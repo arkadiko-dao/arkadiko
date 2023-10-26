@@ -6,7 +6,7 @@ import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
@@ -84,8 +84,7 @@ export const UnstakeLpModal = ({
           setShowUnstakeModal(false);
         },
         anchorMode: AnchorMode.Any,
-      });
-
+      }, resolveProvider() || window.StacksProvider);
     } else {
       await doContractCall({
         network,
@@ -110,7 +109,7 @@ export const UnstakeLpModal = ({
           setShowUnstakeModal(false);
         },
         anchorMode: AnchorMode.Any,
-      });
+      }, resolveProvider() || window.StacksProvider);
     }
   };
 

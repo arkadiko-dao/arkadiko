@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   contractPrincipalCV,
   uintCV,
@@ -114,7 +114,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         window.location.href = '/';
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   useEffect(() => {

@@ -114,7 +114,7 @@ export const getBalance = async (address: string) => {
   };
 };
 
-const icon = 'https://arkadiko.finance/favicon.ico';
+const icon = 'https://arkadiko.finance/favicon.dd4300f9.ico';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';

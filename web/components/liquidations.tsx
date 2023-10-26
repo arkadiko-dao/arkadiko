@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   AnchorMode,
   callReadOnlyFunction,
@@ -92,7 +92,7 @@ export const Liquidations: React.FC = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stake = async () => {
@@ -124,7 +124,7 @@ export const Liquidations: React.FC = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const unstake = async () => {
@@ -157,7 +157,7 @@ export const Liquidations: React.FC = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const getRewardCountV1 = async () => {

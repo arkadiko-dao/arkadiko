@@ -4,7 +4,7 @@ import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { tokenTraits } from '@common/vault-utils';
 import { VaultProps } from './vault';
@@ -59,7 +59,7 @@ export const VaultCloseModal: React.FC<Props> = ({
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   return (

@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   AnchorMode,
   callReadOnlyFunction,
@@ -441,7 +441,7 @@ export const Stake = () => {
         return;
       }
 
-      const totalStakingRewardsYear1 = 11750000;
+      const totalStakingRewardsYear1 = 5875000;
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
@@ -451,7 +451,7 @@ export const Stake = () => {
         0,
         totalDikoUsdaStaked
       );
-      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
+      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.3;
       const dikoUsdaApr =
         dikoUsdaPoolRewards / (dikoDikoUsda['walletValue'] / Number(dikoPrice / 1000000));
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
@@ -461,7 +461,7 @@ export const Stake = () => {
         0,
         totalStxUsdaStaked
       );
-      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.35;
+      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.4;
       const stxUsdaApr =
         stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
@@ -489,7 +489,7 @@ export const Stake = () => {
         0,
         totalXbtcUsdaStaked
       );
-      const xbtcUsdaPoolRewards = totalStakingRewardsYear1 * 0.05;
+      const xbtcUsdaPoolRewards = totalStakingRewardsYear1 * 0;
       const xbtcUsdaApr =
         xbtcUsdaPoolRewards / (dikoXbtcUsda['walletValue'] / Number(dikoPrice / 1000000));
       setXbtcUsdaLpApy(Number((100 * xbtcUsdaApr).toFixed(2)));
@@ -499,7 +499,7 @@ export const Stake = () => {
         0,
         totalXusdUsda2Staked * 100
       );
-      const xusdUsdaPoolRewards = totalStakingRewardsYear1 * 0.118;
+      const xusdUsdaPoolRewards = totalStakingRewardsYear1 * 0;
       const xusdUsdaApr =
         xusdUsdaPoolRewards / (dikoXusdUsda['walletValue'] / Number(dikoPrice / 1000000));
       setXusdUsdaLpApy(0);
@@ -694,7 +694,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimDikoUsdaLpPendingRewards = async () => {
@@ -716,7 +716,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimStxUsdaLpPendingRewards = async () => {
@@ -738,7 +738,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimStxDikoLpPendingRewards = async () => {
@@ -760,7 +760,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeDikoUsdaLpPendingRewards = async () => {
@@ -785,7 +785,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimStxXbtcLpPendingRewards = async () => {
@@ -807,7 +807,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeStxXbtcLpPendingRewards = async () => {
@@ -832,7 +832,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimXbtcUsdaLpPendingRewards = async () => {
@@ -854,7 +854,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimXusdUsdaLpPendingRewards = async () => {
@@ -875,7 +875,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const claimXusdUsda2LpPendingRewards = async () => {
@@ -896,7 +896,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeXbtcUsdaLpPendingRewards = async () => {
@@ -921,7 +921,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeXusdUsdaLpPendingRewards = async () => {
@@ -945,7 +945,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeXusdUsda2LpPendingRewards = async () => {
@@ -969,7 +969,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeStxUsdaLpPendingRewards = async () => {
@@ -994,7 +994,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const stakeStxDikoLpPendingRewards = async () => {
@@ -1019,7 +1019,7 @@ export const Stake = () => {
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const getEpochInfo = async () => {
