@@ -97,7 +97,7 @@ export const VaultMint: React.FC<Props> = ({
   return (
     <div>
       <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Mint extra USDA</h3>
-      <p className="text-sm text-gray-500 dark:text-zinc-400">
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
         Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
         <span className="font-semibold">
           {availableCoinsToMint(

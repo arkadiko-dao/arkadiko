@@ -80,8 +80,8 @@ export const VaultWithdraw: React.FC<Props> = ({
   return (
     <div>
       <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Withdraw collateral</h3>
-      <p className="text-sm text-gray-500 dark:text-zinc-400">
-        You can withdraw a maximum of{' '}
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
+        The amount of collateral you are able to withdraw while keeping a healthy collateralization level is{' '}
         <span className="font-semibold">
           {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}
         </span>

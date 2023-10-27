@@ -106,7 +106,7 @@ export const VaultBurn: React.FC<Props> = ({
   return (
     <div>
       <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Repay USDA debt</h3>
-      <p className="text-sm text-gray-500 dark:text-zinc-400">
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
         Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
         <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
       </p>

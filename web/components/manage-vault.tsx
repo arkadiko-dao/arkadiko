@@ -41,10 +41,6 @@ export const ManageVault = ({ match }) => {
   const vaultOwner = match.params.owner;
   const collateralSymbol = match.params.collateral;
 
-  const [showDepositModal, setShowDepositModal] = useState(false);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [showMintModal, setShowMintModal] = useState(false);
-  const [showBurnModal, setShowBurnModal] = useState(false);
   const [showCloseModal, setShowCloseModal] = useState(false);
 
   const [maximumCollateralToWithdraw, setMaximumCollateralToWithdraw] = useState(0);
@@ -197,20 +193,23 @@ export const ManageVault = ({ match }) => {
         unit: '%'
       },
       {
-        label: 'Minimum Ratio (before liquidation)',
-        help: 'The collateral-to-debt ratio when your vault gets liquidated',
-        data: collateralType?.liquidationRatio / 100.0,
-        unit: '%'
+        label: 'Collateral amount',
+        help: 'The amount of collateral you deposited in this vault',
+        data: collateralLocked(),
+        unit: vault?.collateralToken.toUpperCase()
       },
       {
-        label: 'Liquidation penalty',
-        help: 'The penalty you pay when your vault gets liquidated',
-        data: collateralType?.liquidationPenalty,
-        unit: '%'
+        label: 'Outstanding debt',
+        help: `Your total debt including a ${collateralType?.stabilityFeeApy / 100}% yearly stability fee.`,
+        data: totalDebt.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 6,
+        }),
+        unit: 'USDA'
       },
       {
-        label: 'Stability fee',
-        help: 'Yearly interest you pay on your USDA loan',
+        label: 'Stability fee amount',
+        help: 'The interest fee on your USDA loan',
         data: stabilityFee / 1000000,
         unit: 'USDA'
       }
@@ -310,20 +309,19 @@ export const ManageVault = ({ match }) => {
           </header>
 
           <div className="mt-4" id="liquidation-status-alert">
-            {/* @TODO: pass `border-TOKEN/20` class */}
-            <div className={`flex flex-col rounded-md border-STX/20 bg-white dark:bg-zinc-800 border shadow`}>
-              <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">
+            <div className={`flex flex-col rounded-md bg-white dark:bg-zinc-800 shadow`}>
+              <h3 className="text-base font-normal leading-6 text-gray-900 sr-only font-headings dark:text-zinc-50">
                 Vault details
               </h3>
               <div className="flex flex-col h-full p-4">
                 <div className="space-y-2 lg:grid md:items-center lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                   {/* @TODO: pass bg-TOKEN class */}
-                  <div className="flex flex-col h-full px-4 py-5 mb-4 sm:mb-0 rounded-lg bg-STX bg-opacity-[.08] flex items-center">
-                    <dl className="flex-1 w-full space-y-1.5">
+                  <div className="flex flex-col items-center h-full px-4 py-5 mb-4 border rounded-lg sm:mb-0 bg-STX bg-opacity-10 border-STX/20">
+                    <dl className="flex-1 w-full space-y-2">
                       {vaultDetails.primary.map(detail => (
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto" key={detail.label}>
                         <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                          <p className="text-sm font-semibold brightness-85 text-STX">
+                          <p className="text-sm font-semibold text-STX dark:text-indigo-200">
                             {detail.label}
                           </p>
                             <Tooltip
@@ -332,12 +330,12 @@ export const ManageVault = ({ match }) => {
                             >
                               <StyledIcon
                                 as="InformationCircleIcon"
-                                size={5}
-                                className="block ml-2 text-gray-400"
+                                size={4}
+                                className="block ml-2 text-STX/80 dark:brightness-100 dark:text-gray-400"
                               />
                             </Tooltip>
                           </dt>
-                          <dd className="mt-1 text-sm text-right text-gray-900 dark:text-zinc-100 sm:mt-0">
+                          <dd className="mt-1 text-sm text-right sm:mt-0">
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"
@@ -345,28 +343,33 @@ export const ManageVault = ({ match }) => {
                                 width={Placeholder.width.FULL}
                               />
                             ) : (
-                              <>
+                              <p
+                                className="text-base font-semibold leading-none"
+                              >
                                 {detail.label === 'Collateral to Debt ratio' ? (
-                                  <p
-                                    className={`text-base font-semibold leading-none ${debtClass(
-                                      collateralType?.liquidationRatio / 100.0,
-                                      debtRatio
-                                    )}`}
-                                  >
-                                    {detail.data}
-                                    <span className="text-sm font-normal ml-0.5">%</span>
-                                  </p>
-                                ) : (
-                                  <p
-                                    className="text-base font-semibold leading-none"
-                                  >
-                                    {detail.data}
-                                    <span className="text-sm font-normal ml-0.5">
-                                      {detail.label === "Stability fee" ? 'USDA' : '%'}
+                                  <>
+                                    <span className="flex items-center justify-end">
+                                      {/* @TODO: Change icon according to collateral to debt ratio - (SUCCESS, WARNING, DANGER) */}
+                                      <Status
+                                        type={Status.type.SUCCESS}
+                                      />
+                                      <span className="ml-2 text-STX brightness-50 dark:brightness-100 dark:text-zinc-100">{detail.data}</span>
+                                      <span className="text-STX brightness-50 dark:brightness-100 dark:text-zinc-100 text-sm font-normal ml-0.5">
+                                        {detail.unit}
+                                      </span>
                                     </span>
-                                  </p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span className="text-STX brightness-50 dark:brightness-100 dark:text-zinc-100">{detail.data}</span>
+                                    <span className="text-STX brightness-50 dark:brightness-100 dark:text-zinc-100 text-sm font-normal ml-0.5">
+                                      {detail.unit}
+                                    </span>
+                                  </>
                                 )}
-                              </>
+
+
+                              </p>
                             )}
                           </dd>
                         </div>
@@ -430,7 +433,7 @@ export const ManageVault = ({ match }) => {
               </div>
 
               {debtRatio > 0 ? (
-                <div className="lg:grid lg:grid-cols-3 lg:gap-4 pt-0 px-4 pb-4">
+                <div className="px-4 pt-0 pb-4 lg:grid lg:grid-cols-3 lg:gap-4">
                   <div className="md:col-span-2">
                     {loadingVaultData ? (
                       <div className="p-4 border-l-4 border-gray-400 rounded-tr-md rounded-br-md bg-gray-50 dark:bg-gray-200">
@@ -498,11 +501,19 @@ export const ManageVault = ({ match }) => {
                     )}
                   </div>
 
-                  <div className="p-3 rounded-md bg-gray-50 dark:bg-gray-200">
-                    <p className="text-sm font-semibold leading-none text-gray-400 dark:text-gray-500">
-                      Current {vault?.collateralToken} price
-                    </p>
-                    <p className="mt-1 text-base font-semibold text-gray-900">${price / decimals}</p>
+                  <div className="relative flex items-center justify-between gap-6 p-3 overflow-hidden border border-gray-100 rounded-md bg-gradient-to-l from-gray-50 to-gray-200/80">
+                    <div>
+                      <p className="text-sm font-semibold leading-none text-gray-500">
+                        Current {vault?.collateralToken} price
+                        <span className="block mt-1 text-xs text-gray-400 dark:text-gray-500">(based on the oracle price)</span>
+                      </p>
+                      <p className="mt-2.5 text-xl font-semibold text-gray-900">${price / decimals}</p>
+                    </div>
+                    <div className="p-2 bg-gray-200 dark:bg-gray-300 rounded-3xl">
+                      <svg className="text-gray-400 w-14 h-14" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 120 120">
+                        <path fill="currentColor" d="M86.078 92 72.499 71.427H92v-7.762H28v7.77h19.494L33.92 92h10.126L60 67.83 75.952 92h10.126Zm5.921-35.869v-7.84H72.895L86.287 28H76.162L59.999 52.488 43.837 28H33.712l13.41 20.31H28v7.821h64Z"/>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               ) : null}
@@ -536,6 +547,12 @@ export const ManageVault = ({ match }) => {
         </section>
 
         <section className="mt-12">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
+              Deposit and Withdraw
+            </h3>
+          </header>
+
           {isVaultOwner ? (
             <div className="mt-4">
               <div className="bg-white rounded-md shadow dark:bg-zinc-800">

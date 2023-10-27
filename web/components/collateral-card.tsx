@@ -18,7 +18,7 @@ const collExtraInfo = {
     logo: '/assets/tokens/stx.svg',
     path: '/vaults/new?token=stx',
     classes: {
-      wrapper: 'border-STX/5 hover:border-STX/40 shadow-STX/10 from-STX/[.01] to-STX/5',
+      wrapper: 'border-STX/20 hover:border-STX/40 shadow-STX/10 from-STX/5 to-STX/10',
       tokenShadow: 'shadow-STX/10',
       innerBg: 'bg-STX',
       iconColor: 'text-STX/80',
@@ -29,7 +29,7 @@ const collExtraInfo = {
     logo: '/assets/tokens/ststx.svg',
     path: '/vaults/new?token=ststx',
     classes: {
-      wrapper: 'border-zinc-500/5 hover:border-zinc-500/40 shadow-zinc-500/10 from-zinc-500/[.01] to-zinc-500/5',
+      wrapper: 'border-zinc-500/20 hover:border-zinc-500/40 shadow-zinc-500/10 from-zinc-500/5 to-zinc-500/10',
       tokenShadow: 'shadow-zinc-500/10',
       innerBg: 'bg-zinc-500',
       iconColor: 'text-zinc-500/80',
@@ -40,7 +40,7 @@ const collExtraInfo = {
     logo: '/assets/tokens/xbtc.svg',
     path: '/vaults/new?token=xBTC',
     classes: {
-      wrapper: 'border-xBTC/5 hover:border-xBTC/40 shadow-xBTC/10 from-xBTC/[.01] to-xBTC/5',
+      wrapper: 'border-xBTC/20 hover:border-xBTC/40 shadow-xBTC/10 from-xBTC/5 to-xBTC/10',
       tokenShadow: 'shadow-xBTC/10',
       innerBg: 'bg-xBTC',
       iconColor: 'text-xBTC/80',
@@ -51,7 +51,7 @@ const collExtraInfo = {
     logo: '/assets/tokens/atalex.svg',
     path: '/vaults/new?token=auto-alex',
     classes: {
-      wrapper: 'border-atAlex/5 hover:border-atAlex/40 shadow-atAlex/10 from-atAlex/[.01] to-atAlex/5',
+      wrapper: 'border-atAlex/20 hover:border-atAlex/40 shadow-atAlex/10 from-atAlex/5 to-atAlex/10',
       tokenShadow: 'shadow-atAlex/10',
       innerBg: 'bg-atAlex',
       iconColor: 'text-atAlex/80',
@@ -282,7 +282,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
             <dl className="mt-4 mb-6 space-y-2">
               <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-400">Status</dt>
+                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Status</dt>
                 <dd className="flex text-xs font-semibold text-right text-gray-700/70">
                   <span className="flex items-center flex-grow border border-gray-200 dark:border-gray-600 px-2 py-0.5 rounded-xl bg-gray-100/80">
                     {Number(state.vaults[collateral.name]['status']) != 100 ? (
@@ -326,13 +326,13 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-400">Liquidation ratio</dt>
+                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Liquidation ratio</dt>
                 <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
                   <span className="flex-grow">{collateral.liquidationRatio / 100}%</span>
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-400">Current liquidity available</dt>
+                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Current liquidity available</dt>
                 <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
                   <span className="flex-grow">${
                     ((collateral.maximumDebt - collateral.totalDebt) / 1000000).toLocaleString(undefined, {
@@ -343,7 +343,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-400">Stability Fee</dt>
+                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Stability Fee</dt>
                 <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
                   <span className="flex-grow">{collateral.stabilityFeeApy / 100}%</span>
                 </dd>
@@ -356,7 +356,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <RouterLink
                     to={`vaults/${stxAddress}/${collateral.name}`}
                     exact
-                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md ${collateral.name === "STX" ? "text-indigo-700 bg-indigo-100 hover:bg-indigo-200 " : "text-white bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border rounded-md text-indigo-700 bg-white border-indigo-500 hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                   >
                     Manage
                     <StyledIcon
@@ -368,7 +368,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <RouterLink
                     to={collateral.path}
                     exact
-                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md ${collateral.name === "STX" ? "text-indigo-700 bg-indigo-100 hover:bg-indigo-200 " : "text-white bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                   >
                     Borrow
                     <StyledIcon

@@ -134,13 +134,13 @@ export const VaultDeposit: React.FC<Props> = ({
   return (
     <div>
       <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Deposit extra collateral</h3>
-      <p className="text-sm text-gray-500 dark:text-zinc-400">
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
         You have a balance of{' '}
         <span className="font-semibold">
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
           {vault?.collateralToken.toUpperCase()}
         </span>
-        .
+        . Depositing extra collateral allows you to mint more USDA.
       </p>
 
       <div className="mt-6">
