@@ -37,6 +37,8 @@ export const ManageVault = ({ match }) => {
   const { doContractCall } = useConnect();
   const senderAddress = useSTXAddress();
   const [state, setState] = useContext(AppContext);
+  const [{ collateralTypes }, _x] = useContext(AppContext);
+
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const vaultOwner = match.params.owner;
   const collateralSymbol = match.params.collateral;
@@ -67,13 +69,12 @@ export const ManageVault = ({ match }) => {
         contractAddress,
         contractName: 'arkadiko-vaults-data-v1-1',
         functionName: 'get-vault',
-        functionArgs: [standardPrincipalCV(vaultOwner), contractPrincipalCV(contractAddress, collateralSymbol)],
+        functionArgs: [standardPrincipalCV(vaultOwner), contractPrincipalCV(contractAddress, 'wstx-token')], // TODO
         senderAddress: senderAddress || contractAddress,
         network: network,
       });
 
       const data = cvToJSON(serializedVault).value.value;
-      console.log(data);
 
       if (data['status'] !== 0) {
         setVault({
@@ -82,7 +83,8 @@ export const ManageVault = ({ match }) => {
           collateralToken: collateralSymbol,
           collateralType: collateralSymbol,
           isLiquidated: false,
-          debt: data['debt'].value
+          debt: data['debt'].value,
+          status: data['status'].value
         });
         console.log('lollzz', data);
         setIsVaultOwner(vaultOwner === senderAddress);
@@ -110,6 +112,10 @@ export const ManageVault = ({ match }) => {
   }, [match.params.owner, match.params.collateral]);
 
   useEffect(() => {
+    setCollateralType(collateralTypes[collateralSymbol]);
+  }, [collateralTypes, collateralSymbol]);
+
+  useEffect(() => {
     if (vault && collateralType?.collateralToDebtRatio) {
       if (Number(vault.stackedTokens) === 0) {
         setMaximumCollateralToWithdraw(
@@ -125,17 +131,25 @@ export const ManageVault = ({ match }) => {
         setMaximumCollateralToWithdraw(0);
       }
     }
-  }, [collateralType?.collateralToDebtRatio, price]);
+  }, [collateralType?.collateralToDebtRatio, price, vault?.status]);
 
   useEffect(() => {
     const fetchFees = async () => {
       const feeCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-freddie-v1-1', // TODO
-        functionName: 'get-stability-fee-for-vault',
+        contractName: 'arkadiko-vaults-helpers-v1-1',
+        functionName: 'get-stability-fee',
         functionArgs: [
-          uintCV(vault?.id),
-          contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
+          contractPrincipalCV(
+            process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            'arkadiko-vaults-tokens-v1-1'
+          ),
+          contractPrincipalCV(
+            process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            'arkadiko-vaults-data-v1-1'
+          ),
+          standardPrincipalCV(vaultOwner),
+          contractPrincipalCV(contractAddress, 'wstx-token') // TODO: make dynamic
         ],
         senderAddress: contractAddress || '',
         network: network,
@@ -147,34 +161,15 @@ export const ManageVault = ({ match }) => {
       setLoadingFeesData(false);
     };
 
-    const fetchCollateralToDebtRatio = async () => {
-      if (vault && vault['debt'] > 0) {
-        const collToDebt = await callReadOnlyFunction({
-          contractAddress,
-          contractName: 'arkadiko-freddie-v1-1',
-          functionName: 'calculate-current-collateral-to-debt-ratio',
-          functionArgs: [
-            uintCV(vault.id),
-            contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
-            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-2'),
-            falseCV(),
-          ],
-          senderAddress: senderAddress || contractAddress,
-          network: network,
-        });
-        const json = cvToJSON(collToDebt);
-        if (json.value) {
-          setDebtRatio(json.value.value);
-        }
-      }
-    };
-
-    if (vault?.status) {
-      setDecimals(['stx', 'xbtc', 'btc'].includes(collateralSymbol) ? 1000000 : 100000000);
+    console.log('GOT VAULT:', vault);
+    if (vault?.status && price > 0) {
+      const decimals = ['stx', 'xbtc', 'btc'].includes(collateralSymbol.toLowerCase()) ? 1000000 : 100000000;
+      setDecimals(decimals);
       fetchFees();
-      fetchCollateralToDebtRatio();
+      console.log('FETCHING COLL TO DEBT...', vault['debt'], vault['collateral'], price);
+      setDebtRatio(100.0 * vault['collateral'] * price / vault['debt'] / decimals);
     }
-  }, [vault]);
+  }, [vault, price]);
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
