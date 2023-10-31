@@ -171,20 +171,23 @@ module.exports = {
         test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
         loader: 'file-loader',
       },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto",
+      },
     ],
   },
   devServer: {
     historyApiFallback: true,
-    disableHostCheck: true,
-    contentBase: './dist',
+    // disableHostCheck: true,
+    // contentBase: './dist',
     port: process.env.PORT ? parseInt(process.env.PORT) : 9000,
   },
   devtool: getSourceMap(),
   watch: false,
   plugins: [
     new Dotenv(),
-    new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
-    new webpack.HashedModuleIdsPlugin(),
     new CheckerPlugin(),
     new MiniCssExtractPlugin({
       filename: 'styles.css',
