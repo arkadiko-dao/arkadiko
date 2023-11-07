@@ -3,7 +3,7 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-
+const BN = require('bn.js');
 
 async function getEpochEndBlock() {
 
@@ -30,6 +30,7 @@ async function addRewards() {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
+    fee: new BN(50000, 10),
     network
   };
 
