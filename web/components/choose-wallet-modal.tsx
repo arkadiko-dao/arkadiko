@@ -16,7 +16,7 @@ export function ChooseWalletModal({
   const [xVerseInstalled, setXVerseInstalled] = useState(false);
 
   useEffect(() => {
-    if (window.XverseProviders?.StacksProvider) {
+    if (window.XverseProviders?.StacksProvider || (window.StacksProvider && !window.StacksProvider.isHiroWallet)) {
       setXVerseInstalled(true);
     }
   }, [window.XverseProviders]);
