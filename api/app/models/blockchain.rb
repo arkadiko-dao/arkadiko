@@ -176,6 +176,7 @@ class Blockchain < ApplicationRecord
 
   def scan_result(result, enforce_block_height)
     return if enforce_block_height && result['block_height'] > last_block_height_imported
+    puts result.inspect
     return if %w[coinbase token_transfer].include?(result['tx_type'])
     return if result['contract_call'].nil?
 
