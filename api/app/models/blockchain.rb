@@ -14,7 +14,8 @@ class Blockchain < ApplicationRecord
     SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v1-1
     SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1
   ].freeze
-  STACKS_MAINNET_NODE_URL = 'https://api.hiro.so'.freeze
+  # STACKS_MAINNET_NODE_URL = 'https://api.hiro.so'.freeze
+  STACKS_MAINNET_NODE_URL = 'https://stacks-blockchain-lb.alexlab.co'.freeze
 
   def scan_transaction(tx_id)
     result = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/tx/#{tx_id}")&.parsed_response
