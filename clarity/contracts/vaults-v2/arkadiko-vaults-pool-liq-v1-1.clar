@@ -145,7 +145,10 @@
     (staker-info (get-staker staker))
     (fragments-added (* amount (var-get fragments-per-token)))
   )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (or
+      (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-migration")))
+      (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
+    ) (err ERR_NOT_AUTHORIZED))
 
     ;; Stake for user
     (map-set stakers { staker: staker }
@@ -385,7 +388,7 @@
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
-      (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+      (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
     ) (err ERR_NOT_AUTHORIZED))
 
     (asserts! (>= usda-balance amount) (err ERR_INSUFFICIENT_USDA))
@@ -409,7 +412,7 @@
 
 (define-public (migrate-token (token <ft-trait>) (receiver principal) (amount uint))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (try! (as-contract (contract-call? token transfer amount tx-sender receiver none)))
     (ok true)
@@ -418,7 +421,7 @@
 
 (define-public (set-diko-rewards-percentage (percentage uint))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set diko-rewards-percentage percentage)
 
@@ -428,7 +431,7 @@
 
 (define-public (set-shutdown-activated (activated bool))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set shutdown-activated activated)
 

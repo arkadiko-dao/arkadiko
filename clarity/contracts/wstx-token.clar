@@ -119,7 +119,7 @@
 ;; ---------------------------------------------------------
 
 (define-public (set-token-uri (value (string-utf8 256)))
-  (if (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+  (if (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
     (ok (var-set token-uri value))
     (err ERR_NOT_AUTHORIZED)
   )
@@ -127,7 +127,7 @@
 
 (define-public (set-protocol-addresses (addresses (list 20 principal)))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set protocol-addresses addresses)
     (ok true)
