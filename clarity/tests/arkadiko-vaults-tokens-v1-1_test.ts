@@ -143,3 +143,22 @@ Clarinet.test({
     result.expectErr().expectUint(970401);
   },
 });
+
+Clarinet.test({
+  name: "vaults-tokens: can only add 25 collateral tokens",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let vaultsTokens = new VaultsTokens(chain, deployer);
+
+    // 4 tokens added on deploy, we can add 21 more
+    for (let i = 0; i < 21; i++) {
+      let result = vaultsTokens.setToken(deployer, "token-" + i, "TOK-" + i, 100, 1, 0.05, 1.5, 0.2, 0.01, 0.1, 300, 1000);
+      result.expectOk().expectBool(true);
+    }
+
+    let result = vaultsTokens.setToken(deployer, "token", "TOK", 100, 1, 0.05, 1.5, 0.2, 0.01, 0.1, 300, 1000);
+    result.expectErr().expectUint(970002);
+  },
+});

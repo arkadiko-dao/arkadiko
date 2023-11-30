@@ -9,6 +9,7 @@
 
 (define-constant ERR_NOT_AUTHORIZED u970401)
 (define-constant ERR_UNKNOWN_TOKEN u970001)
+(define-constant ERR_UPDATE_LIST_FAILED u970002)
 
 ;; ---------------------------------------------------------
 ;; Variables
@@ -86,7 +87,7 @@
       false
       ;; Add token to list
       (begin
-        (var-set token-list (unwrap-panic (as-max-len? (append (var-get token-list) token) u25)))
+        (var-set token-list (unwrap! (as-max-len? (append (var-get token-list) token) u25) (err ERR_UPDATE_LIST_FAILED)))
         true
       )
     )
