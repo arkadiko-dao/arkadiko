@@ -1,5 +1,8 @@
 ## Audit
 
+### ME-02 Lost Funds due to Fee Front-Running
+- Added param `max-mint-fee` to `open-vault` and `update-vault` methods
+
 ### ME-03 Authentication via tx-sender
 - Switched from using `tx-sender` to `contract-caller`
 - Did not change `wstx-token` L55. In this case we do want to compare `sender` param to original `tx-sender` and not with an intermediate contract that handles the transfer.
