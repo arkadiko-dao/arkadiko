@@ -1,5 +1,13 @@
 ## Audit
 
+### CR-01 Signature Replay in Price Oracle
+
+### HI-01 Update Codebase for Mainnet
+
+### ME-01 Rewards Lost because of Race Condition
+- The `fragments-per-token` variable is only needed to convert a stakers amount into fragments. The reason this conversion was added is so that when USDA is burned, the amount of all stakers can be decreased by updating one variable.
+- The rewards logic should not take `fragments-per-token` into account. The rewards are distributed across the total fragments.
+
 ### ME-02 Lost Funds due to Fee Front-Running
 - Added param `max-mint-fee` to `open-vault` and `update-vault` methods
 
