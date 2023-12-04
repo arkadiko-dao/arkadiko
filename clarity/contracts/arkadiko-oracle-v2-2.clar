@@ -31,6 +31,7 @@
 )
 
 (define-map trusted-oracles (buff 33) bool)
+(define-map signatures-used (buff 65) bool)
 
 (define-map token-id-to-names uint (list 4 (string-ascii 12)))
 (define-map token-name-to-id (string-ascii 12) uint)
@@ -42,6 +43,11 @@
 ;; @desc check if given public key is trusted
 (define-read-only (is-trusted-oracle (pubkey (buff 33)))
   (default-to false (map-get? trusted-oracles pubkey))
+)
+
+;; @desc check if given signature is already used
+(define-read-only (is-signature-used (signature (buff 65)))
+  (default-to false (map-get? signatures-used signature))
 )
 
 ;; @desc get token ID for given name
@@ -103,7 +109,7 @@
     (check-result (fold + (map check-price-signer block-list token-id-list price-list decimals-list signatures) u0))
   )
     (asserts! (< block-height (+ block u10)) (err ERR-OLD-MESSAGE))
-    (asserts! (check-unique-signatures signatures) (err ERR-SIGNATURES-NOT-UNIQUE))
+    (asserts! (is-eq (fold and (map check-unique-signatures-iter signatures) true) true) (err ERR-SIGNATURES-NOT-UNIQUE))
 
     (if (>= check-result (var-get minimum-valid-signers))
       (update-price-multi-helper token-id price decimals)
@@ -133,23 +139,16 @@
   )
 )
 
-;; Check if given list contains duplicates
-(define-read-only (check-unique-signatures (signatures (list 10 (buff 65))))
-  (let (
-    (index-list (list u0 u1 u2 u3 u4 u5 u6 u7 u8 u9))
-    (signatures-list (list signatures signatures signatures signatures signatures signatures signatures signatures signatures signatures))
-    (checks (map check-unique-signatures-iter index-list signatures signatures-list))
+;; Helper method to iterate over all signatures in a list
+;; The signatures are added to a map, so that a signature can only be used once
+(define-private (check-unique-signatures-iter (signature (buff 65)))
+  (if (is-signature-used signature)
+    false
+    (begin
+      (map-set signatures-used signature true)
+      true
+    )
   )
-    (fold and checks true)
-  )
-)
-
-;; Helper method to iterate over all signatures in a list and find duplicates
-;; The clarity method 'index-of' returns the first index of an element in the list
-;; If the current index is not equal to the index returned by 'index-of',
-;; we know the element already appeared in the list previously and is not unique.
-(define-read-only (check-unique-signatures-iter (index uint) (signature (buff 65)) (signatures (list 10 (buff 65))))
-  (is-eq index (unwrap-panic (index-of signatures signature)))
 )
 
 ;; ---------------------------------------------------------

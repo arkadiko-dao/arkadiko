@@ -1,6 +1,8 @@
 ## Audit
 
 ### CR-01 Signature Replay in Price Oracle
+- Signatures are now stored in a map (buffer to boolean). 
+- If a signature is re-used, the transaction will fail.
 
 ### HI-01 Update Codebase for Mainnet
 
