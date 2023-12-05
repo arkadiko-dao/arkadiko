@@ -5,6 +5,7 @@
 - If a signature is re-used, the transaction will fail.
 
 ### HI-01 Update Codebase for Mainnet
+- Executed planned modifications for mainnet.
 
 ### ME-01 Rewards Lost because of Race Condition
 - The `fragments-per-token` variable is only needed to convert a stakers amount into fragments. The reason this conversion was added is so that when USDA is burned, the amount of all stakers can be decreased by updating one variable.
