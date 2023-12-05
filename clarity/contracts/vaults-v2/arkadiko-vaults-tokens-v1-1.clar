@@ -135,17 +135,15 @@
 
 (begin
   (var-set token-list (list 
-    ;; TODO: update for mainnet
-    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token
-    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token 
-    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin
-    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auto-alex-v2
+    .wstx-token
+    'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.ststx-token 
+    'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin
+    'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex-v2
   ))
 
   (map-set tokens
     { 
-      ;; TODO: update for mainnet
-      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.wstx-token 
+      token: .wstx-token 
     }
     {
       token-name: "STX",
@@ -163,8 +161,7 @@
 
   (map-set tokens
     { 
-      ;; TODO: update for mainnet
-      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token 
+      token: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.ststx-token 
     }
     {
       token-name: "stSTX",
@@ -182,8 +179,7 @@
 
   (map-set tokens
     { 
-      ;; TODO: update for mainnet
-      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin 
+      token: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin 
     }
     {
       token-name: "xBTC",
@@ -201,8 +197,7 @@
 
   (map-set tokens
     { 
-      ;; TODO: update for mainnet
-      token: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auto-alex-v2
+      token: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex-v2
     }
     {
       token-name: "atALEXv2",
