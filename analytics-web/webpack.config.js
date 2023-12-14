@@ -175,16 +175,12 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    disableHostCheck: true,
-    contentBase: './dist',
     port: process.env.PORT ? parseInt(process.env.PORT) : 9000,
   },
   devtool: getSourceMap(),
   watch: false,
   plugins: [
     new Dotenv(),
-    new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
-    new webpack.HashedModuleIdsPlugin(),
     new CheckerPlugin(),
     new MiniCssExtractPlugin({
       filename: 'styles.css',
