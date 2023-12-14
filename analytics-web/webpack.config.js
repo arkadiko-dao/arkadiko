@@ -42,7 +42,7 @@ const hmtlProdOpts = !isDevelopment
 const getSourceMap = () => {
   if (extEnv === 'web' && nodeEnv != 'production') {
     // do not generate for production for now
-    return nodeEnv === 'production' ? 'eval' : 'cheap-source-map';
+    return nodeEnv === 'production' ? 'eval' : 'eval-cheap-source-map';
   }
   return 'none';
 };
@@ -72,6 +72,9 @@ module.exports = {
     extensions: ['.js', '.ts', '.tsx', '.json'],
     plugins: [new TsconfigPathsPlugin()],
     alias: aliases,
+    fallback: {
+      "buffer": require.resolve("buffer")
+    }
   },
   optimization: {
     minimize: !isDevelopment,
@@ -114,8 +117,7 @@ module.exports = {
             // https://github.com/facebook/create-react-app/issues/2488
             ascii_only: true,
           },
-        },
-        sourceMap: false,
+        }
       }),
     ],
     // Automatically split vendor and commons
@@ -153,7 +155,9 @@ module.exports = {
             plugins: [
               // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
               // ["@babel/plugin-proposal-decorators", { legacy: true }],
-              ['@babel/plugin-proposal-class-properties', { loose: true }],
+              ['@babel/plugin-proposal-class-properties', { 'loose': true }],
+              ['@babel/plugin-proposal-private-property-in-object', { 'loose': true }],
+              ['@babel/plugin-proposal-private-methods', { 'loose': true }],
               '@babel/plugin-transform-runtime',
               '@babel/plugin-proposal-nullish-coalescing-operator',
               '@babel/plugin-proposal-optional-chaining',
@@ -171,13 +175,19 @@ module.exports = {
         test: /\.(woff|ttf|otf|eot|woff2|svg)$/i,
         loader: 'file-loader',
       },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto",
+      },
     ],
   },
   devServer: {
     historyApiFallback: true,
+    // disableHostCheck: true,
+    // contentBase: './dist',
     port: process.env.PORT ? parseInt(process.env.PORT) : 9000,
   },
-  devtool: getSourceMap(),
   watch: false,
   plugins: [
     new Dotenv(),
@@ -202,6 +212,11 @@ module.exports = {
         test: /\.(jpg|jpeg|png|gif|svg)?$/,
       },
     ]),
+    // Work around for Buffer is undefined:
+    // https://github.com/webpack/changelog-v5/issues/10
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new webpack.DefinePlugin({
       'process.env.AUTH_ORIGIN': JSON.stringify(process.env.AUTH_ORIGIN),
       NODE_ENV: JSON.stringify(nodeEnv),

@@ -188,13 +188,6 @@ export const Prices: React.FC = () => {
                             </div>
                           ) : null}
                         </div>
-                      ) : asset.token == 'DIKO' ? (
-                        <p>
-                          <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
-                          <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                            {asset.price} BLAAAAT
-                          </span>
-                        </p>
                       ) : (
                         <p>
                           <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
