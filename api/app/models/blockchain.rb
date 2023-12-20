@@ -31,6 +31,18 @@ class Blockchain < ApplicationRecord
     update(last_block_height_imported: tip_height)
   end
 
+  def scan_swap_transactions
+    response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1/transactions?limit=50")
+    response.each do |tx|
+      scan_result(tx, false)
+    end
+
+    response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/v2/info")&.parsed_response
+    tip_height = response['stacks_tip_height']
+
+    update(last_block_height_imported: tip_height)
+  end
+
   def rescan_blocks(starting_block)
     response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/v2/info")&.parsed_response
     tip_height = response['stacks_tip_height']
