@@ -32,7 +32,7 @@ class Blockchain < ApplicationRecord
   end
 
   def scan_swap_transactions
-    response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1/transactions?limit=50")
+    response = HTTParty.get("https://api.hiro.so/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1/transactions?limit=50")
     response.each do |tx|
       puts "TX HASH: #{tx}"
       scan_result(tx, false)
