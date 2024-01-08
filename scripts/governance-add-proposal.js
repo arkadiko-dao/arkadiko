@@ -19,7 +19,7 @@ async function transact() {
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/565'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("arkadiko-governance-stable-swap-yield"),
+          'name': tx.stringAsciiCV("arkadiko-governance-aip-16"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
           'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-16-arkadiko-governance-emissions"),
           'can-mint': tx.falseCV(),
@@ -28,6 +28,7 @@ async function transact() {
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
+    fee: new BN(1000000, 10),
     postConditionMode: 1,
     network
   };
