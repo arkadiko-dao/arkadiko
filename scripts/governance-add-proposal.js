@@ -16,12 +16,12 @@ async function transact() {
       tx.uintCV(134860),
       tx.uintCV(720),
       tx.stringUtf8CV('AIP 16 - New DIKO Emissions'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/533'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/565'),
       tx.listCV([
         tx.tupleCV({
           'name': tx.stringAsciiCV("arkadiko-governance-stable-swap-yield"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-stable-swap-yield"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-16-arkadiko-governance-emissions"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
