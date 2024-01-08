@@ -19,7 +19,7 @@
   (or
     (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
     (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
-    (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+    (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
   )
 )
 

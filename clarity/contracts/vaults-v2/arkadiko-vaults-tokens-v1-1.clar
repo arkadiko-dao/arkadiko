@@ -9,6 +9,7 @@
 
 (define-constant ERR_NOT_AUTHORIZED u970401)
 (define-constant ERR_UNKNOWN_TOKEN u970001)
+(define-constant ERR_UPDATE_LIST_FAILED u970002)
 
 ;; ---------------------------------------------------------
 ;; Variables
@@ -79,14 +80,14 @@
   (redemption-fee-block-rate uint)
 )
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (if (is-some (index-of? (var-get token-list) token))
       ;; Token already in list
       false
       ;; Add token to list
       (begin
-        (var-set token-list (unwrap-panic (as-max-len? (append (var-get token-list) token) u25)))
+        (var-set token-list (unwrap! (as-max-len? (append (var-get token-list) token) u25) (err ERR_UPDATE_LIST_FAILED)))
         true
       )
     )
@@ -113,7 +114,7 @@
 ;; Remove token
 (define-public (remove-token (token principal))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-some (index-of? (var-get token-list) token)) (err ERR_UNKNOWN_TOKEN))
 
     (var-set token-to-remove token)

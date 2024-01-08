@@ -433,3 +433,31 @@ Clarinet.test({
     result.expectErr().expectUint(930005);
   },
 });
+
+Clarinet.test({
+  name: "vaults-operations: mint fee is higher than max provided",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+
+    oracleManager.updatePrice("STX", 0.5);    
+
+    let result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    // Set fee to 20%
+    result = vaultsOperations.setMintFee(deployer, 0.2);
+    result.expectOk().expectBool(true);
+
+    result = vaultsOperations.openVault(wallet_2, "wstx-token", 2000, 500, wallet_1.address)
+    result.expectErr().expectUint(930006);
+
+    result = vaultsOperations.updateVault(wallet_1, "wstx-token", 5000, 1000, wallet_1.address)
+    result.expectErr().expectUint(930006);
+
+  },
+});

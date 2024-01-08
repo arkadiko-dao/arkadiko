@@ -233,46 +233,6 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "oracle: can check for unique signatures",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-
-    let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "check-unique-signatures", [
-        types.list([
-          "0xf4fcbf9d11a0f044a052dfab979f7103df7d2c575726a22cc7e8c019e39158cc6001942c6ec0181603d1b060c9ac7745cce8a662746c89ea08f35d4e005eb64800",
-          "0x45a8ba6288edf22e2561946f64f5029d9671d20c1eb09b561cf0336f11eb5d0353af9bbb93d21f6220ef5f064e131b3d4b7f8b98251179caf60360f41363599400",
-          "0x7e92e90a302b30a5ceeafa15d0ae164fbef55c2ac6227907d40c59e1cbe42bf601e1ffd8ca4b4117de9c397456ae4da0bc49ed49ac0d5c6052b89a21f770533501"
-        ])
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectBool(true);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "check-unique-signatures", [
-        types.list([
-          "0xf4fcbf9d11a0f044a052dfab979f7103df7d2c575726a22cc7e8c019e39158cc6001942c6ec0181603d1b060c9ac7745cce8a662746c89ea08f35d4e005eb64800",
-          "0xf4fcbf9d11a0f044a052dfab979f7103df7d2c575726a22cc7e8c019e39158cc6001942c6ec0181603d1b060c9ac7745cce8a662746c89ea08f35d4e005eb64800",
-          "0x7e92e90a302b30a5ceeafa15d0ae164fbef55c2ac6227907d40c59e1cbe42bf601e1ffd8ca4b4117de9c397456ae4da0bc49ed49ac0d5c6052b89a21f770533501"
-        ])
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectBool(false);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "check-unique-signatures", [
-        types.list([
-          "0xf4fcbf9d11a0f044a052dfab979f7103df7d2c575726a22cc7e8c019e39158cc6001942c6ec0181603d1b060c9ac7745cce8a662746c89ea08f35d4e005eb64800",
-          "0xf4fcbf9d11a0f044a052dfab979f7103df7d2c575726a22cc7e8c019e39158cc6001942c6ec0181603d1b060c9ac7745cce8a662746c89ea08f35d4e005eb64800",
-          "0xf4fcbf9d11a0f044a052dfab979f7103df7d2c575726a22cc7e8c019e39158cc6001942c6ec0181603d1b060c9ac7745cce8a662746c89ea08f35d4e005eb64800"
-        ])
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectBool(false);
-  }
-});
-
-Clarinet.test({
   name: "oracle: owner can update prices with owner method",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
@@ -515,5 +475,59 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(8402);
+  }
+});
+
+Clarinet.test({
+  name: "oracle: can not use same signature twice",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    setTrustedOracles(chain, deployer);
+
+    // Duplicate signatures in list
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400",
+          "0xfe243aa0a991327f6922417959c40fc82be6852e60eb66ce380c4fe9c6866ffd6af83ccd082e17abbcaddd1d95286ba8a10ff7d8a93fbbb1bde29d7e8c21752f01",
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(8403);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400",
+          "0xfe243aa0a991327f6922417959c40fc82be6852e60eb66ce380c4fe9c6866ffd6af83ccd082e17abbcaddd1d95286ba8a10ff7d8a93fbbb1bde29d7e8c21752f01",
+          "0x7b08fe12a53b175af72e5a8318bac89a6f72e328e5985887a6c8747ca7aa1e2108719d7c1bae45cef7840ee22ce669753e73f2a7bbddb6ef73cfb0d85577d02a01"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Signature that was already used before
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(8403);
   }
 });

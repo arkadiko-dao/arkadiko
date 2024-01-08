@@ -22,6 +22,7 @@
 (define-constant ERR_INVALID_RATIO u930003)
 (define-constant ERR_MAX_DEBT_REACHED u930004)
 (define-constant ERR_MIN_DEBT u930005)
+(define-constant ERR_MAX_MINT_FEE u930006)
 
 (define-constant STATUS_ACTIVE u101)
 (define-constant STATUS_CLOSED_BY_OWNER u102)
@@ -62,6 +63,7 @@
   (collateral uint) 
   (debt uint) 
   (prev-owner-hint (optional principal)) 
+  (max-mint-fee uint)
 )
   (let (
     (owner tx-sender)
@@ -83,6 +85,7 @@
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ total-debt debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
     (asserts! (>= debt (get vault-min-debt collateral-info)) (err ERR_MIN_DEBT))
+    (asserts! (>= max-mint-fee (get-mint-fee)) (err ERR_MAX_MINT_FEE))
 
     ;; Save vault data
     (try! (as-contract (contract-call? vaults-data set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
@@ -112,6 +115,7 @@
   (collateral uint) 
   (debt uint) 
   (prev-owner-hint (optional principal)) 
+  (max-mint-fee uint)
 )
   (let (
     (owner tx-sender)
@@ -133,6 +137,7 @@
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
     (asserts! (< (+ (- total-debt (get debt vault)) debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
     (asserts! (>= debt (get vault-min-debt collateral-info)) (err ERR_MIN_DEBT))
+    (asserts! (>= max-mint-fee (get-mint-fee)) (err ERR_MAX_MINT_FEE))
 
     ;; Update vault data
     (try! (as-contract (contract-call? vaults-data set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
@@ -212,7 +217,7 @@
 
 (define-public (set-shutdown-activated (activated bool))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set shutdown-activated activated)
 
@@ -222,7 +227,7 @@
 
 (define-public (set-mint-fee (fee uint))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set mint-fee fee)
 

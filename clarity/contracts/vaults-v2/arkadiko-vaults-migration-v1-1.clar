@@ -29,7 +29,7 @@
   (let (
     (migrate-result (map migrate-vault-iter vaults))
   )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-none (index-of? migrate-result (ok false))) (err ERR_MIGRATE_FAILED))
 
     (print { migrate-result: migrate-result })
@@ -78,7 +78,7 @@
   (let (
     (migrate-result (map migrate-pool-liq-iter stakers))
   )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
     (asserts! (is-none (index-of? migrate-result (ok false))) (err ERR_MIGRATE_FAILED))
 
     (print { migrate-result: migrate-result })

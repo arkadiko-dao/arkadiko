@@ -333,6 +333,20 @@ export const Prices: React.FC = () => {
                               </div>
                             ) : null}
                           </div>
+                        ) : asset.token == 'DIKO' ? (
+                          <p>
+                            <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
+                            <span className="text-gray-700 dark:text-zinc-100">
+                              {asset.price}
+                            </span>
+
+                            {' '}(
+
+                            <span className="text-base font-medium text-gray-500">$</span>
+                            <span className="text-gray-700 dark:text-zinc-100">
+                              {asset.price * stxUsdaPrice / 1000000}
+                            </span>)
+                          </p>
                         ) : (
                           <p>
                             <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}

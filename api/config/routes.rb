@@ -17,6 +17,7 @@ Rails.application.routes.draw do
         get 'stake'
         get 'swap'
         get 'oracle'
+        get 'supply'
       end
     end
   end

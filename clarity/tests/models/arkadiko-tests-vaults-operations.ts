@@ -50,6 +50,7 @@ class VaultsOperations {
         types.uint(collateral * 1000000), 
         types.uint(debt * 1000000),
         types.some(types.principal(prevHint)),
+        types.uint(1000),
       ], caller.address)
     ]);
     return block.receipts[0].result;
@@ -74,6 +75,7 @@ class VaultsOperations {
         types.uint(collateral * 1000000), 
         types.uint(debt * 1000000),
         types.some(types.principal(prevHint)),
+        types.uint(1000),
       ], caller.address)
     ]);
     return block.receipts[0].result;

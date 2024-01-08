@@ -145,7 +145,10 @@
     (staker-info (get-staker staker))
     (fragments-added (* amount (var-get fragments-per-token)))
   )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (or
+      (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-migration")))
+      (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
+    ) (err ERR_NOT_AUTHORIZED))
 
     ;; Stake for user
     (map-set stakers { staker: staker }
@@ -237,7 +240,7 @@
     (token-info (get-token token))
 
     (amount-owed-per-fragment (- (get cumm-reward-per-fragment token-info) (get cumm-reward-per-fragment rewards-info)))
-    (rewards (/ (* (get fragments staker-info) amount-owed-per-fragment) (* u10000000000 (var-get fragments-per-token))))
+    (rewards (/ (* (get fragments staker-info) amount-owed-per-fragment) u1000000000000000000000000))
   )
     (ok rewards)
   )
@@ -357,11 +360,11 @@
   (let (
     (current-total-fragments (var-get fragments-total))
     (current-cumm-reward-per-fragment (get cumm-reward-per-fragment (get-token token))) 
-    (fragments-added (* amount-added (var-get fragments-per-token)))
+    (fragments-added (* amount-added u1000000000000000000000000))
   )
     (if (> current-total-fragments u0)
       (let (
-        (reward-added-per-fragment (/ (* fragments-added u10000000000) current-total-fragments))
+        (reward-added-per-fragment (/ fragments-added current-total-fragments))
         (new-cumm-reward-per-fragment (+ current-cumm-reward-per-fragment reward-added-per-fragment))
       )
         new-cumm-reward-per-fragment
@@ -385,7 +388,7 @@
     (asserts! (or
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-operations")))
       (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-manager")))
-      (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner))
+      (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner))
     ) (err ERR_NOT_AUTHORIZED))
 
     (asserts! (>= usda-balance amount) (err ERR_INSUFFICIENT_USDA))
@@ -409,7 +412,7 @@
 
 (define-public (migrate-token (token <ft-trait>) (receiver principal) (amount uint))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (try! (as-contract (contract-call? token transfer amount tx-sender receiver none)))
     (ok true)
@@ -418,7 +421,7 @@
 
 (define-public (set-diko-rewards-percentage (percentage uint))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set diko-rewards-percentage percentage)
 
@@ -428,7 +431,7 @@
 
 (define-public (set-shutdown-activated (activated bool))
   (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     (var-set shutdown-activated activated)
 

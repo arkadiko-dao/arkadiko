@@ -61,7 +61,7 @@ export const Footer = () => {
           <div>
             <h3 className="text-sm font-semibold tracking-wider text-gray-800 uppercase dark:text-white font-headings">Protocol</h3>
             <ul className="mt-4 space-y-4">
-              <li><a href="https://arkadiko.finance/arkadiko-whitepaper.pdf" className="text-base transition duration-300 hover:text-gray-700 dark:hover:text-zinc-300">Whitepaper</a></li>
+              <li><a href="https://usda.arkadiko.finance/arkadiko-whitepaper.pdf" className="text-base transition duration-300 hover:text-gray-700 dark:hover:text-zinc-300">Whitepaper</a></li>
               <li><a href="https://docs.arkadiko.finance/" target="_blank" rel="noopener noreferrer" className="text-base transition duration-300 hover:text-gray-700 dark:hover:text-zinc-300">Documentation</a></li>
               <li><a href="https://github.com/arkadiko-dao/arkadiko/blob/master/SECURITY.md" target="_blank" rel="noopener noreferrer" className="text-base transition duration-300 hover:text-gray-700 dark:hover:text-zinc-300">Bug Bounty</a></li>
               <li><a href="https://arkadiko.finance/brand" className="text-base transition duration-300 hover:text-gray-700 dark:hover:text-zinc-300">Brand</a></li>

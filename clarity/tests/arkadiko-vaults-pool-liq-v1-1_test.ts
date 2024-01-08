@@ -167,7 +167,7 @@ Clarinet.test({
 
     // Small rounding error
     call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "arkadiko-token");
-    call.result.expectOk().expectUintWithDecimals(51.364723 * 3 - 0.000001);
+    call.result.expectOk().expectUintWithDecimals(51.364723 * 3);
 
     result = vaultsPoolLiquidation.unstake(wallet_1, 800);    
     result.expectOk().expectBool(true);
@@ -184,7 +184,125 @@ Clarinet.test({
     // Unstake triggers adding rewards (1 block)
     // Small rounding error
     call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(150000 + 51.364723 * 8 - 0.000001);
+    call.result.expectOk().expectUintWithDecimals(150000 + 51.364723 * 8);
+  },
+});
+
+Clarinet.test({
+  name: "vaults-pool-liq: rewards and stake of while burning USDA",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+    let wallet_2 = accounts.get("wallet_2")!;
+
+    let vaultsPoolLiquidation = new VaultsPoolLiq(chain, deployer);
+
+
+    //
+    // Stake
+    //
+
+    let result = vaultsPoolLiquidation.stake(wallet_1, 1000);    
+    result.expectOk().expectBool(true);
+
+    result = vaultsPoolLiquidation.stake(wallet_2, 2000);    
+    result.expectOk().expectBool(true);
+
+  
+    //
+    // Add Rewards
+    //
+
+    result = vaultsPoolLiquidation.addRewards(deployer, "wstx-token", 300);
+    result.expectOk().expectUintWithDecimals(300);
+
+    let call:any = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_2.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(200);
+
+    call = vaultsPoolLiquidation.getPendingRewards(deployer.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(0);
+
+
+    //
+    // Burn USDA
+    // Rewards remain the same, stakeOf decreased
+    //
+
+    result = vaultsPoolLiquidation.burnUsda(deployer, 300);
+    result.expectOk().expectUintWithDecimals(300);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(100);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_2.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(200);
+
+    call = vaultsPoolLiquidation.getPendingRewards(deployer.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(900);
+
+    call = vaultsPoolLiquidation.getStakeOf(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(1800);
+
+    call = vaultsPoolLiquidation.getStakeOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+
+    //
+    // Stake
+    //
+
+    result = vaultsPoolLiquidation.stake(deployer, 2700);    
+    result.expectOk().expectBool(true);
+
+
+    //
+    // Add rewards
+    //
+
+    result = vaultsPoolLiquidation.addRewards(deployer, "wstx-token", 600);
+    result.expectOk().expectUintWithDecimals(600);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(100 + 100);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_2.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(200 + 200);
+
+    call = vaultsPoolLiquidation.getPendingRewards(deployer.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(299.999999);
+
+
+    //
+    // Burn USDA
+    // Rewards remain the same, stakeOf decreased
+    //
+
+    result = vaultsPoolLiquidation.burnUsda(deployer, 540);
+    result.expectOk().expectUintWithDecimals(540);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(100 + 100);
+
+    call = vaultsPoolLiquidation.getPendingRewards(wallet_2.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(200 + 200);
+
+    call = vaultsPoolLiquidation.getPendingRewards(deployer.address, "wstx-token");
+    call.result.expectOk().expectUintWithDecimals(299.999999);
+
+    call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
+    call.result.expectOk().expectUintWithDecimals(900 - 90);
+
+    call = vaultsPoolLiquidation.getStakeOf(wallet_2.address);
+    call.result.expectOk().expectUintWithDecimals(1800 - 180);
+
+    call = vaultsPoolLiquidation.getStakeOf(deployer.address);
+    call.result.expectOk().expectUintWithDecimals(2700 - 270);
   },
 });
 
