@@ -13,7 +13,7 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(134860),
+      tx.uintCV(134865),
       tx.uintCV(720),
       tx.stringUtf8CV('AIP 16 - New DIKO Emissions'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/565'),
@@ -28,7 +28,8 @@ async function transact() {
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(1000000, 10),
+    fee: new BN(2000000, 10),
+    nonce: new BN(3521, 10),
     postConditionMode: 1,
     network
   };
