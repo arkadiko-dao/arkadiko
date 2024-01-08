@@ -42,7 +42,7 @@ const hmtlProdOpts = !isDevelopment
 const getSourceMap = () => {
   if (extEnv === 'web' && nodeEnv != 'production') {
     // do not generate for production for now
-    return nodeEnv === 'production' ? 'eval' : 'cheap-source-map';
+    return nodeEnv === 'production' ? 'eval' : 'eval-cheap-source-map';
   }
   return 'none';
 };
@@ -117,8 +117,7 @@ module.exports = {
             // https://github.com/facebook/create-react-app/issues/2488
             ascii_only: true,
           },
-        },
-        sourceMap: false,
+        }
       }),
     ],
     // Automatically split vendor and commons
@@ -189,7 +188,6 @@ module.exports = {
     // contentBase: './dist',
     port: process.env.PORT ? parseInt(process.env.PORT) : 9000,
   },
-  devtool: getSourceMap(),
   watch: false,
   plugins: [
     new Dotenv(),

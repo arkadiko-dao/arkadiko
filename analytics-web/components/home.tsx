@@ -31,7 +31,7 @@ export const Home: React.FC = () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools`);
       const array:any = [];
       response.data.pools.forEach((pool:any) => {
-        if (pool['token_x_name'] !== 'wxusd') {
+        if (pool['token_x_name'] !== 'wxusd' && !pool['token_x_name'].includes('lydian-token')) {
           array.push(
             <PoolRow
               key={pool.id}

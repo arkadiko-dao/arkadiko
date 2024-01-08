@@ -14,7 +14,8 @@ class Blockchain < ApplicationRecord
     SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v1-1
     SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1
   ].freeze
-  STACKS_MAINNET_NODE_URL = 'https://api.hiro.so'.freeze
+  # STACKS_MAINNET_NODE_URL = 'https://api.hiro.so'.freeze
+  STACKS_MAINNET_NODE_URL = 'https://stacks-blockchain-lb.alexlab.co'.freeze
 
   def scan_transaction(tx_id)
     result = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/tx/#{tx_id}")&.parsed_response
@@ -30,6 +31,19 @@ class Blockchain < ApplicationRecord
     update(last_block_height_imported: tip_height)
   end
 
+  def scan_swap_transactions
+    response = HTTParty.get("https://api.hiro.so/extended/v1/address/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-swap-v2-1/transactions?limit=50")
+    response['results'].each do |tx|
+      puts "TX: #{tx}"
+      scan_result(tx, false)
+    end
+
+    response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/v2/info")&.parsed_response
+    tip_height = response['stacks_tip_height']
+
+    update(last_block_height_imported: tip_height)
+  end
+
   def rescan_blocks(starting_block)
     response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/v2/info")&.parsed_response
     tip_height = response['stacks_tip_height']
@@ -37,6 +51,7 @@ class Blockchain < ApplicationRecord
     while starting_block <= tip_height
       puts "Scanning block #{starting_block}"
       response = HTTParty.get("#{STACKS_MAINNET_NODE_URL}/extended/v1/block/by_height/#{starting_block}")&.parsed_response
+      puts response.inspect
       response['txs'].each do |tx_id|
         scan_transaction(tx_id)
       end
@@ -175,6 +190,7 @@ class Blockchain < ApplicationRecord
   end
 
   def scan_result(result, enforce_block_height)
+    return if result.nil?
     return if enforce_block_height && result['block_height'] > last_block_height_imported
     return if %w[coinbase token_transfer].include?(result['tx_type'])
     return if result['contract_call'].nil?

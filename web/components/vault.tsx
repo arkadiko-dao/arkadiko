@@ -224,7 +224,7 @@ export const Vault: React.FC<VaultProps> = ({
                   <span>Vault liquidated</span>
                 )
               ) : (
-                <span>Auctioning Collateral...</span>
+                <span>Vault liquidated</span>
               )
             ) : (
               <RouterLink
