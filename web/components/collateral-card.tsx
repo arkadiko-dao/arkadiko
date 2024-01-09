@@ -149,7 +149,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
               <div className="ml-4">
                 <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
                 {/* @TODO: If user has opened a vault with this collateral type, display vault health with <Status> component. Use NEUTRAL and "No open vault" when user doesn't have any open vault with said collateral */}
-                {collateral.name === "STX" ? (
+                {Number(state.vaults[collateral.name]['status']) === 101 ? (
                   <Status
                     type={Status.type.SUCCESS}
                     label='Healthy'
@@ -159,8 +159,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                     type={Status.type.NEUTRAL}
                     label='No open vault'
                   />
-                )
-                }
+                )}
               </div>
             </div>
 
@@ -216,6 +215,15 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                         :
                         `2000`
                       :
+                      collateral.name === "stSTX" ?
+                        state.userData && (parseFloat(state.balance["ststx"] !== '0')) ?
+                          `${(parseFloat(state.balance["ststx"]) / 1000000).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })}`
+                        :
+                        `2000`
+                      :
                       collateral.name === "xBTC" ?
                         state.userData && (parseFloat(state.balance["xbtc"] !== '0')) ?
                           `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
@@ -260,7 +268,19 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                           maximumFractionDigits: 0,
                         })
                       :
-                      ((1 * prices['xBTC']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      ((1 * prices['xBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })
+                    :
+                    collateral.name === "stSTX" ?
+                      state.userData && (parseFloat(state.balance["ststx"] !== '0.00')) ?
+                        (((parseFloat(state.balance["ststx"]) / 100000000) * prices['ststx']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        })
+                      :
+                      ((2000 * prices['ststx']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
@@ -292,7 +312,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <span className="flex items-center flex-grow border border-gray-200 dark:border-gray-600 px-2 py-0.5 rounded-xl bg-gray-100/80">
                     {Number(state.vaults[collateral.name]['status']) != 100 ? (
                       <>
-                        {/* We need status and tooltip copy for:
+                        {/* @TODO We need status and tooltip copy for:
                         - active
                         - inactive
                         - closed
