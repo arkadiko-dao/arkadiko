@@ -183,7 +183,7 @@ export const App: React.FC = () => {
       console.log('Got collateral type with:', json);
       collTypes[json.value['token-name'].value] = {
         name: json.value['token-name'].value,
-        collateralToDebtRatio: '110', // TODO?
+        collateralToDebtRatio: json.value['liquidation-ratio'].value,
         liquidationPenalty: json.value['liquidation-penalty'].value / 100,
         liquidationRatio: json.value['liquidation-ratio'].value,
         maximumDebt: json.value['max-debt'].value,
