@@ -15,6 +15,7 @@ import { stacksNetwork as network, asyncForEach } from '@common/utils';
 
 const collExtraInfo = {
   'STX': {
+    key: 2,
     logo: '/assets/tokens/stx.svg',
     path: '/vaults/new?token=stx',
     classes: {
@@ -26,6 +27,7 @@ const collExtraInfo = {
     }
   },
   'stSTX': {
+    key: 1,
     logo: '/assets/tokens/ststx.svg',
     path: '/vaults/new?token=ststx',
     classes: {
@@ -37,6 +39,7 @@ const collExtraInfo = {
     }
   },
   'xBTC': {
+    key: 3,
     logo: '/assets/tokens/xbtc.svg',
     path: '/vaults/new?token=xBTC',
     classes: {
@@ -48,6 +51,7 @@ const collExtraInfo = {
     }
   },
   'atALEXv2': {
+    key: 4,
     logo: '/assets/tokens/atalex.svg',
     path: '/vaults/new?token=auto-alex',
     classes: {
@@ -109,6 +113,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
         const coll = collateralTypes[tokenSymbol];
         items.push({
+          key: collExtraInfo[tokenSymbol]?.['key'],
           name: coll['name'],
           token: coll['token'],
           tokenType: coll['tokenType'],
@@ -134,7 +139,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
   return (
     <>
-      {collateralItems.length > 0 && collateralItems.map((collateral) => (
+      {collateralItems.length > 0 && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
         <div key={collateral.tokenType} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
           <div className="flex flex-col flex-1 px-6 py-8">
             <div className="flex items-center">
