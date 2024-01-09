@@ -28,14 +28,14 @@ const collExtraInfo = {
   },
   'stSTX': {
     key: 1,
-    logo: '/assets/tokens/ststx.jpg',
+    logo: '/assets/tokens/ststx.png',
     path: '/vaults/new?token=ststx',
     classes: {
-      wrapper: 'border-zinc-500/20 hover:border-zinc-500/40 shadow-zinc-500/10 from-zinc-500/5 to-zinc-500/10',
-      tokenShadow: 'shadow-zinc-500/10',
-      innerBg: 'bg-zinc-500',
-      iconColor: 'text-zinc-500/80',
-      innerText: 'text-zinc-500'
+      wrapper: 'border-stSTX/20 hover:border-stSTX/40 shadow-stSTX/10 from-stSTX/5 to-stSTX/10',
+      tokenShadow: 'shadow-stSTX/10',
+      innerBg: 'bg-stSTX',
+      iconColor: 'text-stSTX/80',
+      innerText: 'text-stSTX'
     }
   },
   'xBTC': {
