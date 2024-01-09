@@ -28,7 +28,7 @@ const collExtraInfo = {
   },
   'stSTX': {
     key: 1,
-    logo: '/assets/tokens/ststx.svg',
+    logo: '/assets/tokens/ststx.jpg',
     path: '/vaults/new?token=ststx',
     classes: {
       wrapper: 'border-zinc-500/20 hover:border-zinc-500/40 shadow-zinc-500/10 from-zinc-500/5 to-zinc-500/10',
