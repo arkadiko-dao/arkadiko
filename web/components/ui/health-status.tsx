@@ -54,6 +54,18 @@ export const debtClassToType = (debtClass: string) => {
   return StatusType.NEUTRAL;
 }
 
+export const debtClassToLabel = (debtClass: string) => {
+  if (debtClass.includes('green-500')) {
+    return 'Healthy';
+  } else if (debtClass.includes('orange-500')) {
+    return 'Danger';
+  } else if (debtClass.includes('dark-600')) {
+    return 'Liquidation Soon';
+  }
+
+  return 'Neutral';
+}
+
 export function Status({ type = StatusType.SUCCESS, label, labelHover, hasHover }: Props) {
   const status = configMap[type];
 
