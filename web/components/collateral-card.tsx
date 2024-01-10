@@ -6,18 +6,20 @@ import { AppContext } from '@common/context';
 import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
-import { Status } from './ui/health-status';
+import { Status, debtClassToType } from './ui/health-status';
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network, asyncForEach } from '@common/utils';
+import { debtClass } from './vault';
 
 const collExtraInfo = {
   'STX': {
     key: 2,
     logo: '/assets/tokens/stx.svg',
     path: '/vaults/new?token=stx',
+    decimals: 1,
     classes: {
       wrapper: 'border-STX/20 hover:border-STX/40 shadow-STX/10 from-STX/5 to-STX/10',
       tokenShadow: 'shadow-STX/10',
@@ -30,6 +32,7 @@ const collExtraInfo = {
     key: 1,
     logo: '/assets/tokens/ststx.png',
     path: '/vaults/new?token=ststx',
+    decimals: 1,
     classes: {
       wrapper: 'border-stSTX/20 hover:border-stSTX/40 shadow-stSTX/10 from-stSTX/5 to-stSTX/10',
       tokenShadow: 'shadow-stSTX/10',
@@ -42,6 +45,7 @@ const collExtraInfo = {
     key: 3,
     logo: '/assets/tokens/xbtc.svg',
     path: '/vaults/new?token=xBTC',
+    decimals: 100,
     classes: {
       wrapper: 'border-xBTC/20 hover:border-xBTC/40 shadow-xBTC/10 from-xBTC/5 to-xBTC/10',
       tokenShadow: 'shadow-xBTC/10',
@@ -54,6 +58,7 @@ const collExtraInfo = {
     key: 4,
     logo: '/assets/tokens/atalex.svg',
     path: '/vaults/new?token=auto-alex',
+    decimals: 100,
     classes: {
       wrapper: 'border-atAlex/20 hover:border-atAlex/40 shadow-atAlex/10 from-atAlex/5 to-atAlex/10',
       tokenShadow: 'shadow-atAlex/10',
@@ -63,6 +68,26 @@ const collExtraInfo = {
     }
   }
 };
+
+const vaultStatusToLabel = (status: number) => {
+  if (Number(status) === 101) {
+    return 'Active'
+  } else if (Number(status) === 201) {
+    return 'Liquidated'
+  } else if (Number(status) === 202) {
+    return 'Redeemed'
+  }
+}
+
+const vaultStatusToTooltip = (status: number) => {
+  if (Number(status) === 101) {
+    return 'Vault is active'
+  } else if (Number(status) === 201) {
+    return 'Vault got liquidated. You can open a new one'
+  } else if (Number(status) === 202) {
+    return 'Vault got remeeded. You can open a new one'
+  }
+}
 
 export const CollateralCard: React.FC<CollateralTypeProps> = () => {
   const [state, _] = useContext(AppContext);
@@ -128,7 +153,8 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           label: collExtraInfo[tokenSymbol]?.['label'],
           logo: collExtraInfo[tokenSymbol]?.['logo'],
           path: collExtraInfo[tokenSymbol]?.['path'],
-          classes: collExtraInfo[tokenSymbol]?.['classes']
+          classes: collExtraInfo[tokenSymbol]?.['classes'],
+          decimals: collExtraInfo[tokenSymbol]?.['decimals']
         });
       });
       setCollateralItems(items);
@@ -148,7 +174,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
               </div>
               <div className="ml-4">
                 <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
-                {/* @TODO: If user has opened a vault with this collateral type, display vault health with <Status> component. Use NEUTRAL and "No open vault" when user doesn't have any open vault with said collateral */}
                 {Number(state.vaults[collateral.name]['status']) === 101 ? (
                   <Status
                     type={Status.type.SUCCESS}
@@ -169,7 +194,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <div className="flex justify-between">
                     <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Collateral</dt>
                     <dd className={`text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
-                      <span className="flex-grow">{state.vaults[collateral.name]['collateral'] / 1000000} STX</span>
+                      <span className="flex-grow">{state.vaults[collateral.name]['collateral'] / (collateral.decimals * 1000000)} {collateral.name}</span>
                     </dd>
                   </div>
                   <div className="flex justify-between">
@@ -182,14 +207,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                     <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Collateral ratio</dt>
                     <dd>
                       <span className="flex items-center flex-grow">
-                        {/* @TODO: Change icon according to collateral to debt ratio - (SUCCESS, WARNING, DANGER) */}
                         <Status
-                          type={Status.type.SUCCESS}
+                          type={debtClassToType(debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
+                              prices[collateral.name] / collateral.decimals,
+                              state.vaults[collateral.name]['debt'],
+                              state.vaults[collateral.name]['collateral']
+                            ) * 100.0))
+                        }
                         />
                         <span className={`ml-2 text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
                           {
                             getCollateralToDebtRatio(
-                              prices['STX'],
+                              prices[collateral.name] / collateral.decimals,
                               state.vaults[collateral.name]['debt'],
                               state.vaults[collateral.name]['collateral']
                             ) * 100.0
@@ -312,17 +341,11 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <span className="flex items-center flex-grow border border-gray-200 dark:border-gray-600 px-2 py-0.5 rounded-xl bg-gray-100/80">
                     {Number(state.vaults[collateral.name]['status']) != 100 ? (
                       <>
-                        {/* @TODO We need status and tooltip copy for:
-                        - active
-                        - inactive
-                        - closed
-                        - closed by liquidation
-                        - closed by redemption */}
-                        Active
+                        {vaultStatusToLabel(state.vaults[collateral.name]['status'])}
                         <Tooltip
                           className="ml-2"
                           shouldWrapChildren={true}
-                          label={`Vault open`}
+                          label={vaultStatusToTooltip(state.vaults[collateral.name]['status'])}
                         >
                           <StyledIcon
                             as="InformationCircleIcon"

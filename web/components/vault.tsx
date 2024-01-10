@@ -42,7 +42,7 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
     return 'text-red-600';
   }
 
-  return 'text-gray-900 dark:text-zinc-100';
+  return 'text-dark-600';
 };
 
 export const Vault: React.FC<VaultProps> = ({

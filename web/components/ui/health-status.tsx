@@ -42,6 +42,18 @@ const configMap: Record<StatusType, StatusTypeConfig> = {
   },
 };
 
+export const debtClassToType = (debtClass: string) => {
+  if (debtClass.includes('green-500')) {
+    return StatusType.SUCCESS;
+  } else if (debtClass.includes('orange-500')) {
+    return StatusType.WARNING;
+  } else if (debtClass.includes('dark-600')) {
+    return StatusType.ERROR;
+  }
+
+  return StatusType.NEUTRAL;
+}
+
 export function Status({ type = StatusType.SUCCESS, label, labelHover, hasHover }: Props) {
   const status = configMap[type];
 
