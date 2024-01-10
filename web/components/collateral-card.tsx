@@ -6,7 +6,7 @@ import { AppContext } from '@common/context';
 import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
-import { Status, debtClassToType } from './ui/health-status';
+import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
