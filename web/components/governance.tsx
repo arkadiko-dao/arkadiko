@@ -195,9 +195,12 @@ export const Governance = () => {
                 <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">
                   Governance
                 </h3>
-                <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-                  DIKO tokens represent voting shares in Arkadiko governance. <br />
+                <p className="max-w-4xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
+                  DIKO tokens represent voting shares in Arkadiko governance.
                   You can vote on each proposal and cannot delegate any votes.
+                </p>
+                <p className="max-w-4xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
+                Your (st)DIKO goes into the voting contract (leaves your wallet) until the end of the vote after which you can withdraw it again.
                 </p>
               </header>
 
