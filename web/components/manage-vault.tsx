@@ -21,7 +21,7 @@ import {
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { debtClass, VaultProps } from './vault';
 import { getPrice } from '@common/get-price';
-import { getLiquidationPrice, availableCoinsToMint } from '@common/vault-utils';
+import { getLiquidationPrice, availableCoinsToMint, tokenTraits } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
 import { getRPCClient } from '@common/utils';
 import { microToReadable, availableCollateralToWithdraw } from '@common/vault-utils';
@@ -31,6 +31,7 @@ import { Alert } from './ui/alert';
 import { PoxTimeline } from '@components/pox-timeline';
 import { StyledIcon } from './ui/styled-icon';
 import { Status } from './ui/health-status';
+import { collExtraInfo } from './collateral-card';
 
 export const ManageVault = ({ match }) => {
   const senderAddress = useSTXAddress();
@@ -59,11 +60,15 @@ export const ManageVault = ({ match }) => {
 
   useEffect(() => {
     const fetchVault = async () => {
+      const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
       const serializedVault = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-data-v1-1',
         functionName: 'get-vault',
-        functionArgs: [standardPrincipalCV(vaultOwner), contractPrincipalCV(contractAddress, 'wstx-token')], // TODO
+        functionArgs: [
+          standardPrincipalCV(vaultOwner),
+          contractPrincipalCV(tokenInfo['address'], tokenInfo['name'])
+        ],
         senderAddress: senderAddress || contractAddress,
         network: network,
       });
@@ -142,7 +147,7 @@ export const ManageVault = ({ match }) => {
       const decimals = ['stx', 'xbtc', 'btc'].includes(collateralSymbol.toLowerCase()) ? 1000000 : 100000000;
       setDecimals(decimals);
       fetchFees();
-      console.log('FETCHING COLL TO DEBT...', vault['debt'], vault['collateral'], price);
+      console.log('FETCHING COLL TO DEBT...', vault['debt'], vault['collateral'], price, decimals);
       setDebtRatio(100.0 * vault['collateral'] * price / vault['debt'] / decimals);
     }
   }, [vault, price]);
@@ -170,6 +175,7 @@ export const ManageVault = ({ match }) => {
   const collateralLocked = () => {
     if (vault) {
       const decimals = vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000;
+      console.log(decimals, vault);
       return vault['collateral'] / decimals;
     }
 
@@ -263,12 +269,10 @@ export const ManageVault = ({ match }) => {
                 ) : (
                   <div className="flex items-center gap-x-4">
                     <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/80 rounded-md border border-gray-400/30`}>
-                      {/* @TODO: pass token logo */}
-                      <img className="w-10 h-10" src="/assets/tokens/stx.svg" alt="" />
+                      <img className="w-10 h-10" src={collExtraInfo[collateralSymbol]['logo']} alt="" />
                     </div>
                     <div>
-                      {/* @TODO pass tolen name */}
-                      <div className="mb-2">STX</div>
+                      <div className="mb-2">{collateralSymbol}</div>
                       {debtRatio > 0 ? (
                         loadingVaultData ? (
                           <Placeholder

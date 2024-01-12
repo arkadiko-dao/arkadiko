@@ -14,7 +14,7 @@ import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalC
 import { stacksNetwork as network, asyncForEach } from '@common/utils';
 import { debtClass } from './vault';
 
-const collExtraInfo = {
+export const collExtraInfo = {
   'STX': {
     key: 2,
     logo: '/assets/tokens/stx.svg',
