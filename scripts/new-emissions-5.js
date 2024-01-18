@@ -11,11 +11,11 @@ async function transact() {
     contractName: 'arkadiko-stake-registry-v1-1',
     functionName: 'set-pool-data',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.stringAsciiCV('DIKO'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),
+      tx.stringAsciiCV('Liquidation pool'),
       tx.uintCV(0),
       tx.uintCV(0),
-      tx.uintCV(20000) // 20%
+      tx.uintCV(10000)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
