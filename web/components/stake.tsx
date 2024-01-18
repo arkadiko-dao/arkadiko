@@ -442,7 +442,7 @@ export const Stake = () => {
       }
 
       const totalStakingRewardsYear1 = 5875000;
-      const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const dikoPoolRewards = totalStakingRewardsYear1 * 0.2;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
 
@@ -451,7 +451,7 @@ export const Stake = () => {
         0,
         totalDikoUsdaStaked
       );
-      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.3;
+      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
       const dikoUsdaApr =
         dikoUsdaPoolRewards / (dikoDikoUsda['walletValue'] / Number(dikoPrice / 1000000));
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
@@ -461,7 +461,7 @@ export const Stake = () => {
         0,
         totalStxUsdaStaked
       );
-      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.4;
+      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.35;
       const stxUsdaApr =
         stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
@@ -471,7 +471,7 @@ export const Stake = () => {
         0,
         totalStxDikoStaked
       );
-      const stxDikoPoolRewards = 0;
+      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const stxDikoApr = stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
@@ -1384,7 +1384,7 @@ export const Stake = () => {
                           foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
-                          canStake={false}
+                          canStake={true}
                           tokenListItemX={2}
                           tokenListItemY={1}
                           balance={state.balance['wstxdiko']}

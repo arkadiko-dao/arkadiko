@@ -8,17 +8,14 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-stake-registry-v1-1',
-    functionName: 'set-pool-data',
+    contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
+    functionName: 'update-epoch-data',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.stringAsciiCV('DIKO'),
-      tx.uintCV(0),
-      tx.uintCV(0),
-      tx.uintCV(200000) // 20%
+      tx.uintCV(100000),
+      tx.uintCV(720),
+      tx.uintCV(136318)
     ],
     fee: new BN(500000, 10),
-    nonce: new BN(3548, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
