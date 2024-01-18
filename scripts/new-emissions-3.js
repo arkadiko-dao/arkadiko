@@ -15,7 +15,7 @@ async function transact() {
       tx.stringAsciiCV('DIKO-USDA LP'),
       tx.uintCV(0),
       tx.uintCV(0),
-      tx.uintCV(25000)
+      tx.uintCV(250000)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,

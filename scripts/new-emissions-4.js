@@ -15,7 +15,7 @@ async function transact() {
       tx.stringAsciiCV('wSTX-USDA LP'),
       tx.uintCV(0),
       tx.uintCV(0),
-      tx.uintCV(35000)
+      tx.uintCV(350000)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
