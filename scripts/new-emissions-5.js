@@ -11,9 +11,9 @@ async function transact() {
     contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
     functionName: 'update-epoch-data',
     functionArgs: [
-      tx.uintCV(0),
-      tx.uintCV(0),
-      tx.uintCV(100000)
+      tx.uintCV(100000),
+      tx.uintCV(720),
+      tx.uintCV(136318)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
