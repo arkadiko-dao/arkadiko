@@ -17,6 +17,8 @@ async function transact() {
       tx.uintCV(0),
       tx.uintCV(350000)
     ],
+    fee: new BN(500000, 10),
+    nonce: new BN(3545, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
