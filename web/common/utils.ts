@@ -4,8 +4,8 @@ import { StacksMainnet, StacksTestnet } from '@stacks/network';
 const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
 const selectedNetwork = localStorage.getItem('arkadiko-stacks-node');
-// let coreApiUrl = 'https://api.hiro.so';
-let coreApiUrl = 'https://stacks-blockchain-lb.alexlab.co';
+let coreApiUrl = 'https://api.hiro.so';
+// let coreApiUrl = 'https://stacks-blockchain-lb.alexlab.co';
 if (selectedNetwork) {
   const network = JSON.parse(selectedNetwork);
   if (network['url']) {
