@@ -317,6 +317,20 @@ export const ManageVault = ({ match }) => {
               <h3 className="text-base font-normal leading-6 text-gray-900 sr-only font-headings dark:text-zinc-50">
                 Vault details
               </h3>
+              {vault?.collateralToken?.toLowerCase() === 'stx' && (
+                <Alert type={Alert.type.INFO} title="Want to earn more yield?">
+                  <p>
+                    Convert your vault into a stSTX vault and automatically earn yield from the Stacks blockchain. <a href="https://docs.stackingdao.com" className="underline">Read more about liquid stacking.</a>
+                  </p>
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-3 py-2 text-sm mt-2 font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    onClick={() => callMint()}
+                  >
+                    Convert vault to stSTX
+                  </button>
+                </Alert>
+              )}
               <div className="flex flex-col h-full p-4">
                 <div className="space-y-2 lg:grid md:items-center lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                   {/* @TODO: pass bg-TOKEN class */}
