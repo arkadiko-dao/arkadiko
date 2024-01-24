@@ -566,7 +566,7 @@ export const ManageVault = ({ match }) => {
                       match={match}
                       vault={vault}
                       reserveName={reserveName}
-                      decimals={['xbtc-a'].includes(vault?.collateralType?.toLowerCase()) ? decimals * 100 : decimals}
+                      decimals={['xbtc'].includes(vault?.collateralType?.toLowerCase()) ? decimals * 100 : decimals}
                     />
                   </div>
                   <div className="flex flex-col px-4 py-5 sm:p-6">
