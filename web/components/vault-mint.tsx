@@ -79,7 +79,7 @@ export const VaultMint: React.FC<Props> = ({
 
   const mintMaxAmount = () => {
     const tokens = availableCoinsToMint(
-      vault?.collateralToken === 'auto-alex' ? price / 100 : price,
+      price * 100,
       collateralLocked(),
       outstandingDebt(),
       collateralType?.collateralToDebtRatio
@@ -101,7 +101,7 @@ export const VaultMint: React.FC<Props> = ({
         Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
         <span className="font-semibold">
           {availableCoinsToMint(
-            vault?.collateralToken === 'auto-alex' ? price / 100 : price,
+            price * 100,
             collateralLocked(),
             outstandingDebt(),
             collateralType?.collateralToDebtRatio
@@ -117,7 +117,7 @@ export const VaultMint: React.FC<Props> = ({
       <div className="mt-6">
         <InputAmount
           balance={availableCoinsToMint(
-            vault?.collateralToken === 'auto-alex' ? price / 100 : price,
+            price * 100,
             collateralLocked(),
             outstandingDebt(),
             collateralType?.collateralToDebtRatio

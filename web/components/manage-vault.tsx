@@ -104,7 +104,7 @@ export const ManageVault = ({ match }) => {
     if (vault?.status && collateralType?.collateralToDebtRatio && price > 0) {
       setMaximumCollateralToWithdraw(
         availableCollateralToWithdraw(
-          price,
+          price * 100,
           collateralLocked(),
           outstandingDebt(),
           collateralType?.collateralToDebtRatio,
