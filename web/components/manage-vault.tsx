@@ -317,10 +317,10 @@ export const ManageVault = ({ match }) => {
               <h3 className="text-base font-normal leading-6 text-gray-900 sr-only font-headings dark:text-zinc-50">
                 Vault details
               </h3>
-              {vault?.collateralToken?.toLowerCase() === 'stx' && (
+              {vault?.collateralToken?.toLowerCase() === 'stx' && false && (
                 <Alert type={Alert.type.INFO} title="Want to earn more yield?">
                   <p>
-                    Convert your vault into a stSTX vault and automatically earn yield from the Stacks blockchain. <a href="https://docs.stackingdao.com" className="underline">Read more about liquid stacking.</a>
+                    Convert your vault into a stSTX vault and automatically earn yield from the Stacks blockchain. <a href="https://docs.stackingdao.com" target="_blank" className="underline">Read more about liquid stacking.</a>
                   </p>
                   <button
                     type="button"
