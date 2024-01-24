@@ -134,7 +134,7 @@ export const Mint = () => {
                 </table>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-2 w-full">
+              <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3 w-full">
                 <CollateralCard />
               </div>
             )}

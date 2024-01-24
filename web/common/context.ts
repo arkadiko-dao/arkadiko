@@ -45,7 +45,7 @@ export interface AppState {
   userData: UserData | null;
   balance: UserBalance;
   vaults: VaultProps[];
-  definedCollateralTypes: [string, string, string, string];
+  definedCollateralTypes: [string, string, string];
   collateralTypes: object;
   showTxModal: boolean;
   currentTxId: string;
@@ -100,7 +100,7 @@ export const defaultState = (): AppState => {
         'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.wstx-token', // TODO: make dynamic
         'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.Wrapped-Bitcoin',
         'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.ststx-token',
-        'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.auto-alex-v2'
+        // 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.auto-alex-v2'
       ],
       collateralTypes: [],
       currentTxId: '',
@@ -118,7 +118,7 @@ export const defaultState = (): AppState => {
       'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.wstx-token',
       'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.Wrapped-Bitcoin',
       'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.ststx-token',
-      'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.auto-alex-v2',
+      // 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.auto-alex-v2',
     ],
     collateralTypes: [],
     currentTxId: '',
