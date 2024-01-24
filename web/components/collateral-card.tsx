@@ -351,7 +351,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
               <div className="flex justify-between">
                 <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Status</dt>
                 <dd className="flex text-xs font-semibold text-right text-gray-700/70">
-                  <span className="flex items-center flex-grow border border-gray-200 dark:border-gray-600 px-2 py-0.5 rounded-xl bg-gray-100/80">
+                  <span className={`flex items-center flex-grow border border-gray-200 dark:border-gray-600 text-gray-100 px-2 py-0.5 rounded-xl ${collateral.classes?.innerBg}`}>
                     {Number(state.vaults[collateral.name]['status']) != 100 ? (
                       <>
                         {vaultStatusToLabel(state.vaults[collateral.name]['status'])}
@@ -363,7 +363,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                           <StyledIcon
                             as="InformationCircleIcon"
                             size={4}
-                            className="block ml-2 text-gray-500"
+                            className="block ml-2 text-gray-100"
                           />
                         </Tooltip>
                       </>
@@ -378,7 +378,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                           <StyledIcon
                             as="InformationCircleIcon"
                             size={4}
-                            className="block ml-2 text-gray-500"
+                            className="block ml-2 text-gray-100"
                           />
                         </Tooltip>
                       </>
@@ -417,7 +417,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <RouterLink
                     to={`vaults/${stxAddress}/${collateral.name}`}
                     exact
-                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border rounded-md text-indigo-700 bg-white border-indigo-500 hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border rounded-md ${collateral.classes?.innerText} ${collateral.classes?.wrapper} bg-white border-indigo-500 hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                   >
                     Manage
                     <StyledIcon
@@ -429,7 +429,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <RouterLink
                     to={collateral.path}
                     exact
-                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                   >
                     Borrow
                     <StyledIcon
