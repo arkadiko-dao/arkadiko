@@ -99,9 +99,10 @@
 (define-public (unlock-liquidated-vault (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (asserts! (get is-liquidated vault) (err ERR-VAULT-LIQUIDATED))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (get is-liquidated vault) (err ERR-VAULT-LIQUIDATED))
+    (asserts! (> (get stacked-tokens vault) u0) (err ERR-STILL-STACKING))
 
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
         stacked-tokens: u0,
