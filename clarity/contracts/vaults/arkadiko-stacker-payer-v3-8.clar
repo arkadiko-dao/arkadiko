@@ -26,14 +26,11 @@
     (old-unlock (contract-call? .arkadiko-stacker-payer-v3-7 get-vault-unlock vault-id))
     (old-unlock-burn-height (get unlocked-at-burn-height old-unlock))
     (new-unlock (get-vault-unlock vault-id))
-    (unlock
-      (if (<= old-unlock-burn-height u829850)
-        old-unlock
-        new-unlock
-      )
-    )
   )
-    unlock
+    (if (<= old-unlock-burn-height u829850)
+      old-unlock
+      new-unlock
+    )
   )
 )
 
