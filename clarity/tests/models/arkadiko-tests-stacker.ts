@@ -52,7 +52,7 @@ class Stacker {
 
   enableVaultWithdrawals(vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-7", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-8", "enable-vault-withdrawals", [
         types.uint(vaultId)
       ], this.deployer.address)
     ]);
@@ -109,7 +109,7 @@ class Stacker2 {
 
   enableVaultWithdrawals(vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-7", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-8", "enable-vault-withdrawals", [
         types.uint(vaultId)
       ], this.deployer.address)
     ]);

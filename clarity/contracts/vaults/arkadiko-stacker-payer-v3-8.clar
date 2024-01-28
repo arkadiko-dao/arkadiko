@@ -21,6 +21,22 @@
   )
 )
 
+(define-read-only (get-vault-combined-unlock (vault-id uint))
+  (let (
+    (old-unlock (contract-call? .arkadiko-stacker-payer-v3-7 get-vault-unlock vault-id))
+    (old-unlock-burn-height (get unlocked-at-burn-height old-unlock))
+    (new-unlock (get-vault-unlock vault-id))
+    (unlock
+      (if (<= old-unlock-burn-height u829850)
+        old-unlock
+        new-unlock
+      )
+    )
+  )
+    unlock
+  )
+)
+
 (define-read-only (is-enabled)
   (and
     (not (unwrap-panic (contract-call? .arkadiko-dao get-emergency-shutdown-activated)))
@@ -58,7 +74,7 @@
 (define-public (enable-vault-withdrawals (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-    (unlock (get-vault-unlock vault-id))
+    (unlock (get-vault-combined-unlock vault-id))
   )
     (asserts!
       (and
@@ -105,6 +121,7 @@
     (asserts! (> (get stacked-tokens vault) u0) (err ERR-STILL-STACKING))
 
     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
+        revoked-stacking: true,
         stacked-tokens: u0,
         updated-at-block-height: block-height
       }))
