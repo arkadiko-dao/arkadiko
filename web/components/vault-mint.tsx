@@ -32,7 +32,6 @@ export const VaultMint: React.FC<Props> = ({
   console.log('vault-mint', vault);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-  console.log(tokenInfo);
 
   const callMint = async () => {
     const tokenAddress = tokenInfo['address'];
@@ -72,7 +71,7 @@ export const VaultMint: React.FC<Props> = ({
         'arkadiko-oracle-v2-2'
       ),
       contractPrincipalCV(tokenAddress, token),
-      collateralAmount,
+      uintCV(collateralAmount),
       uintCV(debtAmount),
       someCV(standardPrincipalCV(hint['prevOwner']))
     ];
