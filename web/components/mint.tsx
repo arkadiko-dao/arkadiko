@@ -72,8 +72,7 @@ export const Mint = () => {
           status: vault['status'].value,
           isLiquidated: Number(vault['status'].value) == 201,
           isRedeemed: Number(vault['status'].value) == 202,
-          debt: vault['debt'].value,
-          liquidationRatio: 110 // TODO
+          debt: vault['debt'].value
         };
       });
 

@@ -37,7 +37,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const debtAmount = parseInt(coinAmounts['amounts']['usda'], 10) * 1000000;
     const amount = uintCV(collateralAmount);
 
-    const BASE_URL = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/hint' // TODO: add to .env
+    const BASE_URL = process.env.HINT_API_URL;
     const url = BASE_URL + `?owner=${address}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
     const response = await fetch(url);
     const hint = await response.json();
