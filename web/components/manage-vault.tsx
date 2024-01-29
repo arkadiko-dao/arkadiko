@@ -85,7 +85,6 @@ export const ManageVault = ({ match }) => {
           debt: data['debt'].value,
           status: data['status'].value
         });
-        console.log('lollzz', data);
         setIsVaultOwner(vaultOwner === senderAddress);
 
         const price = await getPrice(collateralSymbol);
@@ -333,7 +332,7 @@ export const ManageVault = ({ match }) => {
                       {vaultDetails.primary.map(detail => (
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto" key={detail.label}>
                         <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                          <p className="text-sm font-semibold ${collExtraInfo[collateralSymbol]['classes']['innerText']}">
+                          <p className={`text-sm font-semibold ${collExtraInfo[collateralSymbol]['classes']['innerText']}`}>
                             {detail.label}
                           </p>
                             <Tooltip
@@ -367,7 +366,7 @@ export const ManageVault = ({ match }) => {
                                         />
                                       ) : (
                                         <Status
-                                          type={Status.type.DANGER}
+                                          type={Status.type.ERROR}
                                         />
                                       )}
                                       <span className="ml-2 text-STX brightness-50 dark:brightness-100 dark:text-zinc-100">{detail.data}</span>

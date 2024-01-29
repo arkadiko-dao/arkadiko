@@ -341,7 +341,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
                             <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
-                              Current {tokenName} Price
+                              Current {tokenNameToTicker(tokenName)} Price
                             </dt>
                             <dd className="mt-1 text-sm text-indigo-900 sm:mt-0 sm:ml-auto">
                               ${price}
