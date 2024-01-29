@@ -327,13 +327,12 @@ export const ManageVault = ({ match }) => {
               )}
               <div className="flex flex-col h-full p-4">
                 <div className="space-y-2 lg:grid md:items-center lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-                  {/* @TODO: pass bg-TOKEN class */}
-                  <div className="flex flex-col items-center h-full px-4 py-5 mb-4 border rounded-lg sm:mb-0 bg-STX bg-opacity-10 border-STX/20">
+                  <div className={`flex flex-col items-center h-full px-4 py-5 mb-4 border rounded-lg sm:mb-0 ${collExtraInfo[collateralSymbol]['classes']['innerBg']} ${collExtraInfo[collateralSymbol]['classes']['wrapper']} bg-opacity-10`}>
                     <dl className="flex-1 w-full space-y-2">
                       {vaultDetails.primary.map(detail => (
                         <div className="sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-auto" key={detail.label}>
                         <dt className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-zinc-400">
-                          <p className="text-sm font-semibold text-STX dark:text-indigo-200">
+                          <p className="text-sm font-semibold ${collExtraInfo[collateralSymbol]['classes']['innerText']}">
                             {detail.label}
                           </p>
                             <Tooltip
