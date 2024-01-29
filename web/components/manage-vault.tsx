@@ -116,6 +116,7 @@ export const ManageVault = ({ match }) => {
 
   useEffect(() => {
     const fetchFees = async () => {
+      const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
       const feeCall = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-helpers-v1-1',
@@ -130,7 +131,7 @@ export const ManageVault = ({ match }) => {
             'arkadiko-vaults-data-v1-1'
           ),
           standardPrincipalCV(vaultOwner),
-          contractPrincipalCV(contractAddress, 'wstx-token') // TODO: make dynamic
+          contractPrincipalCV(tokenInfo['address'], tokenInfo['name'])
         ],
         senderAddress: contractAddress || '',
         network: network,
