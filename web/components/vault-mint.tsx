@@ -1,12 +1,12 @@
 import React, { useContext, useState, useRef } from 'react';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
-import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV, someCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { VaultProps } from './vault';
-import { availableCoinsToMint } from '@common/vault-utils';
+import { availableCoinsToMint, tokenTraits } from '@common/vault-utils';
 
 interface Props {
   vault: VaultProps;
@@ -29,24 +29,61 @@ export const VaultMint: React.FC<Props> = ({
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
+  console.log('vault-mint', vault);
+  const collateralSymbol = match.params.collateral;
+  const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
+  console.log(tokenInfo);
 
   const callMint = async () => {
+    const tokenAddress = tokenInfo['address'];
+    const token = tokenInfo['name'];
+    const collateralAmount = vault.collateral;
+    const debtAmount = Number(vault.debt) + Number(usdToMint * 1000000);
+
+    const BASE_URL = process.env.HINT_API_URL;
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
+    const args = [
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-oracle-v2-2'
+      ),
+      contractPrincipalCV(tokenAddress, token),
+      collateralAmount,
+      uintCV(debtAmount),
+      someCV(standardPrincipalCV(hint['prevOwner']))
+    ];
+
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'mint',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(parseInt(parseFloat(usdToMint).toFixed(6) * 1000000, 10)),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v3-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v2-2'),
-      ],
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'update-vault',
+      functionArgs: args,
       onFinish: data => {
         console.log('finished mint!', data, data.txId);
         setState(prevState => ({
