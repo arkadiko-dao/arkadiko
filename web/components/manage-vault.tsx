@@ -526,9 +526,7 @@ export const ManageVault = ({ match }) => {
                       <p className="mt-2.5 text-xl font-semibold text-gray-900">${price / decimals}</p>
                     </div>
                     <div className="p-2 bg-gray-200 dark:bg-gray-300 rounded-3xl">
-                      <svg className="text-gray-400 w-14 h-14" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 120 120">
-                        <path fill="currentColor" d="M86.078 92 72.499 71.427H92v-7.762H28v7.77h19.494L33.92 92h10.126L60 67.83 75.952 92h10.126Zm5.921-35.869v-7.84H72.895L86.287 28H76.162L59.999 52.488 43.837 28H33.712l13.41 20.31H28v7.821h64Z"/>
-                      </svg>
+                      <img src={collExtraInfo[collateralSymbol]['logo']} className="w-14" />
                     </div>
                   </div>
                 </div>
