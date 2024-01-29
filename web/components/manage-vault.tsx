@@ -161,12 +161,12 @@ export const ManageVault = ({ match }) => {
   const liquidationPrice = () => {
     if (vault) {
       // (liquidationRatio * coinsMinted) / collateral = rekt
-      return getLiquidationPrice(
+      return Number(getLiquidationPrice(
         collateralType?.liquidationRatio / 100.0,
         vault['debt'],
         vault['collateral'],
         vault['collateralToken']
-      );
+      )).toFixed(2);
     }
 
     return 0;
@@ -360,10 +360,15 @@ export const ManageVault = ({ match }) => {
                                 {detail.label === 'Collateral to Debt ratio' ? (
                                   <>
                                     <span className="flex items-center justify-end">
-                                      {/* @TODO: Change icon according to collateral to debt ratio - (SUCCESS, WARNING, DANGER) */}
-                                      <Status
-                                        type={Status.type.SUCCESS}
-                                      />
+                                      {debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) == 'text-green-500' ? (
+                                        <Status
+                                          type={Status.type.SUCCESS}
+                                        />
+                                      ) : (
+                                        <Status
+                                          type={Status.type.DANGER}
+                                        />
+                                      )}
                                       <span className="ml-2 text-STX brightness-50 dark:brightness-100 dark:text-zinc-100">{detail.data}</span>
                                       <span className="text-STX brightness-50 dark:brightness-100 dark:text-zinc-100 text-sm font-normal ml-0.5">
                                         {detail.unit}
