@@ -90,7 +90,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
       setTokenKey(tokenKey);
       console.log(state.balance, tokenKey, tokenName);
-      setDecimals(tokenKey === 'stx' ? 1000000 : 100000000);
+      setDecimals(tokenKey === 'stx' || tokenKey === 'ststx' ? 1000000 : 100000000);
       fetchPrice(tokenKey);
       setIsLoading(false);
     }
@@ -189,7 +189,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               Create a new vault
             </h2>
             <p className="max-w-4xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              Deposit {tokenName} and generate USDA
+              Deposit {tokenName} and mint USDA
             </p>
           </div>
           <div>
@@ -254,17 +254,16 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                       <div className="space-y-6 sm:col-span-3">
                         <div>
                           <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                            How much {tokenName} do you want to collateralize?
+                            How much {tokenNameToTicker(tokenName)} do you want to collateralize?
                           </h3>
                           <p className="mt-2 text-sm">
-                            The amount of {tokenName} you deposit determines how much USDA you can
-                            generate.
+                            The amount of {tokenNameToTicker(tokenName)} you deposit determines how much USDA you can mint.
                           </p>
 
                           <div className="mt-4">
                             <InputAmount
                               balance={state.balance[tokenKey] / decimals}
-                              token={tokenName}
+                              token={tokenNameToTicker(tokenName)}
                               inputName="collateral"
                               inputId="collateralAmount"
                               inputValue={collateralAmount}
