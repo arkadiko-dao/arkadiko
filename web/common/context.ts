@@ -12,6 +12,7 @@ interface UserBalance {
   wldn: number;
   ldn: number;
   welsh: number;
+  ststx: number;
   'auto-alex': number;
   dikousda: number;
   wstxusda: number;
@@ -73,6 +74,7 @@ export const defaultBalance = () => {
     wldn: 0,
     ldn: 0,
     welsh: 0,
+    ststx: 0,
     'auto-alex': 0,
     dikousda: undefined,
     stxusda: undefined,

@@ -30,6 +30,7 @@ export const getBalance = async (address: string) => {
   const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
   const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+  const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
   let lpXusdUsdaBalance = 0;
   let lpXusdUsdaBalance2 = 0;
 
@@ -88,6 +89,10 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[
       `${xbtcContractAddress}.Wrapped-Bitcoin::wrapped-bitcoin`
     ];
+  const stStxBalance =
+    data.fungible_tokens[
+      `${stStxContractAddress}.ststx-token::ststx`
+    ];
   const welshBalance =
     data.fungible_tokens[
       `${welshContractAddress}.welshcorgicoin-token::welshcorgicoin`
@@ -104,6 +109,7 @@ export const getBalance = async (address: string) => {
     wldn: wldnBalance ? wldnBalance.balance : 0,
     ldn: ldnBalance ? ldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
+    ststx: stStxBalance ? stStxBalance.balance : 0,
     'auto-alex': atAlexBalance ? atAlexBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
@@ -152,6 +158,7 @@ export const App: React.FC = () => {
         wldn: account.wldn.toString(),
         ldn: account.ldn.toString(),
         welsh: account.welsh.toString(),
+        ststx: account.ststx.toString(),
         'auto-alex': account['auto-alex'].toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
