@@ -106,17 +106,20 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       const [
         stxPrice,
         btcPrice,
-        atAlexPrice
+        atAlexPrice,
+        stStxPrice
       ] = await Promise.all([
         getPrice("STX"),
         getPrice("xBTC"),
-        getPrice("auto-alex")
+        getPrice("auto-alex"),
+        getPrice("stSTX")
       ]);
 
       setPrices({
         'STX': stxPrice / 1000000,
         'xBTC': btcPrice / 1000000,
-        'atALEXv2': atAlexPrice / 100000000
+        'atALEXv2': atAlexPrice / 100000000,
+        'stSTX': stStxPrice / 1000000
       });
     };
 
@@ -293,19 +296,19 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
                     {collateral.name === "STX" ?
                       state.userData && state.balance["stx"] > 0 ?
-                        ((microToReadable(state.balance["stx"]) * prices['STX']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        ((microToReadable(state.balance["stx"]) * prices['STX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })
                       :
-                      ((2000 * prices['STX']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      ((2000 * prices['STX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
                     :
                     collateral.name === "xBTC" ?
                       state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
-                        (((parseFloat(state.balance["xbtc"]) / 100000000) * prices['xBTC']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        (((parseFloat(state.balance["xbtc"]) / 100000000) * prices['xBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })
@@ -317,19 +320,19 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                     :
                     collateral.name === "stSTX" ?
                       state.userData && (parseFloat(state.balance["ststx"] !== '0.00')) ?
-                        (((parseFloat(state.balance["ststx"]) / 100000000) * prices['ststx']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        (((parseFloat(state.balance["ststx"]) / 1000000) * prices['stSTX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })
                       :
-                      ((2000 * prices['ststx']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                      ((2000 * prices['stSTX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
                     :
                     collateral.name === "atALEXv2" ?
                       state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
-                        (((parseFloat(state.balance["atalex"]) / 100000000) * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                        (((parseFloat(state.balance["atalex"]) / 100000000) * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })
