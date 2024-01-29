@@ -238,12 +238,6 @@ export const ManageVault = ({ match }) => {
         help: 'Yearly interest you pay on your USDA loan',
         data: 4,
         unit: '%'
-      },
-      {
-        label: 'Redemption fee',
-        help: '--',
-        data: '20',
-        unit: '%'
       }
     ]
   };
