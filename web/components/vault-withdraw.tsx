@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef } from 'react';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
-import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV, someCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
