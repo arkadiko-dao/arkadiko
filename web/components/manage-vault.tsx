@@ -543,6 +543,7 @@ export const ManageVault = ({ match }) => {
                       reserveName={reserveName}
                       price={price}
                       collateralType={collateralType}
+                      stabilityFee={stabilityFee}
                     />
                   </div>
                   <div className="flex flex-col px-4 py-5 sm:p-6">
@@ -577,6 +578,7 @@ export const ManageVault = ({ match }) => {
                       vault={vault}
                       reserveName={reserveName}
                       decimals={['xbtc'].includes(vault?.collateralType?.toLowerCase()) ? decimals * 100 : decimals}
+                      stabilityFee={stabilityFee}
                     />
                   </div>
                   <div className="flex flex-col px-4 py-5 sm:p-6">
@@ -585,6 +587,7 @@ export const ManageVault = ({ match }) => {
                       maximumCollateralToWithdraw={maximumCollateralToWithdraw}
                       vault={vault}
                       reserveName={reserveName}
+                      stabilityFee={stabilityFee}
                     />
                   </div>
                 </div>

@@ -9,7 +9,9 @@ import {
   FungibleConditionCode,
   makeStandardSTXPostCondition,
   makeStandardFungiblePostCondition,
-  createAssetInfo
+  createAssetInfo,
+  someCV,
+  standardPrincipalCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -22,6 +24,7 @@ interface Props {
   vault: VaultProps;
   reserveName: string;
   decimals: number;
+  stabilityFee: number;
 }
 
 export const VaultDeposit: React.FC<Props> = ({
@@ -29,6 +32,7 @@ export const VaultDeposit: React.FC<Props> = ({
   vault,
   reserveName,
   decimals,
+  stabilityFee
 }) => {
   const [state, setState] = useContext(AppContext);
   const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
@@ -36,18 +40,23 @@ export const VaultDeposit: React.FC<Props> = ({
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+  const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
 
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
+  const collateralSymbol = match.params.collateral;
+  const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
       return;
     }
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const tokenAddress = tokenInfo['address'];
+    const token = tokenInfo['name'];
     const decimals = token === 'Wrapped-Bitcoin' || token === 'auto-alex' ? 100000000 : 1000000;
-    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
+    const collateralAmount = Number(vault.collateral) + Number(parseFloat(extraCollateralDeposit) * decimals);
+    const debtAmount = Number(vault.debt);
 
     let postConditions: any[] = [];
     if (vault['collateralToken'].toLowerCase() === 'stx') {
@@ -71,6 +80,19 @@ export const VaultDeposit: React.FC<Props> = ({
           )
         ),
       ];
+    } else if (vault['collateralToken'].toLowerCase() === 'ststx') {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          senderAddress || '',
+          FungibleConditionCode.LessEqual,
+          new BN(parseFloat(extraCollateralDeposit) * decimals),
+          createAssetInfo(
+            stStxContractAddress,
+            'ststx-token',
+            'ststx'
+          )
+        ),
+      ];
     } else {
       postConditions = [
         makeStandardFungiblePostCondition(
@@ -85,23 +107,59 @@ export const VaultDeposit: React.FC<Props> = ({
         ),
       ];
     }
+    postConditions.push(
+      makeStandardFungiblePostCondition(
+        senderAddress || '',
+        FungibleConditionCode.LessEqual,
+        uintCV(parseInt(stabilityFee * 1.3, 10)).value,
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      )
+    );
+
+    const BASE_URL = process.env.HINT_API_URL;
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
+    const args = [
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-oracle-v2-2'
+      ),
+      contractPrincipalCV(tokenAddress, token),
+      uintCV(collateralAmount),
+      uintCV(debtAmount),
+      someCV(standardPrincipalCV(hint['prevOwner']))
+    ];
 
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'deposit',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(parseFloat(extraCollateralDeposit) * decimals),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(tokenAddress, token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v3-1'
-        ),
-      ],
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'update-vault',
+      functionArgs: args,
       postConditions,
       onFinish: data => {
         console.log('finished deposit!', data);

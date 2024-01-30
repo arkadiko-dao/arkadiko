@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef } from 'react';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
-import { AnchorMode, contractPrincipalCV, uintCV, someCV, standardPrincipalCV } from '@stacks/transactions';
+import { AnchorMode, contractPrincipalCV, uintCV, someCV, standardPrincipalCV, makeStandardFungiblePostCondition, createAssetInfo, FungibleConditionCode } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
@@ -13,6 +13,7 @@ interface Props {
   reserveName: string;
   price: number;
   collateralType: any;
+  stabilityFee: number;
 }
 
 export const VaultMint: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const VaultMint: React.FC<Props> = ({
   reserveName,
   price,
   collateralType,
+  stabilityFee
 }) => {
   const [_, setState] = useContext(AppContext);
   const [usdToMint, setUsdToMint] = useState('');
@@ -76,6 +78,15 @@ export const VaultMint: React.FC<Props> = ({
       someCV(standardPrincipalCV(hint['prevOwner']))
     ];
 
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        senderAddress || '',
+        FungibleConditionCode.LessEqual,
+        uintCV(parseInt(stabilityFee * 1.3, 10)).value,
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
+    ];
+
     await doContractCall({
       network,
       contractAddress,
@@ -83,6 +94,7 @@ export const VaultMint: React.FC<Props> = ({
       contractName: 'arkadiko-vaults-operations-v1-1',
       functionName: 'update-vault',
       functionArgs: args,
+      postConditions,
       onFinish: data => {
         console.log('finished mint!', data, data.txId);
         setState(prevState => ({
