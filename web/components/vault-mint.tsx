@@ -31,7 +31,6 @@ export const VaultMint: React.FC<Props> = ({
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
-  console.log('vault-mint', vault);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 

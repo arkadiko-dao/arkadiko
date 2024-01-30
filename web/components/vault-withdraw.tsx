@@ -12,6 +12,7 @@ interface Props {
   maximumCollateralToWithdraw: number;
   vault: VaultProps;
   reserveName: string;
+  stabilityFee: number;
 }
 
 export const VaultWithdraw: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const VaultWithdraw: React.FC<Props> = ({
   maximumCollateralToWithdraw,
   vault,
   reserveName,
+  stabilityFee
 }) => {
   const [_, setState] = useContext(AppContext);
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
@@ -27,33 +29,63 @@ export const VaultWithdraw: React.FC<Props> = ({
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
+  const collateralSymbol = match.params.collateral;
+  const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 
   const callWithdraw = async () => {
     if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
       return;
     }
 
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const tokenAddress = tokenInfo['address'];
+    const token = tokenInfo['name'];
     const decimals = token === 'Wrapped-Bitcoin' || token === 'auto-alex' ? 100000000 : 1000000;
-    const amount = uintCV(Number((parseFloat(collateralToWithdraw) * decimals).toFixed(0)));
-    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
+    const collateralAmount = Number(vault.collateral) - Number(parseFloat(collateralToWithdraw) * decimals);
+    const debtAmount = Number(vault.debt);
+
+    const BASE_URL = process.env.HINT_API_URL;
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
+    const args = [
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-oracle-v2-2'
+      ),
+      contractPrincipalCV(tokenAddress, token),
+      uintCV(collateralAmount),
+      uintCV(debtAmount),
+      someCV(standardPrincipalCV(hint['prevOwner']))
+    ];
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'withdraw',
-      functionArgs: [
-        uintCV(match.params.id),
-        amount,
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(tokenAddress, token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v3-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v2-2'),
-      ],
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'update-vault',
+      functionArgs: args,
       postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished withdraw!', data);

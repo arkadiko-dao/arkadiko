@@ -8,6 +8,8 @@ import {
   createAssetInfo,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
+  someCV,
+  standardPrincipalCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -36,10 +38,10 @@ export const VaultBurn: React.FC<Props> = ({
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
+  const collateralSymbol = match.params.collateral;
+  const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 
   const callBurn = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
     let totalToBurn = Number(usdToBurn) + stabilityFee / 1000000;
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
@@ -52,29 +54,62 @@ export const VaultBurn: React.FC<Props> = ({
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
     ];
-
     let burnAmount = 0;
     if (usdToBurn * 1000000 < 1.5 * stabilityFee) {
       burnAmount = parseInt(1.3 * stabilityFee, 10);
     } else {
       burnAmount = parseInt(parseFloat(usdToBurn) * 1000000 - 1.5 * stabilityFee, 10);
     }
+
+    const tokenAddress = tokenInfo['address'];
+    const token = tokenInfo['name'];
+    const collateralAmount = vault.collateral;
+    const debtAmount = Number(vault.debt) - Number(totalToBurn * 1000000);
+
+    const BASE_URL = process.env.HINT_API_URL;
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
+    const args = [
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-oracle-v2-2'
+      ),
+      contractPrincipalCV(tokenAddress, token),
+      uintCV(collateralAmount),
+      uintCV(debtAmount),
+      someCV(standardPrincipalCV(hint['prevOwner']))
+    ];
+
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'burn',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(burnAmount),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(tokenAddress, token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v3-1'
-        ),
-      ],
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'update-vault',
+      functionArgs: args,
       postConditions,
       onFinish: data => {
         console.log('finished burn!', data);
