@@ -42,7 +42,7 @@ export const availableCollateralToWithdraw = (
   // 200 = (stxCollateral * 111) / 5
   const token = collateralToken.toLocaleLowerCase();
   const decimals = token.includes('alex') ? 1000000 : 10000;
-  const minimumStxCollateral = (collateralToDebt * coinsMinted) / (price / decimals);
+  const minimumStxCollateral = 1.05 * (collateralToDebt * coinsMinted) / (price / decimals);
   if (currentStxCollateral - minimumStxCollateral > 0) {
     const decimals = token.includes('xbtc') || token.includes('alex') ? 8 : 6;
     return (currentStxCollateral - minimumStxCollateral).toFixed(decimals);

@@ -175,7 +175,6 @@ export const ManageVault = ({ match }) => {
   const collateralLocked = () => {
     if (vault) {
       const decimals = vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000;
-      console.log(decimals, vault);
       return vault['collateral'] / decimals;
     }
 
