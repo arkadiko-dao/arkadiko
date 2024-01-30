@@ -536,31 +536,31 @@ export const Liquidations: React.FC = () => {
       const [
         totalPooled,
         userPooled,
-        epochInfo,
-        dikoEpochRewardsToAdd,
-        currentBlockHeight,
-        stakerLockup,
-        lockupBlocks,
-        dikoPrice,
-        burnBlock,
+        // epochInfo,
+        // dikoEpochRewardsToAdd,
+        // currentBlockHeight,
+        // stakerLockup,
+        // lockupBlocks,
+        // dikoPrice,
+        // burnBlock,
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
-        getEpochInfo(),
-        getDikoEpochRewardsToAdd(),
-        getCurrentBlockHeight(),
-        getStakerLockup(),
-        getLockup(),
-        getDikoPrice(),
-        getBurnBlockHeight(),
+        // getEpochInfo(),
+        // getDikoEpochRewardsToAdd(),
+        // getCurrentBlockHeight(),
+        // getStakerLockup(),
+        // getLockup(),
+        // getDikoPrice(),
+        // getBurnBlockHeight(),
       ]);
 
       setTotalPooled(totalPooled);
       setUserPooled(userPooled);
-      setDikoEndBlock(epochInfo["end-block"].value);
-      setDikoRewardsToAdd(dikoEpochRewardsToAdd);
-      setCurrentBlockHeight(currentBlockHeight);
-      setBurnBlockHeight(burnBlock);
+      // setDikoEndBlock(epochInfo["end-block"].value);
+      // setDikoRewardsToAdd(dikoEpochRewardsToAdd);
+      // setCurrentBlockHeight(currentBlockHeight);
+      // setBurnBlockHeight(burnBlock);
       
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
@@ -568,20 +568,20 @@ export const Liquidations: React.FC = () => {
       if (userPooled == 0) {
         setStakerLockupBlocks(0);
       } else {
-        setStakerLockupBlocks(parseInt(stakerLockup) + parseInt(lockupBlocks));
+        // setStakerLockupBlocks(parseInt(stakerLockup) + parseInt(lockupBlocks));
       }
-      setLockupBlocks(lockupBlocks);
+      // setLockupBlocks(lockupBlocks);
 
-      const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
-      setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
+      // const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
+      // setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
       setIsLoading(false);
     };
 
-    setIsLoading(false);
-    setButtonStakeDisabled(false);
-    setButtonUnstakeDisabled(userPooled == 0)
+    // setIsLoading(false);
+    // setButtonStakeDisabled(false);
+    // setButtonUnstakeDisabled(userPooled == 0)
 
-    // fetchInfo();
+    fetchInfo();
   }, []);
 
   const tabs = [
