@@ -24,7 +24,7 @@ import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCoinsToMint, tokenTraits } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
 import { getRPCClient } from '@common/utils';
-import { microToReadable, availableCollateralToWithdraw } from '@common/vault-utils';
+import { microToReadable, availableCollateralToWithdraw, getCollateralToDebtRatio } from '@common/vault-utils';
 import { addMinutes } from 'date-fns';
 import { Placeholder } from './ui/placeholder';
 import { Alert } from './ui/alert';
@@ -144,11 +144,16 @@ export const ManageVault = ({ match }) => {
 
     console.log('GOT VAULT:', vault);
     if (vault?.status && price > 0) {
-      const decimals = ['stx', 'xbtc', 'btc'].includes(collateralSymbol.toLowerCase()) ? 1000000 : 100000000;
+      const decimals = ['stx'].includes(collateralSymbol.toLowerCase()) ? 1000000 : 100000000;
       setDecimals(decimals);
       fetchFees();
-      console.log('FETCHING COLL TO DEBT...', vault['debt'], vault['collateral'], price, decimals);
-      setDebtRatio(100.0 * vault['collateral'] * price / vault['debt'] / decimals);
+
+      const ratio = getCollateralToDebtRatio(
+        price / decimals,
+        vault['debt'],
+        vault['collateral']
+      ) * 100.0;
+      setDebtRatio(ratio);
     }
   }, [vault, price]);
 
@@ -525,7 +530,9 @@ export const ManageVault = ({ match }) => {
                         Current {vault?.collateralToken} price
                         <span className="block mt-1 text-xs text-gray-400 dark:text-gray-500">(based on the oracle price)</span>
                       </p>
-                      <p className="mt-2.5 text-xl font-semibold text-gray-900">${price / decimals}</p>
+                      <p className="mt-2.5 text-xl font-semibold text-gray-900">
+                        ${price / (['xbtc'].includes(vault?.collateralType?.toLowerCase()) ? decimals / 100 : decimals)}
+                      </p>
                     </div>
                     <div className="p-2 bg-gray-200 dark:bg-gray-300 rounded-3xl">
                       <img src={collExtraInfo[collateralSymbol]['logo']} className="w-14" />
@@ -579,7 +586,7 @@ export const ManageVault = ({ match }) => {
                       match={match}
                       vault={vault}
                       reserveName={reserveName}
-                      decimals={['xbtc'].includes(vault?.collateralType?.toLowerCase()) ? decimals * 100 : decimals}
+                      decimals={decimals}
                       stabilityFee={stabilityFee}
                     />
                   </div>

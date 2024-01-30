@@ -60,7 +60,7 @@ export const debtClassToLabel = (debtClass: string) => {
   } else if (debtClass.includes('orange-500')) {
     return 'Danger';
   } else if (debtClass.includes('dark-600')) {
-    return 'Liquidation Soon';
+    return 'Liquidation Close';
   }
 
   return 'Neutral';
