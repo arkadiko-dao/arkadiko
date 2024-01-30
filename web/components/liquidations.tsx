@@ -15,7 +15,8 @@ import {
   makeStandardFungiblePostCondition,
   makeContractFungiblePostCondition,
   FungibleConditionCode,
-  createAssetInfo
+  createAssetInfo,
+  listCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
@@ -36,6 +37,9 @@ export const Liquidations: React.FC = () => {
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+  const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
 
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,7 +100,6 @@ export const Liquidations: React.FC = () => {
   };
 
   const stake = async () => {
-
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
@@ -110,10 +113,17 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-pool-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-1',
       functionName: 'stake',
       functionArgs: [
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)))
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))),
+        listCV([
+          contractPrincipalCV(contractAddress, 'wstx-token'),
+          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          contractPrincipalCV(atAlexContractAddress, 'auto-alex-v2')
+        ])
       ],
       postConditions,
       onFinish: data => {
@@ -128,11 +138,10 @@ export const Liquidations: React.FC = () => {
   };
 
   const unstake = async () => {
-
     const postConditions = [
       makeContractFungiblePostCondition(
         contractAddress,
-        'arkadiko-liquidation-pool-v1-1',
+        'arkadiko-vaults-pool-liq-v1-1',
         FungibleConditionCode.Equal,
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
@@ -143,10 +152,17 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-pool-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-1',
       functionName: 'unstake',
       functionArgs: [
-        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0)))
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))),
+        listCV([
+          contractPrincipalCV(contractAddress, 'wstx-token'),
+          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          contractPrincipalCV(atAlexContractAddress, 'auto-alex-v2')
+        ])
       ],
       postConditions,
       onFinish: data => {
@@ -423,7 +439,7 @@ export const Liquidations: React.FC = () => {
         contractName: 'usda-token',
         functionName: 'get-balance',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-1'),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -435,8 +451,8 @@ export const Liquidations: React.FC = () => {
     const getUserPooled = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-liquidation-pool-v1-1',
-        functionName: 'get-tokens-of',
+        contractName: 'arkadiko-vaults-pool-liq-v1-1',
+        functionName: 'get-stake-of',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
         ],
@@ -561,7 +577,11 @@ export const Liquidations: React.FC = () => {
       setIsLoading(false);
     };
 
-    fetchInfo();
+    setIsLoading(false);
+    setButtonStakeDisabled(false);
+    setButtonUnstakeDisabled(userPooled == 0)
+
+    // fetchInfo();
   }, []);
 
   const tabs = [
