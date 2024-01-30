@@ -195,7 +195,10 @@ export const ManageVault = ({ match }) => {
       {
         label: 'Collateral to Debt ratio',
         help: 'The amount of collateral you deposit in a vault versus the stablecoin debt you are minting against it',
-        data: debtRatio,
+        data: debtRatio.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
         unit: '%'
       },
       {
