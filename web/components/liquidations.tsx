@@ -203,7 +203,7 @@ export const Liquidations: React.FC = () => {
       );
     }
     const xbtcRewards = await getPendingRewards(xbtcContractAddress, 'Wrapped-Bitcoin');
-    if (xbtcRewards > 5555555555555) {
+    if (xbtcRewards > 0) {
       rewardData.push(
         <LiquidationReward
           key={1}
