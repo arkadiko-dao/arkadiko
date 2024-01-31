@@ -192,19 +192,49 @@ export const Liquidations: React.FC = () => {
     setIsLoadingRewards(true);
 
     const dikoRewards = await getPendingRewards(contractAddress, 'arkadiko-token');
+    if (dikoRewards > 0) {
+      rewardData.push(
+        <LiquidationReward
+          key={0}
+          token={`${contractAddress}.arkadiko-token`}
+          claimable={dikoRewards}
+          tokenIsStx={false}
+        />
+      );
+    }
     const xbtcRewards = await getPendingRewards(xbtcContractAddress, 'Wrapped-Bitcoin');
-    console.log(xbtcRewards);
-    rewardData.push(
-      <LiquidationReward
-        key={1}
-        rewardIds={[]}
-        token={`${xbtcContractAddress}.Wrapped-Bitcoin`}
-        claimable={xbtcRewards}
-        tokenIsStx={false}
-      />
-    );
+    if (xbtcRewards > 5555555555555) {
+      rewardData.push(
+        <LiquidationReward
+          key={1}
+          token={`${xbtcContractAddress}.Wrapped-Bitcoin`}
+          claimable={xbtcRewards}
+          tokenIsStx={false}
+        />
+      );
+    }
     const stxRewards = await getPendingRewards(contractAddress, 'wstx-token');
+    if (stxRewards > 0) {
+      rewardData.push(
+        <LiquidationReward
+          key={2}
+          token={`${contractAddress}.wstx-token`}
+          claimable={stxRewards}
+          tokenIsStx={true}
+        />
+      );
+    }
     const stStxRewards = await getPendingRewards(stStxContractAddress, 'ststx-token');
+    if (stStxRewards > 0) {
+      rewardData.push(
+        <LiquidationReward
+          key={3}
+          token={`${stStxContractAddress}.ststx-token`}
+          claimable={stStxRewards}
+          tokenIsStx={false}
+        />
+      );
+    }
 
     setIsLoadingRewards(false);
     setLoadedRewards(true);
@@ -345,7 +375,7 @@ export const Liquidations: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                {!isLoadingRewards && rewardData.length == 0 ? (
+                {!isLoadingRewards && rewardData.length == 0 && !loadedRewards ? (
                   <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
                     <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
                       <div className="flex items-center justify-between">
@@ -382,7 +412,7 @@ export const Liquidations: React.FC = () => {
                   <EmptyState
                     Icon={CashIcon}
                     title="You have no rewards to claim."
-                    description="DIKO and liquidation rewards will appear here."
+                    description="DIKO and liquidation rewards appear here."
                   />
                 ) : rewardData.length != 0 ? (
                   <>
