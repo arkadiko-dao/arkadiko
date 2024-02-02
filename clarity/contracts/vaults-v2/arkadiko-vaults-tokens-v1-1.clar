@@ -163,7 +163,7 @@
   (map-set tokens
     { 
       ;; TODO: update for mainnet
-      token: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.ststx-token 
+      token: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.ststx-token
     }
     {
       token-name: "stSTX",
@@ -182,7 +182,7 @@
   (map-set tokens
     { 
       ;; TODO: update for mainnet
-      token: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.Wrapped-Bitcoin 
+      token: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.Wrapped-Bitcoin
     }
     {
       token-name: "xBTC",
