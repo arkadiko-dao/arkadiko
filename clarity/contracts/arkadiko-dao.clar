@@ -14,8 +14,8 @@
 (define-map contracts
   { name: (string-ascii 256) }
   {
-    address: principal, ;; e.g. 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ
-    qualified-name: principal ;; e.g. 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.freddie
+    address: principal, ;; e.g. 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ
+    qualified-name: principal ;; e.g. 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.freddie
   }
 )
 (define-map contracts-data
@@ -169,12 +169,12 @@
   (map-set contracts
     { name: "freddie" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-freddie-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-freddie-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-freddie-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-freddie-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -184,12 +184,12 @@
   (map-set contracts
     { name: "auction-engine" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-auction-engine-v4-5
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-auction-engine-v4-5
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-auction-engine-v4-5 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-auction-engine-v4-5 }
     {
       can-mint: true,
       can-burn: true
@@ -199,33 +199,33 @@
   (map-set contracts
     { name: "oracle" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-oracle-v2-2
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-oracle-v2-2
     }
   )
   (map-set contracts
     { name: "collateral-types" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-collateral-types-v3-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-collateral-types-v3-1
     }
   )
   (map-set contracts
     { name: "governance" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-governance-v4-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-governance-v4-1
     }
   )
   (map-set contracts
     { name: "stake-registry" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-registry-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-registry-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-registry-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-registry-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -235,12 +235,12 @@
   (map-set contracts
     { name: "stake-pool-diko" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-diko-v1-2
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-diko-v1-2
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-diko-v1-2 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-diko-v1-2 }
     {
       can-mint: true,
       can-burn: true
@@ -250,12 +250,12 @@
   (map-set contracts
     { name: "stake-pool-diko-usda" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-diko-usda-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-diko-usda-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-diko-usda-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-diko-usda-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -265,12 +265,12 @@
   (map-set contracts
     { name: "stake-pool-wstx-usda" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-wstx-usda-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-wstx-usda-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-wstx-usda-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-wstx-usda-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -280,12 +280,12 @@
   (map-set contracts
     { name: "stake-pool-wstx-diko" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-wstx-diko-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-wstx-diko-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stake-pool-wstx-diko-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stake-pool-wstx-diko-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -295,41 +295,41 @@
   (map-set contracts
     { name: "stacker" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stacker-v3-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-v3-1
     }
   )
   (map-set contracts
     { name: "stacker-2" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stacker-2-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-2-v1-1
     }
   )
   (map-set contracts
     { name: "stacker-3" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stacker-3-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-3-v1-1
     }
   )
   (map-set contracts
     { name: "stacker-4" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stacker-4-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-4-v1-1
     }
   )
 
   (map-set contracts
     { name: "stacker-payer" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stacker-payer-v3-7
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-payer-v3-7
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stacker-payer-v3-7 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-payer-v3-7 }
     {
       can-mint: false,
       can-burn: true
@@ -339,12 +339,12 @@
   (map-set contracts
     { name: "stx-reserve" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stx-reserve-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stx-reserve-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-stx-reserve-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stx-reserve-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -354,12 +354,12 @@
   (map-set contracts
     { name: "sip10-reserve-v1-1" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-sip10-reserve-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-sip10-reserve-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-sip10-reserve-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-sip10-reserve-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -369,12 +369,12 @@
   (map-set contracts
     { name: "sip10-reserve" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-sip10-reserve-v2-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-sip10-reserve-v2-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-sip10-reserve-v2-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-sip10-reserve-v2-1 }
     {
       can-mint: true,
       can-burn: true
@@ -384,20 +384,20 @@
   (map-set contracts
     { name: "diko-guardian" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-diko-guardian-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-diko-guardian-v1-1
     }
   )
 
   (map-set contracts
     { name: "diko-init" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-diko-init
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-diko-init
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-diko-init }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-diko-init }
     {
       can-mint: true,
       can-burn: true
@@ -407,12 +407,12 @@
   (map-set contracts
     { name: "vault-rewards" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vault-rewards-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vault-rewards-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vault-rewards-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vault-rewards-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -422,12 +422,12 @@
   (map-set contracts
     { name: "swap" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-swap-v2-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-swap-v2-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-swap-v2-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-swap-v2-1 }
     {
       can-mint: true,
       can-burn: true
@@ -437,12 +437,12 @@
   (map-set contracts
     { name: "liquidator" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-auction-engine-v4-5
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-auction-engine-v4-5
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-auction-engine-v4-5 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-auction-engine-v4-5 }
     {
       can-mint: true,
       can-burn: true
@@ -452,12 +452,12 @@
   (map-set contracts
     { name: "liquidation-rewards-diko" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-liquidation-rewards-diko-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-liquidation-rewards-diko-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-liquidation-rewards-diko-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-liquidation-rewards-diko-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -467,12 +467,12 @@
   (map-set contracts
     { name: "liquidation-rewards" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-liquidation-rewards-v1-2
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-liquidation-rewards-v1-2
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-liquidation-rewards-v1-2 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-liquidation-rewards-v1-2 }
     {
       can-mint: false,
       can-burn: false
@@ -482,12 +482,12 @@
   (map-set contracts
     { name: "liquidation-pool" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-liquidation-pool-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-liquidation-pool-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-liquidation-pool-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-liquidation-pool-v1-1 }
     {
       can-mint: false,
       can-burn: false
@@ -497,12 +497,12 @@
   (map-set contracts
     { name: "vaults-manager" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-manager-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-manager-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-manager-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-manager-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -512,12 +512,12 @@
   (map-set contracts
     { name: "vaults-operations" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-operations-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-operations-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-operations-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-operations-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -527,12 +527,12 @@
   (map-set contracts
     { name: "vaults-pool-liq" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-pool-liq-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-pool-liq-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-pool-liq-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-pool-liq-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -542,12 +542,12 @@
   (map-set contracts
     { name: "vaults-pool-active" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-pool-active-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-pool-active-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-pool-active-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-pool-active-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -557,12 +557,12 @@
   (map-set contracts
     { name: "vaults-tokens" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-tokens-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-tokens-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-tokens-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-tokens-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -572,12 +572,12 @@
   (map-set contracts
     { name: "vaults-sorted" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-sorted-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-sorted-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-sorted-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-sorted-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -587,12 +587,12 @@
   (map-set contracts
     { name: "vaults-data" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-data-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-data-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-data-v1-1 }
     {
       can-mint: true,
       can-burn: true
@@ -602,12 +602,12 @@
   (map-set contracts
     { name: "vaults-helpers" }
     {
-      address: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ,
-      qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-helpers-v1-1
+      address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-helpers-v1-1
     }
   )
   (map-set contracts-data
-    { qualified-name: 'STE2RRS4JBKYN062FSVTEX4D19H86JGYHDD8ERQQ.arkadiko-vaults-helpers-v1-1 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-vaults-helpers-v1-1 }
     {
       can-mint: true,
       can-burn: true
