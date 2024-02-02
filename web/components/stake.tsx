@@ -442,7 +442,7 @@ export const Stake = () => {
       }
 
       const totalStakingRewardsYear1 = 5875000;
-      const dikoPoolRewards = totalStakingRewardsYear1 * 0.1;
+      const dikoPoolRewards = totalStakingRewardsYear1 * 0.2;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
 
@@ -451,7 +451,7 @@ export const Stake = () => {
         0,
         totalDikoUsdaStaked
       );
-      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.3;
+      const dikoUsdaPoolRewards = totalStakingRewardsYear1 * 0.25;
       const dikoUsdaApr =
         dikoUsdaPoolRewards / (dikoDikoUsda['walletValue'] / Number(dikoPrice / 1000000));
       setDikoUsdaLpApy(Number((100 * dikoUsdaApr).toFixed(2)));
@@ -461,7 +461,7 @@ export const Stake = () => {
         0,
         totalStxUsdaStaked
       );
-      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.4;
+      const stxUsdaPoolRewards = totalStakingRewardsYear1 * 0.35;
       const stxUsdaApr =
         stxUsdaPoolRewards / (dikoStxUsda['walletValue'] / Number(dikoPrice / 1000000));
       setStxUsdaLpApy(Number((100 * stxUsdaApr).toFixed(2)));
@@ -471,7 +471,7 @@ export const Stake = () => {
         0,
         totalStxDikoStaked
       );
-      const stxDikoPoolRewards = 0;
+      const stxDikoPoolRewards = totalStakingRewardsYear1 * 0.1;
       const stxDikoApr = stxDikoPoolRewards / (dikoStxDiko['walletValue'] / Number(dikoPrice / 1000000));
       setStxDikoLpApy(Number((100 * stxDikoApr).toFixed(2)));
 
@@ -1295,48 +1295,6 @@ export const Stake = () => {
                           </tr>
                         </thead>
 
-                        {/* ALEX xUSD USDA LP Token */}
-                        <StakeLpRow
-                          foreign={true}
-                          loadingApy={loadingApy}
-                          loadingData={loadingData}
-                          canStake={true}
-                          tokenListItemX={8}
-                          tokenListItemY={0}
-                          balance={state.balance['xusdusda']}
-                          pendingRewards={lpXusdUsdaPendingRewards}
-                          stakedAmount={lpXusdUsdaStakedAmount}
-                          apy={xusdUsdaLpApy}
-                          poolInfo={xusdUsdaPoolInfo}
-                          setShowStakeLpModal={setShowStakeLp6Modal}
-                          setShowUnstakeLpModal={setShowUnstakeLp6Modal}
-                          claimLpPendingRewards={claimXusdUsdaLpPendingRewards}
-                          stakeLpPendingRewards={stakeXusdUsdaLpPendingRewards}
-                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.0001e8'}
-                          decimals={8}
-                        />
-
-                        {/* ALEX xUSD USDA 2 LP Token */}
-                        <StakeLpRow
-                          foreign={true}
-                          loadingApy={loadingApy}
-                          loadingData={loadingData}
-                          canStake={true}
-                          tokenListItemX={8}
-                          tokenListItemY={0}
-                          balance={state.balance['xusdusda2']}
-                          pendingRewards={lpXusdUsda2PendingRewards}
-                          stakedAmount={lpXusdUsda2StakedAmount}
-                          apy={xusdUsda2LpApy}
-                          poolInfo={xusdUsda2PoolInfo}
-                          setShowStakeLpModal={setShowStakeLp7Modal}
-                          setShowUnstakeLpModal={setShowUnstakeLp7Modal}
-                          claimLpPendingRewards={claimXusdUsda2LpPendingRewards}
-                          stakeLpPendingRewards={stakeXusdUsda2LpPendingRewards}
-                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.005e8'}
-                          decimals={8}
-                        />
-
                         {/* Arkadiko V1 DIKO USDA LP Token */}
                         <StakeLpRow
                           foreign={false}
@@ -1384,7 +1342,7 @@ export const Stake = () => {
                           foreign={false}
                           loadingApy={loadingApy}
                           loadingData={loadingData}
-                          canStake={false}
+                          canStake={true}
                           tokenListItemX={2}
                           tokenListItemY={1}
                           balance={state.balance['wstxdiko']}
@@ -1440,6 +1398,48 @@ export const Stake = () => {
                           stakeLpPendingRewards={stakeXbtcUsdaLpPendingRewards}
                           getLpRoute={'/swap/add/xBTC/USDA'}
                           decimals={6}
+                        />
+
+                        {/* ALEX xUSD USDA LP Token */}
+                        <StakeLpRow
+                          foreign={true}
+                          loadingApy={loadingApy}
+                          loadingData={loadingData}
+                          canStake={true}
+                          tokenListItemX={8}
+                          tokenListItemY={0}
+                          balance={state.balance['xusdusda']}
+                          pendingRewards={lpXusdUsdaPendingRewards}
+                          stakedAmount={lpXusdUsdaStakedAmount}
+                          apy={xusdUsdaLpApy}
+                          poolInfo={xusdUsdaPoolInfo}
+                          setShowStakeLpModal={setShowStakeLp6Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp6Modal}
+                          claimLpPendingRewards={claimXusdUsdaLpPendingRewards}
+                          stakeLpPendingRewards={stakeXusdUsdaLpPendingRewards}
+                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.0001e8'}
+                          decimals={8}
+                        />
+
+                        {/* ALEX xUSD USDA 2 LP Token */}
+                        <StakeLpRow
+                          foreign={true}
+                          loadingApy={loadingApy}
+                          loadingData={loadingData}
+                          canStake={true}
+                          tokenListItemX={8}
+                          tokenListItemY={0}
+                          balance={state.balance['xusdusda2']}
+                          pendingRewards={lpXusdUsda2PendingRewards}
+                          stakedAmount={lpXusdUsda2StakedAmount}
+                          apy={xusdUsda2LpApy}
+                          poolInfo={xusdUsda2PoolInfo}
+                          setShowStakeLpModal={setShowStakeLp7Modal}
+                          setShowUnstakeLpModal={setShowUnstakeLp7Modal}
+                          claimLpPendingRewards={claimXusdUsda2LpPendingRewards}
+                          stakeLpPendingRewards={stakeXusdUsda2LpPendingRewards}
+                          getLpRoute={'https://app.alexlab.co/pool/token-amm-swap-pool:token-wxusd,token-wusda,0.005e8'}
+                          decimals={8}
                         />
                       </table>
                     </div>
