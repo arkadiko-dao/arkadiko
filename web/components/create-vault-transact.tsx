@@ -18,7 +18,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ExplorerLink } from './explorer-link';
-import { atAlexContractAddress, resolveReserveName, tokenTraits } from '@common/vault-utils';
+import { atAlexContractAddress, resolveReserveName, tokenTraits, calculateMintFee } from '@common/vault-utils';
 import { AppContext } from '@common/context';
 import { Alert } from './ui/alert';
 
@@ -42,6 +42,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);
+    const mintFee = await calculateMintFee(debtAmount);
 
     const args = [
       contractPrincipalCV(
@@ -71,7 +72,8 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       contractPrincipalCV(tokenAddress, token),
       amount,
       uintCV(debtAmount),
-      someCV(standardPrincipalCV(hint['prevOwner']))
+      someCV(standardPrincipalCV(hint['prevOwner'])),
+      uintCV(mintFee)
     ];
 
     let postConditions: any[] = [];

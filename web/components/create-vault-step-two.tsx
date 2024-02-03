@@ -114,7 +114,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         setErrors(errors.concat(error));
       }
     } else {
-      console.log('maxtomint calc...');
       const filteredAry = errors.filter(e => e !== error[0]);
       setErrors(filteredAry);
       maximumCoinsToMint(value);

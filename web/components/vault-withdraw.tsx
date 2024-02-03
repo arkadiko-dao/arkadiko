@@ -77,7 +77,8 @@ export const VaultWithdraw: React.FC<Props> = ({
       contractPrincipalCV(tokenAddress, token),
       uintCV(collateralAmount),
       uintCV(debtAmount),
-      someCV(standardPrincipalCV(hint['prevOwner']))
+      someCV(standardPrincipalCV(hint['prevOwner'])),
+      uintCV(100)
     ];
     await doContractCall({
       network,

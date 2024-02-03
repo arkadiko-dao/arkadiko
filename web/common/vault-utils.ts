@@ -4,8 +4,11 @@ import {
   FungibleConditionCode,
   makeContractFungiblePostCondition,
   makeContractSTXPostCondition,
-  createAssetInfo
+  createAssetInfo,
+  callReadOnlyFunction,
+  cvToJSON
 } from '@stacks/transactions';
+import { stacksNetwork as network } from '@common/utils';
 
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
@@ -63,6 +66,22 @@ export const availableCoinsToMint = (
   }
 
   return 0;
+};
+
+export const calculateMintFee = async (debtAmount: number) => {
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const fetchedPrice = await callReadOnlyFunction({
+    contractAddress,
+    contractName: "arkadiko-vaults-operations-v1-1",
+    functionName: "get-mint-fee",
+    functionArgs: [],
+    senderAddress: contractAddress,
+    network: network,
+  });
+  const json = cvToJSON(fetchedPrice);
+  const mintFeePercentage = Number(json.value) / 100;
+
+  return debtAmount * (mintFeePercentage / 100);
 };
 
 type TokenTraits = Record<string, { address: string; name: string; swap: string; ft: string; multihop: Array<string>; }>;

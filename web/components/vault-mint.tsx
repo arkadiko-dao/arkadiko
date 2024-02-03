@@ -6,7 +6,7 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { VaultProps } from './vault';
-import { availableCoinsToMint, tokenTraits } from '@common/vault-utils';
+import { availableCoinsToMint, tokenTraits, calculateMintFee } from '@common/vault-utils';
 
 interface Props {
   vault: VaultProps;
@@ -45,6 +45,7 @@ export const VaultMint: React.FC<Props> = ({
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);
+    const mintFee = await calculateMintFee(Number(usdToMint) * 1000000);
 
     const args = [
       contractPrincipalCV(
@@ -74,7 +75,8 @@ export const VaultMint: React.FC<Props> = ({
       contractPrincipalCV(tokenAddress, token),
       uintCV(collateralAmount),
       uintCV(debtAmount),
-      someCV(standardPrincipalCV(hint['prevOwner']))
+      someCV(standardPrincipalCV(hint['prevOwner'])),
+      uintCV(mintFee)
     ];
 
     const postConditions = [
