@@ -55,13 +55,28 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const maximumCoinsToMint = (value: string) => {
+  const fetchPrice = async (tokenKey: string) => {
+    if (!tokenName) return;
+
+    const price = await getPrice(tokenNameToTicker(tokenName));
+    const decimals = tokenKey === 'auto-alex' ? 100000000 : 1000000;
+    setPrice(price / decimals);
+
+    return price / decimals;
+  };
+
+  const maximumCoinsToMint = async (value: string) => {
     const collateralType = state.collateralTypes[tokenNameToTicker(tokenName)];
     if (collateralType) {
       const minColl = liquidationRatio;
       const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
       const uCollateralAmount = parseInt(value * 1000000, 10);
-      setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
+
+      let collateralPrice = price;
+      if (Number(collateralPrice) === 0) {
+        collateralPrice = await fetchPrice(tokenName.toLowerCase());
+      }
+      setMaximumToMint(Math.floor((uCollateralAmount * collateralPrice * 100) / maxRatio));
     }
   };
 
@@ -78,18 +93,9 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   };
 
   useEffect(() => {
-    const fetchPrice = async (tokenKey: string) => {
-      if (!tokenName) return;
-
-      const price = await getPrice(tokenNameToTicker(tokenName));
-      const decimals = tokenKey === 'auto-alex' ? 100000000 : 1000000;
-      setPrice(price / decimals);
-    };
-
     if (tokenName) {
       const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
       setTokenKey(tokenKey);
-      console.log(state.balance, tokenKey, tokenName);
       setDecimals(tokenKey === 'stx' || tokenKey === 'ststx' ? 1000000 : 100000000);
       fetchPrice(tokenKey);
       setIsLoading(false);
@@ -108,6 +114,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         setErrors(errors.concat(error));
       }
     } else {
+      console.log('maxtomint calc...');
       const filteredAry = errors.filter(e => e !== error[0]);
       setErrors(filteredAry);
       maximumCoinsToMint(value);
