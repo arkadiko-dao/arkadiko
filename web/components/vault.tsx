@@ -212,7 +212,7 @@ export const Vault: React.FC<VaultProps> = ({
           <div className="text-right">
             {isLiquidated ? (
               auctionEnded ? (
-                leftoverCollateral > 0 && stackedTokens === 0 ? (
+                leftoverCollateral > 0 && Number(stackedTokens) === 0 ? (
                   <button
                     type="button"
                     className="inline-flex px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
