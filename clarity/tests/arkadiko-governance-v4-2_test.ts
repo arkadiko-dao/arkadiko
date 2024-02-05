@@ -76,7 +76,7 @@ Clarinet.test({
     call = governance.getAllProposalIDs();
     call.result.expectOk().expectList();
 
-    call = governance.getProposalByID(7);
+    call = governance.getProposalByID(1);
     call.result.expectTuple()["title"].expectUtf8("Test Title");
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(10);
@@ -153,57 +153,57 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Should have no votes
-    let call:any = governance.getProposalByID(7);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["yes-votes"].expectUint(0);
     call.result.expectTuple()["no-votes"].expectUint(0);
 
-    call = governance.getMemberVotes(7, wallet_1);
+    call = governance.getMemberVotes(1, wallet_1);
     call.result.expectTuple()["vote-count"].expectUint(0);
 
-    call = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_1, "arkadiko-token");
     call.result.expectTuple()["amount"].expectUint(0);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 7, 10);
+    result = governance.voteForProposal(wallet_1, 1, 10);
     result.expectOk().expectUint(3200);
 
     // Check votes
-    call = governance.getProposalByID(7);
+    call = governance.getProposalByID(1);
     call.result.expectTuple()["yes-votes"].expectUintWithDecimals(10);
     call.result.expectTuple()["no-votes"].expectUint(0);
 
-    call = governance.getMemberVotes(7, wallet_1);
+    call = governance.getMemberVotes(1, wallet_1);
     call.result.expectTuple()["vote-count"].expectUintWithDecimals(10);
 
-    call = governance.getMemberVotes(7, wallet_2);
+    call = governance.getMemberVotes(1, wallet_2);
     call.result.expectTuple()["vote-count"].expectUint(0);
 
-    call = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_1, "arkadiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(10);
 
     // Vote for wallet_2
-    result = governance.voteForProposal(wallet_2, 7, 20);
+    result = governance.voteForProposal(wallet_2, 1, 20);
     result.expectOk().expectUint(3200);
 
     // Vote against wallet_2
-    result = governance.voteAgainstProposal(wallet_2, 7, 1);
+    result = governance.voteAgainstProposal(wallet_2, 1, 1);
     result.expectOk().expectUint(3200);
 
     // Check votes
-    call = governance.getProposalByID(7);
+    call = governance.getProposalByID(1);
     call.result.expectTuple()["yes-votes"].expectUintWithDecimals(30);
     call.result.expectTuple()["no-votes"].expectUintWithDecimals(1);
 
-    call = governance.getMemberVotes(7, wallet_1);
+    call = governance.getMemberVotes(1, wallet_1);
     call.result.expectTuple()["vote-count"].expectUintWithDecimals(10);
 
-    call = governance.getMemberVotes(7, wallet_2);
+    call = governance.getMemberVotes(1, wallet_2);
     call.result.expectTuple()["vote-count"].expectUintWithDecimals(21);
 
-    call = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_1, "arkadiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(10);
 
-    call = governance.getMemberVoteTokens(7, wallet_2, "arkadiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_2, "arkadiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(21);
   }
 });
@@ -231,22 +231,22 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 7, 100000);
+    result = governance.voteForProposal(wallet_1, 1, 100000);
     result.expectOk().expectUint(3200);
 
     // Vote for wallet_2
-    result = governance.voteForProposal(wallet_2, 7, 100000);
+    result = governance.voteForProposal(wallet_2, 1, 100000);
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Check if proposal updated
-    let call:any = governance.getProposalByID(7);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     // Check if DAO updated
@@ -287,35 +287,35 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Check if proposal updated
-    let call:any = governance.getProposalByID(7);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(true);
     call.result.expectTuple()["start-block-height"].expectUint(5);
     call.result.expectTuple()["end-block-height"].expectUint(255);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 7, 100000);
+    result = governance.voteForProposal(wallet_1, 1, 100000);
     result.expectOk().expectUint(3200);
 
     // Vote for wallet_2
-    result = governance.voteForProposal(wallet_2, 7, 100000);
+    result = governance.voteForProposal(wallet_2, 1, 100000);
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(50);
 
     // Can not end yet, min vote length is 250 blocks
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectErr().expectUint(35);
 
     // Advance
     chain.mineEmptyBlock(200);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Check if proposal updated
-    call = governance.getProposalByID(7);
+    call = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     // Check if DAO updated
@@ -348,22 +348,22 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for wallet_1
-    result = governance.voteForProposal(wallet_1, 7, 100000);
+    result = governance.voteForProposal(wallet_1, 1, 100000);
     result.expectOk().expectUint(3200);
 
     // Vote for wallet_2
-    result = governance.voteForProposal(wallet_2, 7, 100000);
+    result = governance.voteForProposal(wallet_2, 1, 100000);
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Check if proposal updated
-    let call:any = governance.getProposalByID(7);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     // Check if DAO updated
@@ -469,22 +469,22 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for wallet_1
-    result = governance.voteAgainstProposal(wallet_1, 7, 100000);
+    result = governance.voteAgainstProposal(wallet_1, 1, 100000);
     result.expectOk().expectUint(3200);
 
     // Vote for wallet_2
-    result = governance.voteAgainstProposal(wallet_2, 7, 100000);
+    result = governance.voteAgainstProposal(wallet_2, 1, 100000);
     result.expectOk().expectUint(3200);
     
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Check if proposal updated
-    let call:any = governance.getProposalByID(7);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     // DAO should not be updated
@@ -539,9 +539,9 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote with DIKO
-    result = governance.voteForProposal(wallet_1, 7, 10, "arkadiko-token");
+    result = governance.voteForProposal(wallet_1, 1, 10, "arkadiko-token");
     result.expectOk().expectUint(3200);
-    result = governance.voteAgainstProposal(wallet_1, 7, 1, "arkadiko-token");
+    result = governance.voteAgainstProposal(wallet_1, 1, 1, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // DIKO/stDIKO ratio = ~6
@@ -549,15 +549,15 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(6.637591);
 
     // Vote with stDIKO - 10 stDIKO = ~40 DIKO
-    result = governance.voteForProposal(wallet_1, 7, 10, "stdiko-token");
+    result = governance.voteForProposal(wallet_1, 1, 10, "stdiko-token");
     result.expectOk().expectUint(3200);
-    result = governance.voteAgainstProposal(wallet_1, 7, 1, "stdiko-token");
+    result = governance.voteAgainstProposal(wallet_1, 1, 1, "stdiko-token");
     result.expectOk().expectUint(3200);
 
     // Total votes from wallet: 11 DIKO + 11 stDIKO
     // Where the 1 stDIKO = ~6 DIKO
     // So total is ~56 votes
-    call = governance.getMemberVotes(7, wallet_1);
+    call = governance.getMemberVotes(1, wallet_1);
     call.result.expectTuple()["vote-count"].expectUintWithDecimals(84.013501);
 
     // stDIKO balance has decreased by 11
@@ -569,30 +569,30 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(149789);  
 
     // Tokens used to vote
-    call = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_1, "arkadiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(11);
-    call = governance.getMemberVoteTokens(7, wallet_1, "stdiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_1, "stdiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(11);
 
-    result = governance.voteForProposal(wallet_2, 7, 15000, "arkadiko-token");
+    result = governance.voteForProposal(wallet_2, 1, 15000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
+    result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Return DIKO to members
-    result = governance.returnVotes(7, wallet_1, "arkadiko-token");
+    result = governance.returnVotes(1, wallet_1, "arkadiko-token");
     result.expectOk();
 
     // Return stDIKO to members
-    result = governance.returnVotes(7, wallet_1, "stdiko-token");
+    result = governance.returnVotes(1, wallet_1, "stdiko-token");
     result.expectOk();
 
     // Should have initial amount back
@@ -603,9 +603,9 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(149800);  
 
     // Tokens used to vote
-    call = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_1, "arkadiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(0);
-    call = governance.getMemberVoteTokens(7, wallet_1, "stdiko-token");
+    call = governance.getMemberVoteTokens(1, wallet_1, "stdiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(0);
   }
 });
@@ -632,30 +632,30 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote with DIKO
-    result = governance.voteForProposal(wallet_1, 7, 10, "arkadiko-token");
+    result = governance.voteForProposal(wallet_1, 1, 10, "arkadiko-token");
     result.expectOk().expectUint(3200);
-    result = governance.voteForProposal(wallet_2, 7, 100, "arkadiko-token");
+    result = governance.voteForProposal(wallet_2, 1, 100, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // Tokens used to vote
-    let call:any = governance.getMemberVoteTokens(7, wallet_1, "arkadiko-token");
+    let call:any = governance.getMemberVoteTokens(1, wallet_1, "arkadiko-token");
     call.result.expectTuple()["amount"].expectUintWithDecimals(10);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
-    result = governance.voteForProposal(wallet_2, 7, 15000, "arkadiko-token");
+    result = governance.voteForProposal(wallet_2, 1, 15000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
+    result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Return DIKO to members
-    result = governance.returnVotes(7, wallet_1, "arkadiko-token");
+    result = governance.returnVotes(1, wallet_1, "arkadiko-token");
     result.expectOk();
 
     let block = chain.mineBlock([
@@ -692,20 +692,20 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for proposal
-    result = governance.voteForProposal(wallet_1, 7, 10);
+    result = governance.voteForProposal(wallet_1, 1, 10);
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(wallet_2, 7, 15000, "arkadiko-token");
+    result = governance.voteForProposal(wallet_2, 1, 15000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
+    result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Check if DAO updated
@@ -725,18 +725,18 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 8, 10);
+    result = governance.voteForProposal(wallet_1, 2, 10);
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(wallet_2, 8, 15000, "arkadiko-token");
+    result = governance.voteForProposal(wallet_2, 2, 15000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(deployer, 8, 150000, "arkadiko-token");
+    result = governance.voteForProposal(deployer, 2, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     chain.mineEmptyBlock(1500);
 
-    result = governance.endProposal(8);
+    result = governance.endProposal(2);
     result.expectOk().expectUint(3200);
 
     // DAO is not updated
@@ -795,20 +795,20 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Vote for proposal
-    result = governance.voteForProposal(wallet_1, 7, 10);
+    result = governance.voteForProposal(wallet_1, 1, 10);
     result.expectOk().expectUint(3200);
 
     // Advance
     chain.mineEmptyBlock(1500);
 
-    result = governance.voteForProposal(wallet_2, 7, 15000, "arkadiko-token");
+    result = governance.voteForProposal(wallet_2, 1, 15000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
+    result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // End proposal
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Check if DAO updated
@@ -818,7 +818,7 @@ Clarinet.test({
     call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-governance-tv1-1'));
 
     // Can not execute proposal again
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectErr().expectUint(3401);
   }
 });
@@ -941,14 +941,14 @@ Clarinet.test({
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 7, 100);
+    result = governance.voteForProposal(wallet_1, 1, 100);
     result.expectErr().expectUint(34);
 
     // Turn emergency switch off
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 7, 100);
+    result = governance.voteForProposal(wallet_1, 1, 100);
     result.expectOk().expectUint(3200);
   }
 });
@@ -971,10 +971,10 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 7, 10000);
+    result = governance.voteForProposal(wallet_1, 1, 10000);
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
+    result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     // Turn emergency switch on
@@ -983,14 +983,14 @@ Clarinet.test({
 
     chain.mineEmptyBlock(1500);
 
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectErr().expectUint(34);
 
     // Turn emergency switch off
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
   }
 });
@@ -1013,29 +1013,29 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 7, 10000);
+    result = governance.voteForProposal(wallet_1, 1, 10000);
     result.expectOk().expectUint(3200);
 
-    result = governance.voteForProposal(deployer, 7, 150000, "arkadiko-token");
+    result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     chain.mineEmptyBlock(1500);
 
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
 
     // Turn emergency switch on
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.returnVotes(7, wallet_1, "arkadiko-token");
+    result = governance.returnVotes(1, wallet_1, "arkadiko-token");
     result.expectErr().expectUint(34);
 
     // Turn emergency switch off
     result = governance.toggleShutdown();
     result.expectOk().expectBool(true);
 
-    result = governance.returnVotes(7, wallet_1, "arkadiko-token");
+    result = governance.returnVotes(1, wallet_1, "arkadiko-token");
     result.expectOk().expectBool(true);
   }
 });
@@ -1124,7 +1124,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // End block has still taken 720 blocks (~5 days) into account
-    let call:any = governance.getProposalByID(7);
+    let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["end-block-height"].expectUint(725);
 
   }
@@ -1153,14 +1153,14 @@ Clarinet.test({
     );
     result.expectOk().expectBool(true);
 
-    result = governance.voteForProposal(wallet_1, 7, 10000);
+    result = governance.voteForProposal(wallet_1, 1, 10000);
     result.expectOk().expectUint(3200);
 
     chain.mineEmptyBlock(1500);
 
-    result = governance.endProposal(7);
+    result = governance.endProposal(1);
     result.expectOk().expectUint(3200);
-    call = governance.getProposalByID(7);
+    call = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(false);
 
     call = dao.getQualifiedNameByName("oracle");
