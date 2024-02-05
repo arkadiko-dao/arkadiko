@@ -13,6 +13,7 @@ import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-uti
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network, asyncForEach } from '@common/utils';
 import { debtClass } from './vault';
+import { Placeholder } from './ui/placeholder';
 
 export const collExtraInfo = {
   'STX': {
@@ -99,6 +100,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
   const [collateralItems, setCollateralItems]: CollateralTypeProps[] = useState([]);
   const [prices, setPrices] = useState({});
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -125,6 +127,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
     const fetchData = async () => {
       setStartedLoading(true);
+      setLoading(true);
 
       await fetchInfo();
       const items = [];
@@ -161,6 +164,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
         });
       });
       setCollateralItems(items);
+      setLoading(false);
     }
 
     if (!startedLoading && Object.keys(state?.collateralTypes).length > 0) fetchData();
@@ -168,293 +172,323 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
   return (
     <>
-      {collateralItems.length > 0 && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
-        <div key={collateral.tokenType} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
-          <div className="flex flex-col flex-1 px-6 py-8">
-            <div className="flex items-center">
-              <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/80 rounded-md shadow-2xl ${collateral.classes.tokenShadow} border border-gray-400/30`}>
-                <img className="w-8 h-8" src={collateral.logo} alt="" />
-              </div>
-              <div className="ml-4">
-                <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
-                {Number(state.vaults[collateral.name]['status']) === 101 ? (
-                  <Status
-                    type={debtClassToType(
-                      debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
-                        prices[collateral.name] / collateral.decimals,
-                        state.vaults[collateral.name]['debt'],
-                        state.vaults[collateral.name]['collateral']
-                      ) * 100.0))
-                    }
-                    label={debtClassToLabel(
-                      debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
-                        prices[collateral.name] / collateral.decimals,
-                        state.vaults[collateral.name]['debt'],
-                        state.vaults[collateral.name]['collateral']
-                      ) * 100.0))
-                    }
-                  />
-                ) : (
-                  <Status
-                    type={Status.type.NEUTRAL}
-                    label='No open vault'
-                  />
-                )}
-              </div>
-            </div>
-
-            {Number(state.vaults[collateral.name]['status']) === 101 ? (
-              <div className={`px-4 py-5 mt-8 mb-4 rounded-lg ${collateral.classes.innerBg} bg-opacity-[.08] flex items-center`}>
-                <dl className="flex-1 space-y-1">
-                  <div className="flex justify-between">
-                    <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Collateral</dt>
-                    <dd className={`text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
-                      <span className="flex-grow">{state.vaults[collateral.name]['collateral'] / (collateral.decimals * 1000000)} {collateral.name}</span>
-                    </dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Debt</dt>
-                    <dd className={`text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
-                      <span className="flex-grow">{state.vaults[collateral.name]['debt'] / 1000000} USDA</span>
-                    </dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Collateral ratio</dt>
-                    <dd>
-                      <span className="flex items-center flex-grow">
-                        <Status
-                          type={debtClassToType(
-                            debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
-                              prices[collateral.name] / collateral.decimals,
-                              state.vaults[collateral.name]['debt'],
-                              state.vaults[collateral.name]['collateral']
-                            ) * 100.0))
-                        }
-                        />
-                        <span className={`ml-2 text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
-                          {
-                            getCollateralToDebtRatio(
-                              prices[collateral.name] / collateral.decimals,
-                              state.vaults[collateral.name]['debt'],
-                              state.vaults[collateral.name]['collateral']
-                            ) * 100.0
-                          }%
-                        </span>
-                      </span>
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            ) : (
-              <div className={`px-4 py-8 mt-8 mb-4 rounded-lg ${collateral.classes?.innerBg} bg-opacity-[.08] flex items-center justify-center`}>
-                <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 ${collateral.classes?.iconColor} mr-6 shrink-0`} />
-                <div className="flex flex-col">
-                  <p className={`text-sm font-semibold brightness-75 ${collateral.classes?.innerText}`}>
-                    With{' '}
-                    {collateral.name === "STX" ?
-                        state.userData && state.balance["stx"] > 0 ?
-                          `${microToReadable(state.balance["stx"]).toLocaleString(undefined, {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0,
-                          })}`
-                        :
-                        `2000`
-                      :
-                      collateral.name === "stSTX" ?
-                        state.userData && (parseFloat(state.balance["ststx"] !== '0')) ?
-                          `${(parseFloat(state.balance["ststx"]) / 1000000).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 6,
-                          })}`
-                        :
-                        `2000`
-                      :
-                      collateral.name === "xBTC" ?
-                        state.userData && (parseFloat(state.balance["xbtc"] !== '0')) ?
-                          `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 6,
-                          })}`
-                        :
-                        `1`
-                      :
-                      collateral.name === "auto-alex" ?
-                        state.userData && state.balance["atalex"] > 0 ?
-                          `${(parseFloat(state.balance["atalex"]) / 100000000).toLocaleString(undefined, {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0,
-                          })}`
-                        :
-                        `50,000`
-                        : null
-                    }
-                    <span className="text-xs">
-                      {' '}{collateral.name}
-                    </span>,</p>
-                  <p className={`text-lg font-semibold ${collateral.classes?.innerText} brightness-50 dark:brightness-100`}>
-                    borrow up to {' '}
-
-                    {collateral.name === "STX" ?
-                      state.userData && state.balance["stx"] > 0 ?
-                        ((microToReadable(state.balance["stx"]) * prices['STX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        })
-                      :
-                      ((2000 * prices['STX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })
-                    :
-                    collateral.name === "xBTC" ?
-                      state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
-                        (((parseFloat(state.balance["xbtc"]) / 100000000) * prices['xBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        })
-                      :
-                      ((1 * prices['xBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })
-                    :
-                    collateral.name === "stSTX" ?
-                      state.userData && (parseFloat(state.balance["ststx"] !== '0.00')) ?
-                        (((parseFloat(state.balance["ststx"]) / 1000000) * prices['stSTX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        })
-                      :
-                      ((2000 * prices['stSTX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })
-                    :
-                    collateral.name === "atALEXv2" ?
-                      state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
-                        (((parseFloat(state.balance["atalex"]) / 100000000) * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        })
-                      :
-                      ((50000 * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                      })
-                      : null
-                    }
-
-                    <span className="text-sm"> USDA</span>
-                  </p>
+      {isLoading && (
+        <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow ml-24">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+            <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
+              <tr>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                >
+                  <Placeholder color={Placeholder.color.GRAY} />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="bg-white dark:bg-zinc-800">
+                <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                  <Placeholder />
+                </td>
+              </tr>
+              <tr className="bg-white dark:bg-zinc-800">
+                <td className="px-6 py-4 text-sm text-left text-gray-500 whitespace-nowrap">
+                  <Placeholder />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+      <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3 w-full">
+        {collateralItems.length > 0 && !isLoading && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
+          <div key={collateral.tokenType} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
+            <div className="flex flex-col flex-1 px-6 py-8">
+              <div className="flex items-center">
+                <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/80 rounded-md shadow-2xl ${collateral.classes.tokenShadow} border border-gray-400/30`}>
+                  <img className="w-8 h-8" src={collateral.logo} alt="" />
+                </div>
+                <div className="ml-4">
+                  <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
+                  {Number(state.vaults[collateral.name]['status']) === 101 ? (
+                    <Status
+                      type={debtClassToType(
+                        debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
+                          prices[collateral.name] / collateral.decimals,
+                          state.vaults[collateral.name]['debt'],
+                          state.vaults[collateral.name]['collateral']
+                        ) * 100.0))
+                      }
+                      label={debtClassToLabel(
+                        debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
+                          prices[collateral.name] / collateral.decimals,
+                          state.vaults[collateral.name]['debt'],
+                          state.vaults[collateral.name]['collateral']
+                        ) * 100.0))
+                      }
+                    />
+                  ) : (
+                    <Status
+                      type={Status.type.NEUTRAL}
+                      label='No open vault'
+                    />
+                  )}
                 </div>
               </div>
-            )}
 
-            <dl className="mt-4 mb-6 space-y-2">
-              <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Status</dt>
-                <dd className="flex text-xs font-semibold text-right text-gray-700/70">
-                  <span className={`flex items-center flex-grow border border-gray-200 dark:border-gray-600 text-gray-100 px-2 py-0.5 rounded-xl ${collateral.classes?.innerBg}`}>
-                    {Number(state.vaults[collateral.name]['status']) != 100 ? (
-                      <>
-                        {vaultStatusToLabel(state.vaults[collateral.name]['status'])}
-                        <Tooltip
-                          className="ml-2"
-                          shouldWrapChildren={true}
-                          label={vaultStatusToTooltip(state.vaults[collateral.name]['status'])}
-                        >
-                          <StyledIcon
-                            as="InformationCircleIcon"
-                            size={4}
-                            className="block ml-2 text-gray-100"
+              {Number(state.vaults[collateral.name]['status']) === 101 ? (
+                <div className={`px-4 py-5 mt-8 mb-4 rounded-lg ${collateral.classes.innerBg} bg-opacity-[.08] flex items-center`}>
+                  <dl className="flex-1 space-y-1">
+                    <div className="flex justify-between">
+                      <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Collateral</dt>
+                      <dd className={`text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
+                        <span className="flex-grow">{state.vaults[collateral.name]['collateral'] / (collateral.decimals * 1000000)} {collateral.name}</span>
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Debt</dt>
+                      <dd className={`text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
+                        <span className="flex-grow">{state.vaults[collateral.name]['debt'] / 1000000} USDA</span>
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className={`text-sm font-semibold brightness-85 ${collateral.classes.innerText}`}>Collateral ratio</dt>
+                      <dd>
+                        <span className="flex items-center flex-grow">
+                          <Status
+                            type={debtClassToType(
+                              debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
+                                prices[collateral.name] / collateral.decimals,
+                                state.vaults[collateral.name]['debt'],
+                                state.vaults[collateral.name]['collateral']
+                              ) * 100.0))
+                          }
                           />
-                        </Tooltip>
-                      </>
-                    ) : (
-                      <>
-                        Closed
-                        <Tooltip
-                          className="ml-2"
-                          shouldWrapChildren={true}
-                          label={`Vault closed. Click on Borrow to open a vault.`}
-                        >
-                          <StyledIcon
-                            as="InformationCircleIcon"
-                            size={4}
-                            className="block ml-2 text-gray-100"
-                          />
-                        </Tooltip>
-                      </>
-                    )}
-                  </span>
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Liquidation ratio</dt>
-                <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                  <span className="flex-grow">{collateral.liquidationRatio / 100}%</span>
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Current liquidity available</dt>
-                <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                  <span className="flex-grow">${
-                    ((collateral.maximumDebt - collateral.totalDebt) / 1000000).toLocaleString(undefined, {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    })
-                  }</span>
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Stability Fee</dt>
-                <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                  <span className="flex-grow">{collateral.stabilityFeeApy / 100}%</span>
-                </dd>
-              </div>
-            </dl>
+                          <span className={`ml-2 text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
+                            {
+                              getCollateralToDebtRatio(
+                                prices[collateral.name] / collateral.decimals,
+                                state.vaults[collateral.name]['debt'],
+                                state.vaults[collateral.name]['collateral']
+                              ) * 100.0
+                            }%
+                          </span>
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : (
+                <div className={`px-4 py-8 mt-8 mb-4 rounded-lg ${collateral.classes?.innerBg} bg-opacity-[.08] flex items-center justify-center`}>
+                  <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 ${collateral.classes?.iconColor} mr-6 shrink-0`} />
+                  <div className="flex flex-col">
+                    <p className={`text-sm font-semibold brightness-75 ${collateral.classes?.innerText}`}>
+                      With{' '}
+                      {collateral.name === "STX" ?
+                          state.userData && state.balance["stx"] > 0 ?
+                            `${microToReadable(state.balance["stx"]).toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            })}`
+                          :
+                          `2000`
+                        :
+                        collateral.name === "stSTX" ?
+                          state.userData && (parseFloat(state.balance["ststx"] !== '0')) ?
+                            `${(parseFloat(state.balance["ststx"]) / 1000000).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                            })}`
+                          :
+                          `2000`
+                        :
+                        collateral.name === "xBTC" ?
+                          state.userData && (parseFloat(state.balance["xbtc"] !== '0')) ?
+                            `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 6,
+                            })}`
+                          :
+                          `1`
+                        :
+                        collateral.name === "auto-alex" ?
+                          state.userData && state.balance["atalex"] > 0 ?
+                            `${(parseFloat(state.balance["atalex"]) / 100000000).toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            })}`
+                          :
+                          `50,000`
+                          : null
+                      }
+                      <span className="text-xs">
+                        {' '}{collateral.name}
+                      </span>,</p>
+                    <p className={`text-lg font-semibold ${collateral.classes?.innerText} brightness-50 dark:brightness-100`}>
+                      borrow up to {' '}
 
-            {state.userData ? (
-              <>
-                {Number(state.vaults[collateral.name]['status']) === 101 ? (
-                  <RouterLink
-                    to={`vaults/${stxAddress}/${collateral.name}`}
-                    exact
-                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border rounded-md ${collateral.classes?.innerText} ${collateral.classes?.wrapper} bg-white border-indigo-500 hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    Manage
-                    <StyledIcon
-                      as="CogIcon"
-                      size={4}
-                    />
-                  </RouterLink>
-                ) : (
-                  <RouterLink
-                    to={collateral.path}
-                    exact
-                    className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                  >
-                    Borrow
-                    <StyledIcon
-                      as="ArrowRightIcon"
-                      size={4}
-                    />
-                  </RouterLink>
-                )}
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={() => doOpenAuth()}
-                className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Connect Wallet
-              </button>
-            )}
+                      {collateral.name === "STX" ?
+                        state.userData && state.balance["stx"] > 0 ?
+                          ((microToReadable(state.balance["stx"]) * prices['STX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })
+                        :
+                        ((2000 * prices['STX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        })
+                      :
+                      collateral.name === "xBTC" ?
+                        state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
+                          (((parseFloat(state.balance["xbtc"]) / 100000000) * prices['xBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })
+                        :
+                        ((1 * prices['xBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        })
+                      :
+                      collateral.name === "stSTX" ?
+                        state.userData && (parseFloat(state.balance["ststx"] !== '0.00')) ?
+                          (((parseFloat(state.balance["ststx"]) / 1000000) * prices['stSTX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })
+                        :
+                        ((2000 * prices['stSTX']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        })
+                      :
+                      collateral.name === "atALEXv2" ?
+                        state.userData && (parseFloat(state.balance["atalex"] !== '0.00')) ?
+                          (((parseFloat(state.balance["atalex"]) / 100000000) * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })
+                        :
+                        ((50000 * prices['atALEXv2']) / (collateral.collateralToDebtRatio / 100)).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        })
+                        : null
+                      }
 
+                      <span className="text-sm"> USDA</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <dl className="mt-4 mb-6 space-y-2">
+                <div className="flex justify-between">
+                  <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Status</dt>
+                  <dd className="flex text-xs font-semibold text-right text-gray-700/70">
+                    <span className={`flex items-center flex-grow border border-gray-200 dark:border-gray-600 text-gray-100 px-2 py-0.5 rounded-xl ${collateral.classes?.innerBg}`}>
+                      {Number(state.vaults[collateral.name]['status']) != 100 ? (
+                        <>
+                          {vaultStatusToLabel(state.vaults[collateral.name]['status'])}
+                          <Tooltip
+                            className="ml-2"
+                            shouldWrapChildren={true}
+                            label={vaultStatusToTooltip(state.vaults[collateral.name]['status'])}
+                          >
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={4}
+                              className="block ml-2 text-gray-100"
+                            />
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <>
+                          Closed
+                          <Tooltip
+                            className="ml-2"
+                            shouldWrapChildren={true}
+                            label={`Vault closed. Click on Borrow to open a vault.`}
+                          >
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={4}
+                              className="block ml-2 text-gray-100"
+                            />
+                          </Tooltip>
+                        </>
+                      )}
+                    </span>
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Liquidation ratio</dt>
+                  <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
+                    <span className="flex-grow">{collateral.liquidationRatio / 100}%</span>
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Current liquidity available</dt>
+                  <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
+                    <span className="flex-grow">${
+                      ((collateral.maximumDebt - collateral.totalDebt) / 1000000).toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })
+                    }</span>
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Stability Fee</dt>
+                  <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
+                    <span className="flex-grow">{collateral.stabilityFeeApy / 100}%</span>
+                  </dd>
+                </div>
+              </dl>
+
+              {state.userData ? (
+                <>
+                  {Number(state.vaults[collateral.name]['status']) === 101 ? (
+                    <RouterLink
+                      to={`vaults/${stxAddress}/${collateral.name}`}
+                      exact
+                      className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border rounded-md ${collateral.classes?.innerText} ${collateral.classes?.wrapper} bg-white border-indigo-500 hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      Manage
+                      <StyledIcon
+                        as="CogIcon"
+                        size={4}
+                      />
+                    </RouterLink>
+                  ) : (
+                    <RouterLink
+                      to={collateral.path}
+                      exact
+                      className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      Borrow
+                      <StyledIcon
+                        as="ArrowRightIcon"
+                        size={4}
+                      />
+                    </RouterLink>
+                  )}
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => doOpenAuth()}
+                  className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Connect Wallet
+                </button>
+              )}
+
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
 };
