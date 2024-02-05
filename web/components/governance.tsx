@@ -15,7 +15,6 @@ export const Governance = () => {
   const [state, _] = useContext(AppContext);
   const stxAddress = useSTXAddress();
   const [proposals, setProposals] = useState([]);
-  const [proposalsV1, setProposalsV1] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -23,7 +22,7 @@ export const Governance = () => {
     let mounted = true;
 
     const getData = async () => {
-      const proposals = await callReadOnlyFunction({
+      const proposalsV2 = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v2-1',
         functionName: 'get-proposals',
@@ -31,8 +30,8 @@ export const Governance = () => {
         senderAddress: stxAddress || '',
         network: network,
       });
-      const json = cvToJSON(proposals);
-      const data = json.value.value;
+      const jsonV2 = cvToJSON(proposalsV2);
+      const dataV2 = jsonV2.value.value;
 
       const proposalsV3 = await callReadOnlyFunction({
         contractAddress,
@@ -67,6 +66,17 @@ export const Governance = () => {
       const jsonV1 = cvToJSON(proposalsV1);
       const dataV1 = jsonV1.value.value;
 
+      const proposalsV42 = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-governance-v4-2',
+        functionName: 'get-proposals',
+        functionArgs: [],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const jsonV42 = cvToJSON(proposalsV42);
+      const dataV42 = jsonV42.value.value;
+
       const serializedProposalsV1: {
         id: string;
         title: string;
@@ -93,10 +103,32 @@ export const Governance = () => {
         endBlockHeight: number;
       }[] = [];
 
-      data.forEach((element: object) => {
+      dataV1.forEach((element: object) => {
         if (element.value['id'].value != 0) {
           serializedProposals.push({
-            id: element.value['id'].value,
+            id: Number(element.value['id'].value),
+            proposalId: element.value['id'].value,
+            governanceVersion: "v1-1",
+            title: element.value['title'].value,
+            url: element.value['url'].value,
+            proposer: element.value['proposer'].value,
+            forVotes: element.value['yes-votes'].value,
+            against: element.value['no-votes'].value,
+            changes: extractChanges(element.value['contract-changes']),
+            isOpen: element.value['is-open'].value,
+            startBlockHeight: element.value['start-block-height'].value,
+            endBlockHeight: element.value['end-block-height'].value,
+          });
+        }
+      });
+
+
+      dataV2.forEach((element: object) => {
+        if (element.value['id'].value != 0) {
+          serializedProposals.push({
+            id: Number(element.value['id'].value) + 2,
+            proposalId: element.value['id'].value,
+            governanceVersion: "v2-1",
             title: element.value['title'].value,
             url: element.value['url'].value,
             proposer: element.value['proposer'].value,
@@ -113,7 +145,9 @@ export const Governance = () => {
       dataV3.forEach((element: object) => {
         if (element.value['id'].value != 0) {
           serializedProposals.push({
-            id: element.value['id'].value,
+            id: Number(element.value['id'].value),
+            proposalId: element.value['id'].value,
+            governanceVersion: "v3-1",
             title: element.value['title'].value,
             url: element.value['url'].value,
             proposer: element.value['proposer'].value,
@@ -130,7 +164,9 @@ export const Governance = () => {
       dataV4.forEach((element: object) => {
         if (element.value['id'].value != 0) {
           serializedProposals.push({
-            id: element.value['id'].value,
+            id: Number(element.value['id'].value) + 16,
+            proposalId: element.value['id'].value,
+            governanceVersion: "v4-1",
             title: element.value['title'].value,
             url: element.value['url'].value,
             proposer: element.value['proposer'].value,
@@ -144,10 +180,12 @@ export const Governance = () => {
         }
       });
 
-      dataV1.forEach((element: object) => {
+      dataV42.forEach((element: object) => {
         if (element.value['id'].value != 0) {
-          serializedProposalsV1.push({
-            id: element.value['id'].value,
+          serializedProposals.push({
+            id: Number(element.value['id'].value) + 36,
+            proposalId: element.value['id'].value,
+            governanceVersion: "v4-2",
             title: element.value['title'].value,
             url: element.value['url'].value,
             proposer: element.value['proposer'].value,
@@ -161,7 +199,6 @@ export const Governance = () => {
         }
       });
 
-      setProposalsV1(serializedProposalsV1);
       setProposals(serializedProposals);
       setIsLoading(false);
     };
@@ -233,11 +270,6 @@ export const Governance = () => {
               ) : proposals.length > 0 ? (
                 <>
                   <ProposalGroup proposals={proposals} />
-
-                  <h4 className="mt-8 text-base leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                    Governance V1
-                  </h4>
-                  <ProposalGroup proposals={proposalsV1} />
                 </>
               ) : (
                 <EmptyState
