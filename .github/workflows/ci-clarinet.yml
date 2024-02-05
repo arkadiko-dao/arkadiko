@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "Execute test suite"
-        uses: docker://hirosystems/clarinet:latest
+        uses: docker://hirosystems/clarinet:v1.8.0
         with:
           entrypoint: "bash"
           args: -c "cd clarity && CLARINET_DISABLE_HINTS=1 clarinet test"
