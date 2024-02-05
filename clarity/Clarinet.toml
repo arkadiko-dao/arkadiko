@@ -139,6 +139,11 @@ path = "contracts/vaults/arkadiko-stacker-payer-v3-7.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.arkadiko-stacker-payer-v3-8]
+path = "contracts/vaults/arkadiko-stacker-payer-v3-8.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.arkadiko-mock-stacker-v1-1]
 path = "contracts/vaults/arkadiko-mock-stacker-v1-1.clar"
 clarity_version = 2
@@ -184,8 +189,8 @@ path = "contracts/vaults/arkadiko-vault-rewards-v1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.arkadiko-pox-unstack-unlock-v2-4]
-path = "contracts/vaults/arkadiko-pox-unstack-unlock-v2-4.clar"
+[contracts.arkadiko-pox-unstack-unlock-v2-5]
+path = "contracts/vaults/arkadiko-pox-unstack-unlock-v2-5.clar"
 clarity_version = 2
 epoch = 2.4
 
