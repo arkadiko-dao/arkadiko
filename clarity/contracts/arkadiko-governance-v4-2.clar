@@ -188,7 +188,7 @@
       )
       (err ERR-WRONG-POOL)
     )
-    (asserts! (>= start-block-height block-height) (err ERR-BLOCK-HEIGHT-PASSED))
+    (asserts! (>= start-block-height burn-block-height) (err ERR-BLOCK-HEIGHT-PASSED))
 
     ;; Requires 0.25% of the supply
     (asserts! (>= proposer-total-balance (* u25 (/ supply u10000))) (err ERR-NOT-ENOUGH-BALANCE))
@@ -256,7 +256,7 @@
     ;; Proposal should be open for voting
     (asserts! (get is-open proposal) (err ERR-VOTING-CLOSED))
     ;; Vote should be cast after the start-block-height
-    (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
     ;; Mutate
@@ -308,7 +308,7 @@
     ;; Proposal should be open for voting
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     ;; Vote should be casted after the start-block-height
-    (asserts! (>= block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
     ;; Voter should be able to stake
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
     ;; Mutate
@@ -346,7 +346,7 @@
     )
     (asserts! (not (is-eq (get id proposal) u0)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-BLOCK-HEIGHT-NOT-REACHED))
+    (asserts! (>= burn-block-height (get end-block-height proposal)) (err ERR-BLOCK-HEIGHT-NOT-REACHED))
 
     (map-set proposals
       { id: proposal-id }
@@ -379,7 +379,7 @@
     )
     (asserts! (is-eq (is-token-accepted token) true) (err ERR-WRONG-TOKEN))
     (asserts! (is-eq (get is-open proposal) false) (err ERR-NOT-AUTHORIZED))
-    (asserts! (>= block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (>= burn-block-height (get end-block-height proposal)) (err ERR-NOT-AUTHORIZED))
 
     (map-set tokens-by-member
       { proposal-id: proposal-id, member: member, token: (contract-of token) }

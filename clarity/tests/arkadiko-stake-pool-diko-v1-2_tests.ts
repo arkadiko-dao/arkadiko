@@ -34,7 +34,7 @@ function addNewDikoStakePool(chain: Chain, deployer: Account) {
 
   // Add new pool to DAO
   let block = chain.mineBlock([
-    Tx.contractCall("arkadiko-governance-v4-1", "add-contract-address", [
+    Tx.contractCall("arkadiko-governance-v4-2", "add-contract-address", [
       types.ascii("arkadiko-stake-pool-diko-v1-2"),
       types.principal(deployer.address),
       types.principal(Utils.qualifiedName("arkadiko-stake-pool-diko-v1-2")),
