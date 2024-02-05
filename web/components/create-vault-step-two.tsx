@@ -132,19 +132,23 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
       setCoinAmount(value);
-      const error = [`You cannot mint more than ${maximumToMint / 1000000} USDA`];
-      const funnyError = [`You need to mint at least 500 USDA`];
-      const filteredAry = errors.filter(e => e !== error[0] && e !== funnyError[0]);
-      if (parseFloat(value) > maximumToMint / 1000000) {
-        setErrors(filteredAry.concat(error));
-      } else if (value < 500) {
-        setErrors(filteredAry.concat(funnyError));
-      } else {
-        setErrors(filteredAry);
-      }
+      checkForErrors(value);
     },
     [state, maximumToMint, errors]
   );
+
+  const checkForErrors = (value: number) => {
+    const error = [`You cannot mint more than ${maximumToMint / 1000000} USDA`];
+    const funnyError = [`You need to mint at least 500 USDA`];
+    const filteredAry = errors.filter(e => e !== error[0] && e !== funnyError[0]);
+    if (parseFloat(value) > maximumToMint / 1000000) {
+      setErrors(filteredAry.concat(error));
+    } else if (value < 500) {
+      setErrors(filteredAry.concat(funnyError));
+    } else {
+      setErrors(filteredAry);
+    }
+  }
 
   const setMaxBalance = useCallback(() => {
     let balance = state.balance[tokenKey] / decimals;
@@ -158,6 +162,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   const setMaxCoins = useCallback(() => {
     setCoinAmount((maximumToMint / 1000000).toString());
+    checkForErrors(maximumToMint / 1000000);
   }, [state, maximumToMint]);
 
   useEffect(() => {
