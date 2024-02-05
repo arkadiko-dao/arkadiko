@@ -79,7 +79,7 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stacker-payer-v3-7',
+      contractName: 'arkadiko-stacker-payer-v3-8',
       functionName: 'redeem-stx',
       functionArgs: [uintCV(state.balance['xstx'])],
       postConditionMode: 0x01,

@@ -192,7 +192,7 @@ class VaultManager {
 
   toggleStacking(user: Account, vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-pox-unstack-unlock-v2-4", "unstack", [
+      Tx.contractCall("arkadiko-pox-unstack-unlock-v2-5", "unstack", [
         types.uint(vaultId)
       ], user.address),
     ]);
@@ -201,7 +201,7 @@ class VaultManager {
 
   enableVaultWithdrawals(vaultId: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stacker-payer-v3-7", "enable-vault-withdrawals", [
+      Tx.contractCall("arkadiko-stacker-payer-v3-8", "enable-vault-withdrawals", [
         types.uint(vaultId)
       ], this.deployer.address)
     ]);

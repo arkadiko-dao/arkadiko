@@ -325,11 +325,11 @@
     { name: "stacker-payer" }
     {
       address: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ,
-      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-payer-v3-7
+      qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-payer-v3-8
     }
   )
   (map-set contracts-data
-    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-payer-v3-7 }
+    { qualified-name: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.arkadiko-stacker-payer-v3-8 }
     {
       can-mint: false,
       can-burn: true
