@@ -126,7 +126,7 @@
     (proposer-stdiko-votes (unwrap-panic (token-amount-to-votes stake-pool-diko .stdiko-token proposer-stdiko-balance)))
     (proposer-total-balance (+ proposer-diko-votes proposer-stdiko-votes))
 
-    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init)))
+    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init-v2)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
     (proposal-id (+ u1 (var-get proposal-count)))
     (proposal {
