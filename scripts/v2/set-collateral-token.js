@@ -5,30 +5,34 @@ const utils = require('../utils');
 const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
-async function exec(ownerAddress) {
-  const lastVaultTx = await tx.callReadOnlyFunction({
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-vaults-tokens-v1-1",
-    functionName: "set-token",
-    functionArgs: [
-      tx.contractPrincipalCV('ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ', 'wstx-token'),
-      tx.stringAsciiCV('STX'),
-      max-debt: u5000000000000,
-      vault-min-debt: u500000000,
-      stability-fee: u400,
-      liquidation-ratio: u14000,
-      liquidation-penalty: u1000,
-      redemption-fee-min: u50,
-      redemption-fee-max: u400,
-      redemption-fee-block-interval: u144,
-      redemption-fee-block-rate: u500000000
-    ],
-    senderAddress: CONTRACT_ADDRESS,
-    network
-  });
+const txOptions = {
+  contractAddress: CONTRACT_ADDRESS,
+  contractName: "arkadiko-vaults-tokens-v1-1",
+  functionName: "set-token",
+  functionArgs: [
+    tx.contractPrincipalCV('ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ', 'ststx-token'),
+    tx.stringAsciiCV('stSTX'),
+    tx.uintCV(1300000000),
+    tx.uintCV(500000000),
+    tx.uintCV(400),
+    tx.uintCV(14000),
+    tx.uintCV(1000),
+    tx.uintCV(50),
+    tx.uintCV(400),
+    tx.uintCV(144),
+    tx.uintCV(500000000)
+  ],
+  nonce: new BN(52, 10),
+  fee: new BN(100000, 10),
+  senderKey: process.env.STACKS_PRIVATE_KEY,
+  postConditionMode: 1,
+  network
+};
 
-  console.log(tx.cvToJSON(lastVaultTx).value);
-  return tx.cvToJSON(lastVaultTx).value;
-}
+async function transact() {
+  const transaction = await tx.makeContractCall(txOptions);
+  const result = tx.broadcastTransaction(transaction, network);
+  await utils.processing(result, transaction.txid(), 0);
+};
 
-console.log(exec('ST2C2YFP12AJZB4MABJBAJ55XECVS7E4PMN0KW98F'));
+console.log(transact());

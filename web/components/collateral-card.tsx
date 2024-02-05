@@ -156,6 +156,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           liquidationPenalty: coll['liquidationPenalty'],
           collateralToDebtRatio: coll['collateralToDebtRatio'],
           maximumDebt: coll['maximumDebt'],
+          liquidityAvailable: Number(coll['maximumDebt']) - Number(debtCall.value.value),
           label: collExtraInfo[tokenSymbol]?.['label'],
           logo: collExtraInfo[tokenSymbol]?.['logo'],
           path: collExtraInfo[tokenSymbol]?.['path'],
@@ -432,7 +433,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                   <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Current liquidity available</dt>
                   <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
                     <span className="flex-grow">${
-                      ((collateral.maximumDebt - collateral.totalDebt) / 1000000).toLocaleString(undefined, {
+                      (collateral.liquidityAvailable / 1000000).toLocaleString(undefined, {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       })
@@ -461,7 +462,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                         size={4}
                       />
                     </RouterLink>
-                  ) : (
+                  ) : collateral.liquidityAvailable > 0 ? (
                     <RouterLink
                       to={collateral.path}
                       exact
@@ -470,6 +471,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                       Borrow
                       <StyledIcon
                         as="ArrowRightIcon"
+                        size={4}
+                      />
+                    </RouterLink>
+                  ) : (
+                    <RouterLink
+                      to='#'
+                      exact
+                      className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      No liquidity available
+                      <StyledIcon
+                        as="InformationCircleIcon"
                         size={4}
                       />
                     </RouterLink>
