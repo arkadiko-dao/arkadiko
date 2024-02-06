@@ -116,8 +116,7 @@ export const Liquidations: React.FC = () => {
         listCV([
           contractPrincipalCV(contractAddress, 'wstx-token'),
           contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
-          contractPrincipalCV(atAlexContractAddress, 'auto-alex-v2')
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
         ])
       ],
       postConditions,
@@ -155,8 +154,7 @@ export const Liquidations: React.FC = () => {
         listCV([
           contractPrincipalCV(contractAddress, 'wstx-token'),
           contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
-          contractPrincipalCV(atAlexContractAddress, 'auto-alex-v2')
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
         ])
       ],
       postConditions,
