@@ -76,7 +76,9 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       if (Number(collateralPrice) === 0) {
         collateralPrice = await fetchPrice(tokenName.toLowerCase());
       }
-      setMaximumToMint(Math.floor((uCollateralAmount * collateralPrice * 100) / maxRatio));
+      const maxDebt = Number(collateralType['maximumDebt']);
+      const maxMint = Math.floor((uCollateralAmount * collateralPrice * 100) / maxRatio);
+      setMaximumToMint(Math.min(maxDebt, maxMint));
     }
   };
 
