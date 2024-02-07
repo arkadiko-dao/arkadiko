@@ -188,7 +188,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               Create a new vault
             </h2>
             <p className="max-w-4xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              Deposit {tokenName} and mint USDA
+              Deposit {tokenNameToTicker(tokenName)} and mint USDA
             </p>
           </div>
           <div>
