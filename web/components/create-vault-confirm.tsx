@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Alert } from './ui/alert';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
 import { StyledIcon } from './ui/styled-icon';
+import { tokenNameToTicker } from '@common/vault-utils';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
   const [state] = useContext(AppContext);
@@ -52,12 +53,12 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                       Depositing
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
-                      The amount of {coinAmounts['token-name']} tokens that you are depositing into
+                      The amount of {tokenNameToTicker(coinAmounts['token-name'])} tokens that you are depositing into
                       your vault.
                     </p>
                   </div>
                   <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
-                    {coinAmounts['amounts']['collateral']} {coinAmounts['token-name']}
+                    {coinAmounts['amounts']['collateral']} {tokenNameToTicker(coinAmounts['token-name'])}
                   </p>
                 </div>
 
@@ -116,7 +117,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                     </p>
                   </div>
                   <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
-                    ${coinAmounts['liquidation-price']} / {coinAmounts['token-name']}
+                    ${coinAmounts['liquidation-price']} / {tokenNameToTicker(coinAmounts['token-name'])}
                   </p>
                 </div>
 

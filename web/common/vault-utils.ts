@@ -15,6 +15,7 @@ export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
 export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
 export const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+export const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
 
 export const getLiquidationPrice = (
   liquidationRatio: number,
@@ -82,6 +83,18 @@ export const calculateMintFee = async (debtAmount: number) => {
   const mintFeePercentage = Number(json.value) / 100;
 
   return debtAmount * (mintFeePercentage / 100);
+};
+
+export const tokenNameToTicker = (name: string) => {
+  if (name.toLowerCase() === 'stx') {
+    return 'STX';
+  } else if (name.toLowerCase() === 'xbtc') {
+    return 'xBTC';
+  } else if (name.toLowerCase() === 'ststx') {
+    return 'stSTX';
+  } else {
+    return 'atALEXv2';
+  }
 };
 
 type TokenTraits = Record<string, { address: string; name: string; swap: string; ft: string; multihop: Array<string>; }>;
@@ -328,6 +341,13 @@ export const tokenTraits: TokenTraits = {
     swap: 'auto-alex',
     multihop: [],
     ft: 'auto-alex'
+  },
+  ststx: {
+    address: stStxContractAddress,
+    name: 'ststx-token',
+    swap: 'ststx',
+    multihop: [],
+    ft: 'ststx'
   }
 };
 

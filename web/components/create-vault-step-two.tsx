@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext, UserBalanceKeys } from '@common/context';
 import { getPrice } from '@common/get-price';
-import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
+import { getLiquidationPrice, getCollateralToDebtRatio, tokenNameToTicker } from '@common/vault-utils';
 import { InputAmount } from './input-amount';
 import { useLocation } from 'react-router-dom';
 import {
@@ -77,18 +77,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
         collateralPrice = await fetchPrice(tokenName.toLowerCase());
       }
       setMaximumToMint(Math.floor((uCollateralAmount * collateralPrice * 100) / maxRatio));
-    }
-  };
-
-  const tokenNameToTicker = (name: string) => {
-    if (name.toLowerCase() === 'stx') {
-      return 'STX';
-    } else if (name.toLowerCase() === 'xbtc') {
-      return 'xBTC';
-    } else if (name.toLowerCase() === 'ststx') {
-      return 'stSTX';
-    } else {
-      return 'atALEXv2';
     }
   };
 
