@@ -267,11 +267,14 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                           />
                           <span className={`ml-2 text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
                             {
-                              getCollateralToDebtRatio(
+                              (getCollateralToDebtRatio(
                                 prices[collateral.name] / collateral.decimals,
                                 state.vaults[collateral.name]['debt'],
                                 state.vaults[collateral.name]['collateral']
-                              ) * 100.0
+                              ) * 100.0).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
                             }%
                           </span>
                         </span>
@@ -462,7 +465,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                         size={4}
                       />
                     </RouterLink>
-                  ) : collateral.liquidityAvailable > 0 ? (
+                  ) : collateral.liquidityAvailable > 500 * 1000000 ? (
                     <RouterLink
                       to={collateral.path}
                       exact
