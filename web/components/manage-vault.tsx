@@ -144,7 +144,7 @@ export const ManageVault = ({ match }) => {
 
     console.log('GOT VAULT:', vault);
     if (vault?.status && price > 0) {
-      const decimals = ['stx'].includes(collateralSymbol.toLowerCase()) ? 1000000 : 100000000;
+      const decimals = ['stx', 'ststx'].includes(collateralSymbol.toLowerCase()) ? 1000000 : 100000000;
       setDecimals(decimals);
       fetchFees();
 
