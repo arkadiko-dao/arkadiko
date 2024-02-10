@@ -38,7 +38,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   result.expectOk().expectBool(true);
 
   // Stake funds
-  result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-diko-usda-v1-1", "arkadiko-swap-token-diko-usda", 223.606797)
+  result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-diko-usda-v1-2", "arkadiko-swap-token-diko-usda", 223.606797)
   result.expectOk().expectUintWithDecimals(223.606797);
 
   // Advance 3 block

@@ -22,7 +22,7 @@
 ;; Variables
 (define-data-var total-staked uint u0)
 (define-data-var cumm-reward-per-stake uint u0)
-(define-data-var last-reward-increase-block uint burn-block-height) 
+(define-data-var last-reward-increase-block uint u0) 
 
 ;; ---------------------------------------------------------
 ;; Migration
@@ -264,7 +264,7 @@
 ;; @post uint; returns new cummulative rewards per stake
 (define-public (calculate-cumm-reward-per-stake (registry-trait <stake-registry-trait>))
   (let (
-    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool .arkadiko-stake-pool-wstx-usda-v1-1)))
+    (rewards-per-block (unwrap-panic (contract-call? registry-trait get-rewards-per-block-for-pool (as-contract tx-sender))))
     (current-total-staked (var-get total-staked))
     (last-block-height (get-last-block-height registry-trait))
     (block-diff (if (> last-block-height (var-get last-reward-increase-block))
@@ -290,7 +290,7 @@
 ;; Return current block height, or block height when pool was deactivated
 (define-private (get-last-block-height (registry-trait <stake-registry-trait>))
   (let (
-    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block .arkadiko-stake-pool-wstx-usda-v1-1)))
+    (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block (as-contract tx-sender))))
     (pool-active (is-eq deactivated-block u0))
   )
     (if (is-eq pool-active true)
