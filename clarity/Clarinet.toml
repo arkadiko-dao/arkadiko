@@ -268,6 +268,11 @@ path = "contracts/stake/arkadiko-diko-guardian-v1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.arkadiko-diko-guardian-v2-1]
+path = "contracts/stake/arkadiko-diko-guardian-v2-1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.arkadiko-alex-dual-yield-v1-1]
 path = "contracts/stake/arkadiko-alex-dual-yield-v1-1.clar"
 clarity_version = 2
