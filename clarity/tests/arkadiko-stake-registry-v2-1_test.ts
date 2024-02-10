@@ -7,11 +7,6 @@ import {
 } from "https://deno.land/x/clarinet/index.ts";
 
 import { 
-DikoToken,
-StxUsdaPoolToken
-} from './models/arkadiko-tests-tokens.ts';
-
-import { 
 Swap,
 } from './models/arkadiko-tests-swap.ts';
 
