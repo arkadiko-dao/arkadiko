@@ -389,6 +389,15 @@
     }
   )
 
+    (map-set contracts
+    { name: "diko-guardian-v2-1" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-diko-guardian-v2-1
+    }
+  )
+
+
   (map-set contracts
     { name: "diko-init" }
     {
@@ -398,6 +407,21 @@
   )
   (map-set contracts-data
     { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-diko-init }
+    {
+      can-mint: true,
+      can-burn: true
+    }
+  )
+
+  (map-set contracts
+    { name: "diko-init-v2-1" }
+    {
+      address: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+      qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-diko-init-v2-1
+    }
+  )
+  (map-set contracts-data
+    { qualified-name: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-diko-init-v2-1 }
     {
       can-mint: true,
       can-burn: true
