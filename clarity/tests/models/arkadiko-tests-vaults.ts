@@ -41,7 +41,7 @@ class VaultManager {
       [
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.bool(true)
       ],
       caller.address
@@ -77,7 +77,7 @@ class VaultManager {
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2'))
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3'))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -109,7 +109,7 @@ class VaultManager {
         types.uint(amount * 1000000), 
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2'))
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3'))
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -165,7 +165,7 @@ class VaultManager {
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2'))
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3'))
       ], user.address)
     ]);
     return block.receipts[0].result;
@@ -241,7 +241,7 @@ class VaultManager {
   fetchMinimumCollateralAmount(auctionId: number, caller: Account = this.deployer) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v2-1", "get-minimum-collateral-amount", [
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.uint(auctionId)
       ], caller.address),
     ]);
@@ -322,7 +322,7 @@ class VaultLiquidator {
         types.principal(Utils.qualifiedName('arkadiko-auction-engine-v2-1')),
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2'))
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3'))
       ], user.address),
     ]);
     return block.receipts[0].result;
@@ -409,7 +409,7 @@ class VaultAuction {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v2-1", "bid", [
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.uint(auctionId),
         types.uint(lot),
@@ -623,7 +623,7 @@ class VaultAuctionV4 {
         types.uint(vaultId),
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.principal(Utils.qualifiedName(token)),
         types.principal(Utils.qualifiedName(reserve)),
         types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
@@ -637,7 +637,7 @@ class VaultAuctionV4 {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v4-5", "burn-usda", [
         types.uint(auctionId),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-v3-1')),
         types.principal(Utils.qualifiedName('arkadiko-freddie-v1-1')),
         types.principal(Utils.qualifiedName(token)),
@@ -678,7 +678,7 @@ class VaultAuctionV4 {
   getCollateralDiscountedPrice(auctionId: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v4-5", "get-collateral-discounted-price", [
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.uint(auctionId),
       ], this.deployer.address)
     ]);
@@ -689,7 +689,7 @@ class VaultAuctionV4 {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-auction-engine-v4-5", "burn-usda-amount", [
         types.uint(auctionId),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.principal(Utils.qualifiedName('arkadiko-liquidation-pool-v1-1')),
       ], this.deployer.address)
     ]);

@@ -267,7 +267,7 @@ Clarinet.test({
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
         types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2'))
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3'))
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectUintWithDecimals(1);
@@ -285,7 +285,7 @@ Clarinet.test({
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2'))
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3'))
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectUintWithDecimals(1);;
@@ -310,7 +310,7 @@ Clarinet.test({
         types.principal(Utils.qualifiedName('arkadiko-sip10-reserve-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.principal(Utils.qualifiedName('arkadiko-collateral-types-tv1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-2'))
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3'))
       ], deployer.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(415);
