@@ -210,6 +210,7 @@
 
     (if (> staked-diko-usda u0)
       (begin
+        ;; Unstake will claim rewards
         (try! (contract-call? .arkadiko-stake-pool-diko-usda-v1-1 unstake registry-trait .arkadiko-swap-token-diko-usda staker staked-diko-usda))
         (try! (contract-call? .arkadiko-stake-pool-diko-usda-v1-2 stake registry-trait .arkadiko-swap-token-diko-usda staker staked-diko-usda))
         true
@@ -236,6 +237,60 @@
     )
 
     (ok { staked-diko-usda: staked-diko-usda, staked-wstx-diko: staked-wstx-diko, staked-wstx-usda: staked-wstx-usda })
+  )
+)
+
+(define-public (enable-rewards (last-reward-increase-block uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    ;; DIKO pool
+    (map-set pools-data-map
+      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-3 }
+      {
+        name: "DIKO",
+        deactivated-block: u0,
+        deactivated-rewards-per-block: u0,
+        rewards-percentage: u200000 ;; 20%
+      }
+    )
+    ;; DIKO-USDA LP
+    (map-set pools-data-map
+      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-2 }
+      {
+        name: "DIKO-USDA LP",
+        deactivated-block: u0,
+        deactivated-rewards-per-block: u0,
+        rewards-percentage: u250000 ;; 25% 
+      }
+    )
+    ;; wSTX-USDA LP
+    (map-set pools-data-map
+      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-2 }
+      {
+        name: "wSTX-USDA LP",
+        deactivated-block: u0,
+        deactivated-rewards-per-block: u0,
+        rewards-percentage: u350000 ;; 35% 
+      }
+    )
+    ;; wSTX-DIKO LP
+    (map-set pools-data-map
+      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-2 }
+      {
+        name: "wSTX-DIKO LP",
+        deactivated-block: u0,
+        deactivated-rewards-per-block: u0,
+        rewards-percentage: u100000 ;; 10% 
+      }
+    )
+  
+    (unwrap-panic (contract-call? .arkadiko-stake-pool-diko-v1-3 set-last-reward-add-block last-reward-increase-block))
+    (unwrap-panic (contract-call? .arkadiko-stake-pool-diko-usda-v1-2 set-last-reward-increase-block last-reward-increase-block))
+    (unwrap-panic (contract-call? .arkadiko-stake-pool-wstx-usda-v1-2 set-last-reward-increase-block last-reward-increase-block))
+    (unwrap-panic (contract-call? .arkadiko-stake-pool-wstx-diko-v1-2 set-last-reward-increase-block last-reward-increase-block))
+
+    (ok true)
   )
 )
 
@@ -283,6 +338,51 @@
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
       rewards-percentage: u150000 ;; 15% 
+    }
+  )
+
+  ;;
+  ;; Old pools
+  ;;
+
+  ;; DIKO pool
+  (map-set pools-data-map
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-2 }
+    {
+      name: "DIKO V2",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u0
+    }
+  )
+  ;; DIKO-USDA LP
+  (map-set pools-data-map
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1 }
+    {
+      name: "DIKO-USDA V1 LP",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u0
+    }
+  )
+  ;; wSTX-USDA LP
+  (map-set pools-data-map
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-1 }
+    {
+      name: "wSTX-USDA V1 LP",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u0
+    }
+  )
+  ;; wSTX-DIKO LP
+  (map-set pools-data-map
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-1 }
+    {
+      name: "wSTX-DIKO V1 LP",
+      deactivated-block: u0,
+      deactivated-rewards-per-block: u0,
+      rewards-percentage: u0
     }
   )
 )
