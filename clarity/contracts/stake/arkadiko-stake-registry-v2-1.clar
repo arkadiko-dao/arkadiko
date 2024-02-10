@@ -62,10 +62,7 @@
 ;; Get pool rewards per block
 (define-read-only (get-rewards-per-block-for-pool (pool principal))
   (let (
-    ;; TODO - Update for mainnet
-    ;; Should become arkadiko-diko-guardian-v2-1
-    ;; (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v2-1 get-staking-rewards-per-block))
-    (total-staking-rewards (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
+    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v2-1 get-staking-rewards-per-block))
 
     (pool-percentage (get rewards-percentage (get-pool-data pool)))
     (deactivated-block (get deactivated-block (get-pool-data pool)))
