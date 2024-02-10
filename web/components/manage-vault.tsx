@@ -217,7 +217,7 @@ export const ManageVault = ({ match }) => {
           functionArgs: [
             uintCV(vault.id),
             contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
-            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-2'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-3'),
             falseCV(),
           ],
           senderAddress: senderAddress || contractAddress,
@@ -249,8 +249,8 @@ export const ManageVault = ({ match }) => {
 
       const vaultUnlockCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stacker-payer-v3-8',
-        functionName: 'get-vault-combined-unlock',
+        contractName: 'arkadiko-stacker-payer-v3-7',
+        functionName: 'get-vault-unlock',
         functionArgs: [uintCV(vault?.id)],
         senderAddress: contractAddress || '',
         network: network,
@@ -387,7 +387,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-stacker-payer-v3-8',
+      contractName: 'arkadiko-stacker-payer-v3-7',
       functionName: 'enable-vault-withdrawals',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {
@@ -406,7 +406,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-pox-unstack-unlock-v2-5',
+      contractName: 'arkadiko-pox-unstack-unlock-v2-4',
       functionName: 'unstack',
       functionArgs: [uintCV(match.params.id)],
       onFinish: data => {

@@ -38,14 +38,7 @@ export const ViewProposal = ({ match }) => {
   const [dikoVoted, setDikoVoted] = useState('');
   const [stdikoVoted, setStdikoVoted] = useState('');
 
-  const CONTRACT_NAME =
-    match.params.id <= 2
-      ? 'arkadiko-governance-v1-1'
-      : match.params.id <= 6
-      ? 'arkadiko-governance-v2-1'
-      : match.params.id == 22
-      ? 'arkadiko-governance-v3-1'
-      : 'arkadiko-governance-v4-1';
+  const CONTRACT_NAME = "arkadiko-governance-" + match.params.version
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
