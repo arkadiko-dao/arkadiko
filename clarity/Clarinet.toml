@@ -418,6 +418,11 @@ path = "contracts/tests/arkadiko-stake-registry-tv1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.arkadiko-stake-pool-diko-tv1-1]
+path = "contracts/tests/arkadiko-stake-pool-diko-tv1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.arkadiko-governance-tv1-1]
 path = "contracts/tests/arkadiko-governance-tv1-1.clar"
 clarity_version = 2
