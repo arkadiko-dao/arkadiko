@@ -125,7 +125,19 @@
       rewards-percentage: u100000 ;; 10% - Need to keep this so stakers on old pool can still claim rewards
     }
   )
+
   ;; DIKO pool - New
+  (map-set pools-data-map
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-2 }
+    {
+      name: "DIKO",
+      deactivated-block: u2000,
+      deactivated-rewards-per-block: u0, ;; No need to set for this pool
+      rewards-percentage: u100000 ;; 10% - Need to keep this so stakers on old pool can still claim rewards
+    }
+  )
+
+  ;; DIKO pool - Test
   (map-set pools-data-map
     { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-tv1-1 }
     {

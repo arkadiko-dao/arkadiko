@@ -321,7 +321,7 @@ name: "stake-pool-wstx-diko - stake DIKO rewards",
     result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 100)
     result.expectOk().expectUintWithDecimals(100);
 
-    // Advance 3 blocks
+    // Advance 20 blocks
     chain.mineEmptyBlock(20);
 
     // Pending rewards
@@ -346,7 +346,7 @@ name: "stake-pool-wstx-diko - stake DIKO rewards",
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(1973.156942);
+    result.expectOk().expectUintWithDecimals(2004.476894);
 
   }
 });
