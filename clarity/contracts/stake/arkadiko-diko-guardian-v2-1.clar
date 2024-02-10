@@ -13,7 +13,7 @@
 
 ;; First version of diko-guardian was deployed on block 34239
 ;; https://explorer.hiro.so/txid/0xe8309941311ab8a40b9e1d6ad50a6f59f52e5b4ea4f2441d8ddeecceffbf7406?chain=mainnet
-(define-data-var contract-start-block uint u34239)
+(define-data-var contract-start-block uint (if is-in-mainnet u34239 burn-block-height))
 
 ;; ---------------------------------------------------------
 ;; Staking
