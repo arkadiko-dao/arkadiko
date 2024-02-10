@@ -136,9 +136,9 @@
 (begin
   (var-set token-list (list 
     .wstx-token
-    'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.ststx-token 
-    'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin
-    'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex-v2
+    .ststx-token 
+    .Wrapped-Bitcoin
+    .auto-alex-v2
   ))
 
   (map-set tokens
@@ -161,7 +161,7 @@
 
   (map-set tokens
     { 
-      token: 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.ststx-token 
+      token: .ststx-token 
     }
     {
       token-name: "stSTX",
@@ -179,7 +179,7 @@
 
   (map-set tokens
     { 
-      token: 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin 
+      token: .Wrapped-Bitcoin 
     }
     {
       token-name: "xBTC",
@@ -197,7 +197,7 @@
 
   (map-set tokens
     { 
-      token: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex-v2
+      token: .auto-alex-v2
     }
     {
       token-name: "atALEXv2",
