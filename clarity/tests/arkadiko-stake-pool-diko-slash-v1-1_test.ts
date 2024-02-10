@@ -52,21 +52,21 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   result.expectOk().expectBool(true);
 
   // Vote for wallet_1
-  result = governance.voteForProposal(deployer, 7, 100000);
+  result = governance.voteForProposal(deployer, 1, 100000);
   result.expectOk().expectUint(3200);
 
-  result = governance.voteForProposal(wallet_1, 7, 100000);
+  result = governance.voteForProposal(wallet_1, 1, 100000);
   result.expectOk().expectUint(3200);
 
   // Advance
   chain.mineEmptyBlock(1500);
 
   // End proposal
-  result = governance.endProposal(7);
+  result = governance.endProposal(1);
   result.expectOk().expectUint(3200);
 
   // Check if proposal updated
-  let call:any = governance.getProposalByID(7);
+  let call:any = governance.getProposalByID(1);
   call.result.expectTuple()["is-open"].expectBool(false);
 
   // Check total DIKO pool balance (as rewards have auto compounded)
