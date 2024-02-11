@@ -27,6 +27,9 @@ contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-ownable"
 [[project.requirements]]
 contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool"
 
+[[project.requirements]]
+contract_id = "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.reserve-v1"
+
 
 # ----------------------------------------------------
 # Core
@@ -483,6 +486,11 @@ epoch = 2.4
 # stSTX
 [contracts.ststx-token]
 path = "contracts/tests/ststx/ststx-token.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-v1]
+path = "contracts/tests/ststx/stacking-dao-core-v1.clar"
 clarity_version = 2
 epoch = 2.4
 

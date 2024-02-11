@@ -26,7 +26,171 @@ import {
   VaultsMigration
 } from './models/arkadiko-tests-vaults-migration.ts';
 
+import { 
+  VaultManager,
+} from './models/arkadiko-tests-vaults.ts';
+
+import { 
+  LiquidationPool,
+} from './models/arkadiko-tests-liquidation-pool.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+
+// ---------------------------------------------------------
+// Reserves
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "vaults-migration: migrate reserves",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsMigration = new VaultsMigration(chain, deployer);
+    let vaultManager = new VaultManager(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);    
+    oracleManager.updatePrice("stSTX", 0.6);    
+    oracleManager.updatePrice("xBTC", 40000, 100000000);
+
+    // Create some vaults to fill reserves
+    let result = vaultManager.createVault(deployer, "XBTC-A", 10, 1000, false, false, 'arkadiko-sip10-reserve-v2-1', 'Wrapped-Bitcoin');
+    result.expectOk().expectUintWithDecimals(1000);
+    result = vaultManager.createVault(deployer, "STX-A", 100000, 1000);
+    result.expectOk().expectUintWithDecimals(1000);
+
+    //
+    // Data - before migration
+    //
+
+    let call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-sip10-reserve-v2-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(10);
+
+    call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-stx-balance", [
+    ], deployer.address);
+    call.result.expectUintWithDecimals(100000);
+
+
+    //
+    // Migrate funds
+    //
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-stx-reserve-v1-1", "migrate-funds", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-migration-v1-1')),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-sip10-reserve-v2-1", "migrate-funds", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-migration-v1-1')),
+        types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+
+    call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-sip10-reserve-v2-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = await chain.callReadOnlyFn("arkadiko-stx-reserve-v1-1", "get-stx-balance", [
+    ], deployer.address);
+    call.result.expectUintWithDecimals(0);
+
+    call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-vaults-migration-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(10);
+
+
+    //
+    // Migrate reserves
+    //
+
+    result = vaultsMigration.migrateReserves(deployer, 70000);
+    result.expectOk().expectTuple()["stx-balance"].expectUintWithDecimals(30000);
+    result.expectOk().expectTuple()["ststx-balance"].expectUintWithDecimals(69965.017491);
+    result.expectOk().expectTuple()["wbtc-balance"].expectUintWithDecimals(10);
+
+
+    //
+    // Data - before migration
+    //
+
+    call = await chain.callReadOnlyFn("wstx-token", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(30000);
+
+    call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(69965.017491);
+
+    call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(10);
+
+  },
+});
+
+// ---------------------------------------------------------
+// Pool Liq Funds
+// ---------------------------------------------------------
+
+Clarinet.test({
+  name: "vaults-migration: migrate liquidation pool funds",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsMigration = new VaultsMigration(chain, deployer);
+    let liquidationPool = new LiquidationPool(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);    
+    oracleManager.updatePrice("stSTX", 0.6);    
+
+
+    // Stake in old pool
+    let result = liquidationPool.stake(deployer, 10000);
+    result.expectOk().expectUintWithDecimals(10000);
+
+    let call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-liquidation-pool-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(10000);
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+
+    // Migrate pool funds
+    result = vaultsMigration.migratePoolLiqFunds(deployer)
+    result.expectOk().expectUintWithDecimals(10000);
+
+
+    // Check data
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-liquidation-pool-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(0);
+
+    call = await chain.callReadOnlyFn("usda-token", "get-balance", [
+      types.principal(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"))
+    ], deployer.address);
+    call.result.expectOk().expectUintWithDecimals(10000);
+  },
+});
 
 // ---------------------------------------------------------
 // Vaults
@@ -138,7 +302,7 @@ Clarinet.test({
 
     // Set price
     oracleManager.updatePrice("STX", 0.5);    
-    
+
     // Migrate
     let result = vaultsMigration.migrateVaults(wallet_1, [
       { owner: wallet_1.address, token: "wstx-token", status: 101, collateral: 4000, debt: 2000, prev_owner_hint: wallet_1.address },
@@ -149,6 +313,12 @@ Clarinet.test({
     result = vaultsMigration.migratePoolLiq(wallet_1, [
       { staker: wallet_1.address, amount: 1000 },
     ])
+    result.expectErr().expectUint(990401);
+
+    result = vaultsMigration.migrateReserves(wallet_1, 10);
+    result.expectErr().expectUint(990401);
+
+    result = vaultsMigration.migratePoolLiqFunds(wallet_1);
     result.expectErr().expectUint(990401);
   },
 });

@@ -37,6 +37,14 @@ class VaultsMigration {
     return block.receipts[0].result;
   }
 
+  migratePoolLiqFunds(caller: Account) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-migration-v1-1", "migrate-pool-liq-funds", [
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
   migratePoolLiq(caller: Account, stakers: any[]) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-migration-v1-1", "migrate-pool-liq", [
@@ -44,6 +52,15 @@ class VaultsMigration {
           "staker": types.principal(staker.staker),
           "amount": types.uint(staker.amount * 1000000),
         })))
+      ], caller.address)
+    ]);
+    return block.receipts[0].result;
+  }
+
+  migrateReserves(caller: Account, stxAmountToStack: number) {
+    let block = this.chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-migration-v1-1", "migrate-reserves", [
+        types.uint(stxAmountToStack * 1000000)
       ], caller.address)
     ]);
     return block.receipts[0].result;

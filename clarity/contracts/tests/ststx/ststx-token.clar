@@ -49,6 +49,12 @@
   )
 )
 
+(define-public (mint-for-protocol (amount uint) (recipient principal))
+  (begin
+    (ft-mint? ststx amount recipient)
+  )
+)
+
 ;; Initialize the contract
 (begin
   ;; TODO: do not do this on testnet or mainnet
