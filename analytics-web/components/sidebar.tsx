@@ -5,6 +5,7 @@ import {
   ScaleIcon,
   MenuIcon,
   XIcon,
+  ExternalLinkIcon
 } from '@heroicons/react/outline';
 import { classNames } from '@common/class-names';
 import { NavLink as RouterLink, useLocation } from 'react-router-dom';
@@ -17,6 +18,7 @@ export const Sidebar: React.FC = ({ children }) => {
   const [navigation, updateNavigation] = useState([
     { name: 'Dashboard', href: '/', icon: TrendingUpIcon, current: true },
     { name: 'Balances', href: '/balances', icon: ScaleIcon, current: false },
+    { name: 'Back to app', href: 'https://app.arkadiko.finance', icon: ExternalLinkIcon, current: false }
   ])
 
   useEffect(() => {
