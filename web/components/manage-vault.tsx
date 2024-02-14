@@ -318,6 +318,7 @@ export const ManageVault = ({ match }) => {
               <h3 className="text-base font-normal leading-6 text-gray-900 sr-only font-headings dark:text-zinc-50">
                 Vault details
               </h3>
+              {/*@TODO: convert vault*/}
               {vault?.collateralToken?.toLowerCase() === 'stx' && false && (
                 <Alert type={Alert.type.INFO} title="Want to earn more yield?">
                   <p>
@@ -542,68 +543,72 @@ export const ManageVault = ({ match }) => {
               ) : null}
             </div>
 
-            <div className="mt-4">
-              <div className="bg-white rounded-md shadow dark:bg-zinc-800">
-                <div className="divide-x divide-gray-200 dark:divide-gray-700 lg:grid lg:grid-cols-2 lg:gap-4">
-                  <div className="flex flex-col px-4 py-5 sm:p-6">
-                    <VaultMint
-                      match={match}
-                      vault={vault}
-                      reserveName={reserveName}
-                      price={price}
-                      collateralType={collateralType}
-                      stabilityFee={stabilityFee}
-                    />
-                  </div>
-                  <div className="flex flex-col px-4 py-5 sm:p-6">
-                    <VaultBurn
-                      outstandingDebt={outstandingDebt}
-                      stabilityFee={stabilityFee}
-                      match={match}
-                      vault={vault}
-                      reserveName={reserveName}
-                    />
+            {vaultOwner === senderAddress && (
+              <div className="mt-4">
+                <div className="bg-white rounded-md shadow dark:bg-zinc-800">
+                  <div className="divide-x divide-gray-200 dark:divide-gray-700 lg:grid lg:grid-cols-2 lg:gap-4">
+                    <div className="flex flex-col px-4 py-5 sm:p-6">
+                      <VaultMint
+                        match={match}
+                        vault={vault}
+                        reserveName={reserveName}
+                        price={price}
+                        collateralType={collateralType}
+                        stabilityFee={stabilityFee}
+                      />
+                    </div>
+                    <div className="flex flex-col px-4 py-5 sm:p-6">
+                      <VaultBurn
+                        outstandingDebt={outstandingDebt}
+                        stabilityFee={stabilityFee}
+                        match={match}
+                        vault={vault}
+                        reserveName={reserveName}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
-        <section className="mt-12">
-          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
-            <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
-              Deposit and Withdraw
-            </h3>
-          </header>
+        {vaultOwner === senderAddress && (
+          <section className="mt-12">
+            <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+              <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                Deposit and Withdraw
+              </h3>
+            </header>
 
-          {isVaultOwner ? (
-            <div className="mt-4">
-              <div className="bg-white rounded-md shadow dark:bg-zinc-800">
-                <div className="divide-x divide-gray-200 dark:divide-gray-700 lg:grid lg:grid-cols-2 lg:gap-4">
-                  <div className="flex flex-col px-4 py-5 sm:p-6">
-                    <VaultDeposit
-                      match={match}
-                      vault={vault}
-                      reserveName={reserveName}
-                      decimals={decimals}
-                      stabilityFee={stabilityFee}
-                    />
-                  </div>
-                  <div className="flex flex-col px-4 py-5 sm:p-6">
-                    <VaultWithdraw
-                      match={match}
-                      maximumCollateralToWithdraw={maximumCollateralToWithdraw}
-                      vault={vault}
-                      reserveName={reserveName}
-                      stabilityFee={stabilityFee}
-                    />
+            {isVaultOwner ? (
+              <div className="mt-4">
+                <div className="bg-white rounded-md shadow dark:bg-zinc-800">
+                  <div className="divide-x divide-gray-200 dark:divide-gray-700 lg:grid lg:grid-cols-2 lg:gap-4">
+                    <div className="flex flex-col px-4 py-5 sm:p-6">
+                      <VaultDeposit
+                        match={match}
+                        vault={vault}
+                        reserveName={reserveName}
+                        decimals={decimals}
+                        stabilityFee={stabilityFee}
+                      />
+                    </div>
+                    <div className="flex flex-col px-4 py-5 sm:p-6">
+                      <VaultWithdraw
+                        match={match}
+                        maximumCollateralToWithdraw={maximumCollateralToWithdraw}
+                        vault={vault}
+                        reserveName={reserveName}
+                        stabilityFee={stabilityFee}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ) : null}
-        </section>
+            ) : null}
+          </section>
+        )}
       </main>
     </Container>
   );
