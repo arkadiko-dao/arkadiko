@@ -19,7 +19,7 @@ import {
   falseCV,
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
-import { debtClass, VaultProps } from './vault';
+import { debtClass, VaultProps } from './collateral-card';
 import { getPrice } from '@common/get-price';
 import { getLiquidationPrice, availableCoinsToMint, tokenTraits } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';

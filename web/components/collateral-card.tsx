@@ -12,8 +12,34 @@ import { useSTXAddress } from '@common/use-stx-address';
 import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
 import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { stacksNetwork as network, asyncForEach } from '@common/utils';
-import { debtClass } from './vault';
 import { Placeholder } from './ui/placeholder';
+
+export interface VaultProps {
+  key: string;
+  id: string;
+  owner: string;
+  collateral: number;
+  collateralType: string;
+  collateralToken: string;
+  stabilityFee: number;
+  debt: number;
+  isLiquidated: boolean;
+  auctionEnded: boolean;
+  leftoverCollateral: number;
+  liquidationRatio: number;
+}
+
+export const debtClass = (liquidationRatio: number, ratio: number) => {
+  if (Number(ratio) >= Number(liquidationRatio) + 50) {
+    return 'text-green-500';
+  } else if (Number(ratio) >= Number(liquidationRatio) + 30) {
+    return 'text-orange-500';
+  } else if (Number(ratio) > Number(liquidationRatio) + 10) {
+    return 'text-red-600';
+  }
+
+  return 'text-dark-600';
+};
 
 export const collExtraInfo = {
   'STX': {
