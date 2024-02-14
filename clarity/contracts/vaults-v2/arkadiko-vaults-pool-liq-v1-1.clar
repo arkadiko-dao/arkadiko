@@ -301,7 +301,7 @@
 ;; DIKO rewards that should be added
 (define-read-only (get-diko-rewards-to-add)
   (let (
-    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v1-1 get-staking-rewards-per-block))
+    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v2-1 get-staking-rewards-per-block))
     (total-pool-rewards (/ (* total-staking-rewards (var-get diko-rewards-percentage)) u10000))
     (block-diff (- burn-block-height (var-get diko-rewards-last-block)))
   )

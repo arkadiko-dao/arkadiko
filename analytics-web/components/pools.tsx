@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { PoolRow } from './pool-row';
 
 export const Pools: React.FC = ({pools}) => {
   return (
@@ -32,7 +33,13 @@ export const Pools: React.FC = ({pools}) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {pools}
+                      {pools.map((pool) => (
+                        <PoolRow
+                          key={pool.id}
+                          id={pool.id}
+                          pool={pool}
+                        />
+                      ))}
                     </tbody>
                   </table>
                 </div>

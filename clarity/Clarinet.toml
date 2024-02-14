@@ -491,6 +491,11 @@ path = "contracts/tests/ststx/ststx-token.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.stacking-dao-core-v1]
+path = "contracts/tests/ststx/stacking-dao-core-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 # Tokensoft xBTC
 [contracts.restricted-token-trait]
 path = "contracts/tests/xbtc/restricted-token-trait.clar"
