@@ -280,7 +280,7 @@ export const StakeDikoSection = ({
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   onClick={() => startDikoCooldown()}
-                                  disabled={cooldownRunning}
+                                  disabled={cooldownRunning || Number(stDikoBalance) === 0}
                                 >
                                   {cooldownRunning ? (
                                     <Tooltip
