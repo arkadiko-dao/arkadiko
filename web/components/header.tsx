@@ -463,6 +463,15 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                       Borrow
                     </Disclosure.Button>
 
+                    <Disclosure.Button
+                      as={RouterLink}
+                      to="/stake"
+                      className="block py-2 pl-3 pr-4 text-base font-medium text-gray-500 border-l-4 border-transparent dark:text-zinc-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 dark:hover:bg-zinc-700"
+                      activeClassName="border-indigo-500 text-gray-900"
+                    >
+                      Stake
+                    </Disclosure.Button>
+
                     <a
                       href="https://info.arkadiko.finance/"
                       target="_blank"
