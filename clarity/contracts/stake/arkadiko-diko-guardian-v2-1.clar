@@ -15,7 +15,8 @@
 ;; https://explorer.hiro.so/txid/0xe8309941311ab8a40b9e1d6ad50a6f59f52e5b4ea4f2441d8ddeecceffbf7406?chain=mainnet
 (define-data-var contract-start-block uint (if is-in-mainnet u705573 burn-block-height))
 
-(define-data-var history-blocks uint u500)
+(define-data-var history-blocks uint u1440)
+(define-data-var max-per-block uint u160000000)
 
 ;; ---------------------------------------------------------
 ;; Staking
@@ -24,7 +25,7 @@
 ;; Get currrent staking rewards per block for all pools
 ;; The yearly rewards are reduced by half every year
 ;; During the year, the rewards are reduced every 2 weeks
-(define-read-only (get-staking-rewards-per-burn-block)
+(define-read-only (get-staking-rewards-per-block)
   (let (
     ;; 26 steps per year (2 week interval)
     (steps-per-year u26)
@@ -72,20 +73,31 @@
   )
 )
 
-(define-read-only (get-staking-rewards-per-block)
+(define-private (min-of (i1 uint) (i2 uint))
+  (if (< i1 i2) i1 i2)
+)
+
+(define-read-only (get-staking-rewards-per-stacks-block)
   (let (
+    ;; Burn block height X blocks ago
     (prev-burn-block-height (at-block
       (unwrap-panic (get-block-info? id-header-hash (- block-height (var-get history-blocks)))) 
       burn-block-height
     ))
-    (burn-block-diff (- burn-block-height prev-burn-block-height))
 
-    (stacks-blocks-per-burn-block (if (>= burn-block-diff (var-get history-blocks))
+    ;; Burn block height diff
+    (burn-block-diff (if (> burn-block-height prev-burn-block-height)
+      (- burn-block-height prev-burn-block-height)
+      u0
+    ))
+
+    ;; Stacks blocks per burn block
+    (stacks-blocks-per-burn-block (if (or (is-eq burn-block-diff u0) (>= burn-block-diff (var-get history-blocks)))
       u1
       (/ (* (var-get history-blocks) u1000000) burn-block-diff)
     ))
   )
-    (/ (get-staking-rewards-per-burn-block) stacks-blocks-per-burn-block)
+    (min-of (/ (get-staking-rewards-per-block) stacks-blocks-per-burn-block) (var-get max-per-block))
   )
 )
 
@@ -97,3 +109,13 @@
     (ok true)
   )
 )
+
+(define-public (set-max-per-block (max uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (var-set max-per-block max)
+    (ok true)
+  )
+)
+
