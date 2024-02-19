@@ -15,6 +15,8 @@
 ;; https://explorer.hiro.so/txid/0xe8309941311ab8a40b9e1d6ad50a6f59f52e5b4ea4f2441d8ddeecceffbf7406?chain=mainnet
 (define-data-var contract-start-block uint (if is-in-mainnet u705573 burn-block-height))
 
+(define-data-var history-blocks uint u500)
+
 ;; ---------------------------------------------------------
 ;; Staking
 ;; ---------------------------------------------------------
@@ -22,7 +24,7 @@
 ;; Get currrent staking rewards per block for all pools
 ;; The yearly rewards are reduced by half every year
 ;; During the year, the rewards are reduced every 2 weeks
-(define-read-only (get-staking-rewards-per-block)
+(define-read-only (get-staking-rewards-per-burn-block)
   (let (
     ;; 26 steps per year (2 week interval)
     (steps-per-year u26)
@@ -67,5 +69,31 @@
         MIN-STAKING-BLOCK-REWARDS
       )
     )
+  )
+)
+
+(define-read-only (get-staking-rewards-per-block)
+  (let (
+    (prev-burn-block-height (at-block
+      (unwrap-panic (get-block-info? id-header-hash (- block-height (var-get history-blocks)))) 
+      burn-block-height
+    ))
+    (burn-block-diff (- burn-block-height prev-burn-block-height))
+
+    (stacks-blocks-per-burn-block (if (>= burn-block-diff (var-get history-blocks))
+      u1
+      (/ (* (var-get history-blocks) u1000000) burn-block-diff)
+    ))
+  )
+    (/ (get-staking-rewards-per-burn-block) stacks-blocks-per-burn-block)
+  )
+)
+
+(define-public (set-history-blocks (blocks uint))
+  (begin
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (var-set history-blocks blocks)
+    (ok true)
   )
 )
