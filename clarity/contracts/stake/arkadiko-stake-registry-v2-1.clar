@@ -62,8 +62,7 @@
 ;; Get pool rewards per block
 (define-read-only (get-rewards-per-block-for-pool (pool principal))
   (let (
-    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v3-1 get-staking-rewards-per-block))
-
+    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v3-1 get-staking-rewards-per-stacks-block))
     (pool-percentage (get rewards-percentage (get-pool-data pool)))
     (deactivated-block (get deactivated-block (get-pool-data pool)))
     (deactivated-rewards-per-block (get deactivated-rewards-per-block (get-pool-data pool)))
@@ -188,121 +187,14 @@
 )
 
 ;; ---------------------------------------------------------
-;; Migration
-;; ---------------------------------------------------------
-
-(define-public (migrate-many (registry-trait <stake-registry-trait>) (stakers (list 30 principal)))
-  (let (
-    (registry-list (list registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait))
-  )
-    (ok (map migrate registry-list stakers))
-  )
-)
-
-(define-public (migrate (registry-trait <stake-registry-trait>) (staker principal))
-  (let (
-    (staked-diko-usda (contract-call? .arkadiko-stake-pool-diko-usda-v1-1 get-stake-amount-of staker))
-    (staked-wstx-diko (contract-call? .arkadiko-stake-pool-wstx-diko-v1-1 get-stake-amount-of staker))
-    (staked-wstx-usda (contract-call? .arkadiko-stake-pool-wstx-usda-v1-1 get-stake-amount-of staker))
-  )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
-
-    (if (> staked-diko-usda u0)
-      (begin
-        ;; Unstake will claim rewards
-        (try! (contract-call? .arkadiko-stake-pool-diko-usda-v1-1 unstake registry-trait .arkadiko-swap-token-diko-usda staker staked-diko-usda))
-        (try! (contract-call? .arkadiko-stake-pool-diko-usda-v1-2 stake registry-trait .arkadiko-swap-token-diko-usda staker staked-diko-usda))
-        true
-      )
-      true
-    )
-
-    (if (> staked-wstx-diko u0)
-      (begin
-        (try! (contract-call? .arkadiko-stake-pool-wstx-diko-v1-1 unstake registry-trait .arkadiko-swap-token-wstx-diko staker staked-wstx-diko))
-        (try! (contract-call? .arkadiko-stake-pool-wstx-diko-v1-2 stake registry-trait .arkadiko-swap-token-wstx-diko staker staked-wstx-diko))
-        true
-      )
-      true
-    )
-
-    (if (> staked-wstx-usda u0)
-      (begin
-        (try! (contract-call? .arkadiko-stake-pool-wstx-usda-v1-1 unstake registry-trait .arkadiko-swap-token-wstx-usda staker staked-wstx-usda))
-        (try! (contract-call? .arkadiko-stake-pool-wstx-usda-v1-2 stake registry-trait .arkadiko-swap-token-wstx-usda staker staked-wstx-usda))
-        true
-      )
-      true
-    )
-
-    (ok { staked-diko-usda: staked-diko-usda, staked-wstx-diko: staked-wstx-diko, staked-wstx-usda: staked-wstx-usda })
-  )
-)
-
-(define-public (enable-rewards (last-reward-increase-block uint))
-  (begin
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-
-    ;; DIKO pool
-    (map-set pools-data-map
-      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-3 }
-      {
-        name: "DIKO",
-        deactivated-block: u0,
-        deactivated-rewards-per-block: u0,
-        rewards-percentage: u200000 ;; 20%
-      }
-    )
-    ;; DIKO-USDA LP
-    (map-set pools-data-map
-      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-2 }
-      {
-        name: "DIKO-USDA LP",
-        deactivated-block: u0,
-        deactivated-rewards-per-block: u0,
-        rewards-percentage: u250000 ;; 25% 
-      }
-    )
-    ;; wSTX-USDA LP
-    (map-set pools-data-map
-      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-2 }
-      {
-        name: "wSTX-USDA LP",
-        deactivated-block: u0,
-        deactivated-rewards-per-block: u0,
-        rewards-percentage: u350000 ;; 35% 
-      }
-    )
-    ;; wSTX-DIKO LP
-    (map-set pools-data-map
-      { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-2 }
-      {
-        name: "wSTX-DIKO LP",
-        deactivated-block: u0,
-        deactivated-rewards-per-block: u0,
-        rewards-percentage: u100000 ;; 10% 
-      }
-    )
-  
-    (unwrap-panic (contract-call? .arkadiko-stake-pool-diko-v1-3 set-last-reward-add-block last-reward-increase-block))
-    (unwrap-panic (contract-call? .arkadiko-stake-pool-diko-usda-v1-2 set-last-reward-increase-block last-reward-increase-block))
-    (unwrap-panic (contract-call? .arkadiko-stake-pool-wstx-usda-v1-2 set-last-reward-increase-block last-reward-increase-block))
-    (unwrap-panic (contract-call? .arkadiko-stake-pool-wstx-diko-v1-2 set-last-reward-increase-block last-reward-increase-block))
-
-    (ok true)
-  )
-)
-
-;; ---------------------------------------------------------
 ;; Contract initialisation
 ;; ---------------------------------------------------------
 
-;; TODO - UPDATE FOR MAINNET - SET ALL REWARDS-PERCENTAGE TO 0
+;; Initialize the contract
 (begin
   ;; DIKO pool
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-3 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-4 }
     {
       name: "DIKO",
       deactivated-block: u0,
@@ -312,7 +204,7 @@
   )
   ;; DIKO-USDA LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-2 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1 }
     {
       name: "DIKO-USDA LP",
       deactivated-block: u0,
@@ -322,7 +214,7 @@
   )
   ;; wSTX-USDA LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-2 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-1 }
     {
       name: "wSTX-USDA LP",
       deactivated-block: u0,
@@ -332,57 +224,12 @@
   )
   ;; wSTX-DIKO LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-2 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-1 }
     {
       name: "wSTX-DIKO LP",
       deactivated-block: u0,
       deactivated-rewards-per-block: u0,
       rewards-percentage: u150000 ;; 15% 
-    }
-  )
-
-  ;;
-  ;; Old pools
-  ;;
-
-  ;; DIKO pool
-  (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-2 }
-    {
-      name: "DIKO V2",
-      deactivated-block: u0,
-      deactivated-rewards-per-block: u0,
-      rewards-percentage: u0
-    }
-  )
-  ;; DIKO-USDA LP
-  (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1 }
-    {
-      name: "DIKO-USDA V1 LP",
-      deactivated-block: u0,
-      deactivated-rewards-per-block: u0,
-      rewards-percentage: u0
-    }
-  )
-  ;; wSTX-USDA LP
-  (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-1 }
-    {
-      name: "wSTX-USDA V1 LP",
-      deactivated-block: u0,
-      deactivated-rewards-per-block: u0,
-      rewards-percentage: u0
-    }
-  )
-  ;; wSTX-DIKO LP
-  (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-1 }
-    {
-      name: "wSTX-DIKO V1 LP",
-      deactivated-block: u0,
-      deactivated-rewards-per-block: u0,
-      rewards-percentage: u0
     }
   )
 )

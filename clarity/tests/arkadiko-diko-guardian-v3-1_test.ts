@@ -21,6 +21,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   //   chain.mineEmptyBlock(2016);
   // }
   // console.log("---------------");
+
 }
 });
 
@@ -107,10 +108,15 @@ Clarinet.test({
     call.result.expectUintWithDecimals(626.399062)
 
     call = chain.callReadOnlyFn("arkadiko-diko-guardian-v3-1", "get-staking-rewards-per-stacks-block", [], wallet_1.address);
-    call.result.expectUintWithDecimals(160)
-  
-    // Get rewards after 1 year
-    chain.mineEmptyBlock(2016 * 13);
+    call.result.expectUintWithDecimals(626.399062)
+
+    chain.mineEmptyBlock(20000);
+
+    call = chain.callReadOnlyFn("arkadiko-diko-guardian-v3-1", "get-staking-rewards-per-block", [], wallet_1.address);
+    call.result.expectUintWithDecimals(505.937704)
+
+    call = chain.callReadOnlyFn("arkadiko-diko-guardian-v3-1", "get-staking-rewards-per-stacks-block", [], wallet_1.address);
+    call.result.expectUintWithDecimals(505.937704)
 
   }
   });

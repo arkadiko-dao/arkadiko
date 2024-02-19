@@ -288,8 +288,8 @@ path = "contracts/stake/arkadiko-stake-pool-diko-v1-2.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.arkadiko-stake-pool-diko-v1-3]
-path = "contracts/stake/arkadiko-stake-pool-diko-v1-3.clar"
+[contracts.arkadiko-stake-pool-diko-v1-4]
+path = "contracts/stake/arkadiko-stake-pool-diko-v1-4.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -303,28 +303,13 @@ path = "contracts/stake/arkadiko-stake-pool-diko-usda-v1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.arkadiko-stake-pool-diko-usda-v1-2]
-path = "contracts/stake/arkadiko-stake-pool-diko-usda-v1-2.clar"
-clarity_version = 2
-epoch = 2.4
-
 [contracts.arkadiko-stake-pool-wstx-usda-v1-1]
 path = "contracts/stake/arkadiko-stake-pool-wstx-usda-v1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.arkadiko-stake-pool-wstx-usda-v1-2]
-path = "contracts/stake/arkadiko-stake-pool-wstx-usda-v1-2.clar"
-clarity_version = 2
-epoch = 2.4
-
 [contracts.arkadiko-stake-pool-wstx-diko-v1-1]
 path = "contracts/stake/arkadiko-stake-pool-wstx-diko-v1-1.clar"
-clarity_version = 2
-epoch = 2.4
-
-[contracts.arkadiko-stake-pool-wstx-diko-v1-2]
-path = "contracts/stake/arkadiko-stake-pool-wstx-diko-v1-2.clar"
 clarity_version = 2
 epoch = 2.4
 

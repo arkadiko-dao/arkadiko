@@ -45,7 +45,7 @@
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     
-    ;; Burn DIKO in pool V2, mint in V3
+    ;; Burn DIKO in pool V2, mint in V4
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token diko-supply-v2 .arkadiko-stake-pool-diko-v1-2)))
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-supply-v2 (as-contract tx-sender))))
 
@@ -250,7 +250,7 @@
     (deactivated-block (unwrap-panic (contract-call? registry-trait get-pool-deactivated-block (as-contract tx-sender))))
   )
     (asserts! (is-eq (contract-of registry-trait) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-WRONG-REGISTRY)
-    (asserts! (> burn-block-height (var-get last-reward-add-block)) (ok u0))
+    (asserts! (> block-height (var-get last-reward-add-block)) (ok u0))
 
     ;; Rewards to add can be 0 if called multiple times in same block
     ;; Do not mint if pool deactivated
@@ -294,7 +294,7 @@
     (pool-active (is-eq deactivated-block u0))
   )
     (if (is-eq pool-active true)
-      { height: burn-block-height, pool-active: true }
+      { height: block-height, pool-active: true }
       { height: deactivated-block, pool-active: false }
     )
   )

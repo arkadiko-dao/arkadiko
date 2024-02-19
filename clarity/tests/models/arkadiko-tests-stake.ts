@@ -73,7 +73,7 @@ class StakeRegistry {
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake-pending-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(Utils.qualifiedName(poolAddress)),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-3')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
       ], user.address)
     ]);
@@ -110,19 +110,19 @@ class StakePoolDikoV1 {
   }
 
   getDikoStdikoRatio() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "diko-stdiko-ratio", [], this.deployer.address)
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "diko-stdiko-ratio", [], this.deployer.address)
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "get-total-staked", [], this.deployer.address);
   }
 
   getLastRewardBlock() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "get-last-reward-add-block", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "get-last-reward-add-block", [], this.deployer.address);
   }
 
   getDikoForStDiko(amount: number, stDikoSupply: number) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "diko-for-stdiko", [
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "diko-for-stdiko", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       types.uint(amount * 1000000),
       types.uint(stDikoSupply * 1000000),
@@ -130,14 +130,14 @@ class StakePoolDikoV1 {
   }
 
   walletCanRedeem(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "wallet-can-redeem", [
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "wallet-can-redeem", [
       types.principal(user.address)
     ], user.address);
   }
 
   getStakeOf(user: Account, stDikoSupply: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "get-stake-of", [
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "get-stake-of", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(user.address),
         types.uint(stDikoSupply * 1000000)
@@ -148,7 +148,7 @@ class StakePoolDikoV1 {
 
   addRewardsToPool() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "add-rewards-to-pool", [
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "add-rewards-to-pool", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1'))
       ], this.deployer.address)
     ]);
@@ -157,7 +157,7 @@ class StakePoolDikoV1 {
 
   startCooldown(user: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "start-cooldown", [], user.address)
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "start-cooldown", [], user.address)
     ]);
     return block.receipts[0].result;
   }
@@ -179,23 +179,23 @@ class StakePoolDiko {
   }
 
   getDikoStdikoRatio() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "diko-stdiko-ratio", [], this.deployer.address)
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "diko-stdiko-ratio", [], this.deployer.address)
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "get-total-staked", [], this.deployer.address);
   }
 
   migrateDiko() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "migrate-diko", [], this.deployer.address)
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "migrate-diko", [], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
 
   setLastRewardBlock(lastRewardBlock: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "set-last-reward-add-block", [
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "set-last-reward-add-block", [
         types.uint(lastRewardBlock),
       ], this.deployer.address)
     ]);
@@ -203,7 +203,7 @@ class StakePoolDiko {
   }
 
   getDikoForStDiko(amount: number, stDikoSupply: number) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "diko-for-stdiko", [
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "diko-for-stdiko", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       types.uint(amount * 1000000),
       types.uint(stDikoSupply * 1000000),
@@ -211,14 +211,14 @@ class StakePoolDiko {
   }
 
   walletCanRedeem(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-3", "wallet-can-redeem", [
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "wallet-can-redeem", [
       types.principal(user.address)
     ], user.address);
   }
 
   getStakeOf(user: Account, stDikoSupply: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "get-stake-of", [
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "get-stake-of", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(user.address),
         types.uint(stDikoSupply * 1000000)
@@ -229,7 +229,7 @@ class StakePoolDiko {
 
   addRewardsToPool() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "add-rewards-to-pool", [
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "add-rewards-to-pool", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1'))
       ], this.deployer.address)
     ]);
@@ -238,7 +238,7 @@ class StakePoolDiko {
 
   startCooldown(user: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v1-3", "start-cooldown", [], user.address)
+      Tx.contractCall("arkadiko-stake-pool-diko-v1-4", "start-cooldown", [], user.address)
     ]);
     return block.receipts[0].result;
   }
@@ -260,30 +260,30 @@ class StakePoolDikoUsda {
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], this.deployer.address);
   }
 
   getStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-stake-amount-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStake() {
-    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-cumm-reward-per-stake", [], this.deployer.address);
+    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], this.deployer.address);
   }
 
   calculateCummulativeRewardPerStake() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "calculate-cumm-reward-per-stake", [
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "calculate-cumm-reward-per-stake", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
     ], this.deployer.address);
   }
 
   addRewardsToPool() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-2", "add-rewards-to-pool", [
+      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "add-rewards-to-pool", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1'))
       ], this.deployer.address)
     ]);
@@ -292,7 +292,7 @@ class StakePoolDikoUsda {
 
   emergencyWithdraw(user: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-2", "emergency-withdraw", [
+      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "emergency-withdraw", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       ], user.address)
     ]);
@@ -301,7 +301,7 @@ class StakePoolDikoUsda {
 
   increaseCumulativeRewardPerStake() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-2", "increase-cumm-reward-per-stake", [
+      Tx.contractCall("arkadiko-stake-pool-diko-usda-v1-1", "increase-cumm-reward-per-stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       ], this.deployer.address)
     ]);
@@ -325,34 +325,34 @@ class StakePoolStxUsda {
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-total-staked", [], this.deployer.address);
   }
 
   getStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-stake-amount-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStake() {
-    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-cumm-reward-per-stake", [], this.deployer.address);
+    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-cumm-reward-per-stake", [], this.deployer.address);
   }
 
   getLastRewardIncreaseBlock() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-last-reward-increase-block", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-last-reward-increase-block", [], this.deployer.address);
   }
 
   calculateCummulativeRewardPerStake() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "calculate-cumm-reward-per-stake", [
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "calculate-cumm-reward-per-stake", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
     ], this.deployer.address);
   }
 
   addRewardsToPool() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-2", "add-rewards-to-pool", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-1", "add-rewards-to-pool", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1'))
       ], this.deployer.address)
     ]);
@@ -361,7 +361,7 @@ class StakePoolStxUsda {
 
   emergencyWithdraw(user: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-2", "emergency-withdraw", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-1", "emergency-withdraw", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       ], user.address)
     ]);
@@ -370,7 +370,7 @@ class StakePoolStxUsda {
 
   increaseCumulativeRewardPerStake() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-2", "increase-cumm-reward-per-stake", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-1", "increase-cumm-reward-per-stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       ], this.deployer.address)
     ]);
@@ -394,30 +394,30 @@ class StakePoolStxDiko {
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-total-staked", [], this.deployer.address);
   }
 
   getStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-stake-amount-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-stake-amount-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStake() {
-    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-cumm-reward-per-stake", [], this.deployer.address);
+    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-cumm-reward-per-stake", [], this.deployer.address);
   }
 
   calculateCummulativeRewardPerStake() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "calculate-cumm-reward-per-stake", [
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "calculate-cumm-reward-per-stake", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
     ], this.deployer.address);
   }
 
   addRewardsToPool() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-2", "add-rewards-to-pool", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-1", "add-rewards-to-pool", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1'))
       ], this.deployer.address)
     ]);
@@ -426,7 +426,7 @@ class StakePoolStxDiko {
 
   emergencyWithdraw(user: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-2", "emergency-withdraw", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-1", "emergency-withdraw", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       ], user.address)
     ]);
@@ -435,7 +435,7 @@ class StakePoolStxDiko {
 
   increaseCumulativeRewardPerStake() {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-2", "increase-cumm-reward-per-stake", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-1", "increase-cumm-reward-per-stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       ], this.deployer.address)
     ]);

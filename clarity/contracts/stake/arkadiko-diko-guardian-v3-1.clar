@@ -13,10 +13,10 @@
 
 ;; First version of diko-guardian was deployed on Bitcoin block 705573 (Stacks block 34239)
 ;; https://explorer.hiro.so/txid/0xe8309941311ab8a40b9e1d6ad50a6f59f52e5b4ea4f2441d8ddeecceffbf7406?chain=mainnet
-(define-data-var contract-start-block uint (if is-in-mainnet u705573 burn-block-height))
+(define-data-var contract-start-block uint (if is-in-mainnet u705573 block-height))
 
 (define-data-var history-blocks uint u1440)
-(define-data-var max-per-block uint u160000000)
+(define-data-var max-per-block uint (if is-in-mainnet u160000000 u1000000000))
 
 ;; ---------------------------------------------------------
 ;; Staking
@@ -79,25 +79,34 @@
 
 (define-read-only (get-staking-rewards-per-stacks-block)
   (let (
+    ;; Cap history blocks
+    (capped-history-blocks (if (> block-height (var-get history-blocks))
+      (- block-height (var-get history-blocks))
+      block-height
+    ))
+
     ;; Burn block height X blocks ago
     (prev-burn-block-height (at-block
-      (unwrap-panic (get-block-info? id-header-hash (- block-height (var-get history-blocks)))) 
-      burn-block-height
+        (unwrap-panic (get-block-info? id-header-hash (- block-height capped-history-blocks))) 
+        burn-block-height
     ))
 
     ;; Burn block height diff
     (burn-block-diff (if (> burn-block-height prev-burn-block-height)
-      (- burn-block-height prev-burn-block-height)
-      u0
+      (+ (- burn-block-height prev-burn-block-height) u1)
+      u1
     ))
 
     ;; Stacks blocks per burn block
-    (stacks-blocks-per-burn-block (if (or (is-eq burn-block-diff u0) (>= burn-block-diff (var-get history-blocks)))
-      u1
-      (/ (* (var-get history-blocks) u1000000) burn-block-diff)
+    (stacks-blocks-per-burn-block (if (or (is-eq burn-block-height u0) (>= burn-block-diff capped-history-blocks))
+      u1000000
+      (/ (* capped-history-blocks u1000000) burn-block-diff)
     ))
+
+    ;; Rewards per stacks block
+    (rewards-per-block (/ (* (get-staking-rewards-per-block) u1000000) stacks-blocks-per-burn-block))
   )
-    (min-of (/ (get-staking-rewards-per-block) stacks-blocks-per-burn-block) (var-get max-per-block))
+    (min-of rewards-per-block (var-get max-per-block))
   )
 )
 

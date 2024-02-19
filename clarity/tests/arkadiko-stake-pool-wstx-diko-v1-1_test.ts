@@ -63,7 +63,7 @@ Clarinet.test({
     call.result.expectUint(0);
 
     // Stake funds
-    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Check LP tokens after staking
@@ -82,11 +82,11 @@ Clarinet.test({
     // Advanced 3 blocks for user plus one in calculation
     // At start there are ~626 rewards per block. 4*626=2504 (if 100% of rewards go to this pool)
     // But this pool only gets 15% of total rewards
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(375.839422);   
 
     // Unstake funds
-    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 223.606797)
+    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Check DIKO and LP token balance after unstake
@@ -129,7 +129,7 @@ Clarinet.test({
     call.result.expectOk().expectUint(0);
 
     // Pending rewards should be 0
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUint(0);
 
     // Initial stake should be 0
@@ -139,7 +139,7 @@ Clarinet.test({
     call.result.expectUint(0);
 
     // Stake
-    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // New stake amounts = 223
@@ -165,7 +165,7 @@ Clarinet.test({
     // Advanced 0 blocks for user. 
     // Pending rewards takes into account 1 block extra, 626 at start - if 100% of rewards go to this pool
     // But pool only gets 15% of total staking rewards
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(93.959799);
 
     // Advance 3 blocks
@@ -185,11 +185,11 @@ Clarinet.test({
     // Advanced 3 blocks for user plus one in calculation
     // 4 blocks * ~626 rewards = 2504
     // But we only get 15% of total rewards in this pool
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(375.839422);   
 
     // Stake - Wallet 2
-    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 200)
+    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 200)
     result.expectOk().expectUintWithDecimals(200);
 
     // Total staked
@@ -214,14 +214,14 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1.902614);
 
     // User just staked, so only advanced 1 block. 
-    call = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(44.3618);  
 
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(425.437422);   
 
     // Unstake funds
-    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 100)
+    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 100)
     result.expectOk().expectUintWithDecimals(100);
 
     // New cumm reward for wallet
@@ -259,13 +259,13 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
         types.uint(100000000)
       ], deployer.address),
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
         types.uint(100000000)
       ], wallet_1.address)
@@ -278,11 +278,11 @@ Clarinet.test({
     // Advanced 3 blocks for user plus one in calculation  
     // 626 pool rewards * 4 blocks * 15% of pool = 1252
     // But only 15% of staking rewards are for this pool
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(187.9197);
 
     // Claim
-    result = stakeRegistry.claimRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    result = stakeRegistry.claimRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     result.expectOk().expectUintWithDecimals(187.9197);
 
     // Check if user got rewards (there is still some in swap)
@@ -290,7 +290,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(890087.9197);
 
     // Just claimed rewards, so this is for 1 block only.
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(46.9799);
   }
 });
@@ -318,14 +318,14 @@ name: "stake-pool-wstx-diko - stake DIKO rewards",
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
     // Stake
-    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 100)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 100)
     result.expectOk().expectUintWithDecimals(100);
 
     // Advance 20 blocks
     chain.mineEmptyBlock(20);
 
     // Pending rewards
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(1973.157);
 
     // Stake of user in DIKO pool
@@ -337,7 +337,7 @@ name: "stake-pool-wstx-diko - stake DIKO rewards",
     call.result.expectOk().expectUint(0);   
     
     // Stake pending rewards, check stake of user
-    result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     result.expectOk().expectUintWithDecimals(2067.1168);
 
     // Total stDIKO supply
@@ -346,7 +346,7 @@ name: "stake-pool-wstx-diko - stake DIKO rewards",
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(1973.156942);
+    result.expectOk().expectUintWithDecimals(2004.476894);
 
   }
 });
@@ -367,11 +367,11 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   result.expectOk().expectBool(true);
 
   // No rewards to stake yet
-  result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+  result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
   result.expectErr().expectUint(1);
 
   // Stake
-  result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 100)
+  result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 100)
   result.expectOk().expectUintWithDecimals(100);
 
   // Advance 3 blocks
@@ -381,8 +381,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v2-1", "stake-pending-rewards", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-token')),
     ], deployer.address)
   ]);
@@ -392,23 +392,23 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v2-1", "stake-pending-rewards", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
     ], deployer.address)
   ]);
   block.receipts[0].result.expectErr().expectUint(1);
 
   // Stake pending rewards succeeds
-  result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+  result = stakeRegistry.stakePendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
   result.expectOk().expectUintWithDecimals(2161.0767);
 
   // Claim + stake in DIKO pool should fail
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v2-1", "stake-pending-rewards", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-3')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-3')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
       types.principal(Utils.qualifiedName('arkadiko-token')),
     ], deployer.address)
   ]);
@@ -427,7 +427,7 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
         types.principal(Utils.qualifiedName('usda-token')),
         types.uint(100)
       ], wallet_1.address)
@@ -436,7 +436,7 @@ Clarinet.test({
 
     // Try to stake in pool directly as user - unauthorised
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-2", "stake", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
@@ -447,7 +447,7 @@ Clarinet.test({
 
     // Try to unstake in pool directly as user - unauthorised
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-2", "unstake", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-1", "unstake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
@@ -458,7 +458,7 @@ Clarinet.test({
 
     // Try to claim rewards on pool directly - unauthorised
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-2", "claim-pending-rewards", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-diko-v1-1", "claim-pending-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(wallet_1.address)
       ], wallet_1.address)
@@ -494,7 +494,7 @@ Clarinet.test({
     call.result.expectUint(0);
 
     // Stake funds
-    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Check LP after staking
@@ -527,7 +527,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(150000);   
 
     // Stake
-    let result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 1500000)
+    let result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 1500000)
     result.expectErr().expectUint(1);
   }
 });
@@ -541,7 +541,7 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Claim, no rewards
-    let result = stakeRegistry.claimRewards(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-2");
+    let result = stakeRegistry.claimRewards(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-1");
     result.expectOk().expectUint(0);
   }
 });
@@ -564,11 +564,11 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(223.606797);   
 
     // Stake
-    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 223.606797)
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 223.606797)
     result.expectOk().expectUintWithDecimals(223.606797);
 
     // Unstake funds
-    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 25000)
+    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 25000)
     result.expectErr().expectUint(18003);
   }
 });
@@ -582,11 +582,11 @@ Clarinet.test({
     let stakeRegistry = new StakeRegistry(chain, deployer);
 
     // Stake
-    let result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 0);
+    let result = stakeRegistry.stake(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 0);
     result.expectErr().expectUint(3);
 
     // Unstake funds
-    result = stakeRegistry.unstake(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 0);
+    result = stakeRegistry.unstake(wallet_1, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 0);
     result.expectErr().expectUint(3);
   }
 });
@@ -605,13 +605,13 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-diko')),
         types.uint(223606797)
       ], deployer.address),
       Tx.contractCall("arkadiko-stake-registry-v2-1", "claim-pending-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-diko-v1-1')),
       ], deployer.address)
     ]);
     // Should have staked, but no rewards yet as not advanced
@@ -647,7 +647,7 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(223.606797);  
 
     // Stake funds
-    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 10);
+    result = stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 10);
     result.expectOk().expectUintWithDecimals(10);
 
     // Staked total
@@ -664,11 +664,11 @@ Clarinet.test({
     chain.mineEmptyBlock(3);
 
     // Advanced 3 blocks for user plus one in calculation
-    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+    call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
     call.result.expectOk().expectUintWithDecimals(375.83943);   
 
     // Unstake funds
-    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 10);
+    result = stakeRegistry.unstake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 10);
     result.expectOk().expectUintWithDecimals(10);
 
     // Check if we got LP back
@@ -704,7 +704,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     // Stake funds
-    stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 223.606797)
+    stakeRegistry.stake(deployer, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 223.606797)
 
     for (let index = 0; index < 390; index++) {
 
@@ -715,7 +715,7 @@ Clarinet.test({
       stakePoolStxDiko.increaseCumulativeRewardPerStake();
 
       // Check pending rewards
-      let call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-2");
+      let call = stakeRegistry.getPendingRewards(deployer, "arkadiko-stake-pool-wstx-diko-v1-1");
       
       // Print rewards, for docs
       // console.log(call.result.expectOk())
