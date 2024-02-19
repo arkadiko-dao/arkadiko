@@ -17,7 +17,7 @@
 
 ;; First contract was deployed at Bitcoin block height 705581 (Stacks block 34246)
 ;; https://explorer.hiro.so/txid/0xd5936bad63880563e5e2520e8090621e8a20b02ec096543bd0431ca73f4fad26?chain=mainnet
-(define-data-var contract-start-block uint u705581)
+(define-data-var contract-start-block uint (if is-in-mainnet u705581 block-height))
 
 (define-data-var foundation-wallet principal tx-sender)
 (define-data-var foundation-tokens-claimed uint u0) 
@@ -157,3 +157,5 @@
     )
   )
 )
+
+(migrate)
