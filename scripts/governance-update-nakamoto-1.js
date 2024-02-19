@@ -27,7 +27,7 @@ async function transact() {
         tx.tupleCV({
           'name': tx.stringAsciiCV("diko-guardian"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-diko-guardian-v2-1"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-diko-guardian-v3-1"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),

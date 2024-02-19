@@ -62,7 +62,7 @@
 ;; Get pool rewards per block
 (define-read-only (get-rewards-per-block-for-pool (pool principal))
   (let (
-    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v2-1 get-staking-rewards-per-block))
+    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v3-1 get-staking-rewards-per-block))
 
     (pool-percentage (get rewards-percentage (get-pool-data pool)))
     (deactivated-block (get deactivated-block (get-pool-data pool)))
