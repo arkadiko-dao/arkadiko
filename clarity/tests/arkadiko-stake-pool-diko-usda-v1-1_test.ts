@@ -1134,9 +1134,9 @@ Clarinet.test({
     // Stake funds
     result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1", "arkadiko-swap-token-diko-usda", 50)
     result.expectOk().expectUintWithDecimals(50)
-    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-2", "arkadiko-swap-token-wstx-usda", 50)
+    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1", "arkadiko-swap-token-wstx-usda", 50)
     result.expectOk().expectUintWithDecimals(50)
-    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-2", "arkadiko-swap-token-wstx-diko", 50)
+    result = stakeRegistry.stake(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1", "arkadiko-swap-token-wstx-diko", 50)
     result.expectOk().expectUintWithDecimals(50)
 
     for (let index = 0; index < 390; index++) {
@@ -1151,8 +1151,8 @@ Clarinet.test({
 
       // Check pending rewards
       let callLp1 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-diko-usda-v1-1");
-      let callLp2 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-2");
-      let callLp3 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-2");
+      let callLp2 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-usda-v1-1");
+      let callLp3 = stakeRegistry.getPendingRewards(wallet_2, "arkadiko-stake-pool-wstx-diko-v1-1");
 
       switch (index)
       {
