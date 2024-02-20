@@ -116,6 +116,7 @@ class Governance {
         types.uint(proposal)
       ], this.deployer.address)
     ]);
+    console.log(block);
     return block.receipts[0].result;
   }
 

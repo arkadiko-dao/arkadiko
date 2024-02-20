@@ -521,7 +521,7 @@ Clarinet.test({
 
     // Total stDIKO balance for user is now ~115
     let call:any = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(116.635635);   
+    call.result.expectOk().expectUintWithDecimals(115.065706);   
 
     // Total DIKO balance is 
     call = dikoToken.balanceOf(wallet_1.address);
@@ -546,7 +546,7 @@ Clarinet.test({
 
     // DIKO/stDIKO ratio = ~6
     call = stakePoolDiko.getDikoStdikoRatio();
-    call.result.expectOk().expectUintWithDecimals(6.011192);
+    call.result.expectOk().expectUintWithDecimals(6.637591);
 
     // Vote with stDIKO - 10 stDIKO = ~40 DIKO
     result = governance.voteForProposal(wallet_1, 1, 10, "stdiko-token");
@@ -562,7 +562,7 @@ Clarinet.test({
 
     // stDIKO balance has decreased by 11
     call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(105.635635);   
+    call.result.expectOk().expectUintWithDecimals(104.065706);   
 
     // DIKO balance has decreased by 11
     call = dikoToken.balanceOf(wallet_1.address);
@@ -597,7 +597,7 @@ Clarinet.test({
 
     // Should have initial amount back
     call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(116.635635);   
+    call.result.expectOk().expectUintWithDecimals(115.065706);   
 
     call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(149800);  

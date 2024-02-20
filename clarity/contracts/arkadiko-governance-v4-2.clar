@@ -158,7 +158,7 @@
       )
     )
 
-    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init-v2-1)))
+    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init-v1-1)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
     (proposal-id (+ u1 (var-get proposal-count)))
     (proposal {
@@ -332,7 +332,7 @@
 (define-public (end-proposal (proposal-id uint))
   (let (
     (proposal (get-proposal-by-id proposal-id))
-    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init-v2-1)))
+    (diko-init-balance (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-diko-init-v1-1)))
     (supply (- (unwrap-panic (contract-call? .arkadiko-token get-total-supply)) diko-init-balance))
     (sum-of-votes (+ (get no-votes proposal) (get yes-votes proposal)))
     (participation-threshold (/ (* u5 supply) u100))
