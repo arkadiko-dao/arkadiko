@@ -27,7 +27,7 @@ const getPrice = async (symbol: string) => {
   const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
   const fetchedPrice = await callReadOnlyFunction({
     contractAddress,
-    contractName: "arkadiko-oracle-v2-2",
+    contractName: "arkadiko-oracle-v2-3",
     functionName: "get-price",
     functionArgs: [stringAsciiCV(symbol || 'stx')],
     senderAddress: contractAddress,
