@@ -260,19 +260,19 @@ class StakePoolDikoUsda {
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-total-staked", [], this.deployer.address);
   }
 
   getStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-stake-amount-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-amount-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStake() {
-    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-2", "get-cumm-reward-per-stake", [], this.deployer.address);
+    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-usda-v1-1", "get-cumm-reward-per-stake", [], this.deployer.address);
   }
 
   calculateCummulativeRewardPerStake() {
@@ -325,23 +325,23 @@ class StakePoolStxUsda {
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-total-staked", [], this.deployer.address);
   }
 
   getStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-stake-amount-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-amount-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStake() {
-    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-cumm-reward-per-stake", [], this.deployer.address);
+    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-cumm-reward-per-stake", [], this.deployer.address);
   }
 
   getLastRewardIncreaseBlock() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-2", "get-last-reward-increase-block", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-usda-v1-1", "get-last-reward-increase-block", [], this.deployer.address);
   }
 
   calculateCummulativeRewardPerStake() {
@@ -394,19 +394,19 @@ class StakePoolStxDiko {
   }
 
   getTotalStaked() {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-total-staked", [], this.deployer.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-total-staked", [], this.deployer.address);
   }
 
   getStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-stake-amount-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-stake-amount-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStakeOf(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
+    return this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-stake-cumm-reward-per-stake-of", [types.principal(user.address)], user.address);
   }
 
   getCummulativeRewardPerStake() {
-    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-2", "get-cumm-reward-per-stake", [], this.deployer.address);
+    return  this.chain.callReadOnlyFn("arkadiko-stake-pool-wstx-diko-v1-1", "get-cumm-reward-per-stake", [], this.deployer.address);
   }
 
   calculateCummulativeRewardPerStake() {
