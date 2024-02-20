@@ -187,59 +187,6 @@
 )
 
 ;; ---------------------------------------------------------
-<<<<<<< HEAD
-;; Migration
-;; ---------------------------------------------------------
-
-(define-public (migrate-many (registry-trait <stake-registry-trait>) (stakers (list 30 principal)))
-  (let (
-    (registry-list (list registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait registry-trait))
-  )
-    (ok (map migrate registry-list stakers))
-  )
-)
-
-(define-public (migrate (registry-trait <stake-registry-trait>) (staker principal))
-  (let (
-    (staked-diko-usda (contract-call? .arkadiko-stake-pool-diko-usda-v1-1 get-stake-amount-of staker))
-    (staked-wstx-diko (contract-call? .arkadiko-stake-pool-wstx-diko-v1-1 get-stake-amount-of staker))
-    (staked-wstx-usda (contract-call? .arkadiko-stake-pool-wstx-usda-v1-1 get-stake-amount-of staker))
-  )
-    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
-    (asserts! (is-eq (as-contract tx-sender) (contract-of registry-trait)) ERR-WRONG-REGISTRY)
-
-    (if (> staked-diko-usda u0)
-      (begin
-        (try! (contract-call? .arkadiko-stake-pool-diko-usda-v1-1 unstake registry-trait .arkadiko-swap-token-diko-usda staker staked-diko-usda))
-        (try! (contract-call? .arkadiko-stake-pool-diko-usda-v1-2 stake registry-trait .arkadiko-swap-token-diko-usda staker staked-diko-usda))
-        true
-      )
-      true
-    )
-
-    (if (> staked-wstx-diko u0)
-      (begin
-        (try! (contract-call? .arkadiko-stake-pool-wstx-diko-v1-1 unstake registry-trait .arkadiko-swap-token-wstx-diko staker staked-wstx-diko))
-        (try! (contract-call? .arkadiko-stake-pool-wstx-diko-v1-2 stake registry-trait .arkadiko-swap-token-wstx-diko staker staked-wstx-diko))
-        true
-      )
-      true
-    )
-
-    (if (> staked-wstx-usda u0)
-      (begin
-        (try! (contract-call? .arkadiko-stake-pool-wstx-usda-v1-1 unstake registry-trait .arkadiko-swap-token-wstx-usda staker staked-wstx-usda))
-        (try! (contract-call? .arkadiko-stake-pool-wstx-usda-v1-2 stake registry-trait .arkadiko-swap-token-wstx-usda staker staked-wstx-usda))
-        true
-      )
-      true
-    )
-
-    (ok { staked-diko-usda: staked-diko-usda, staked-wstx-diko: staked-wstx-diko, staked-wstx-usda: staked-wstx-usda })
-  )
-)
-
-;; ---------------------------------------------------------
 ;; Contract initialisation
 ;; ---------------------------------------------------------
 
