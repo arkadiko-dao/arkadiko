@@ -15,12 +15,18 @@ StakeRegistry,
 StakePoolStxUsda,
 } from './models/arkadiko-tests-stake.ts';
 
+import { 
+  Governance,
+  Dao
+} from './models/arkadiko-tests-governance.ts';
+
 import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
 
 const usdaTokenAddress = 'usda-token'
 const wstxTokenAddress = 'wrapped-stx-token'
+const dikoTokenAddress = 'arkadiko-token'
 const wstxUsdaTokenAddress = 'arkadiko-swap-token-wstx-usda'
-const wstxUsdaPoolAddress = 'arkadiko-stake-pool-wstx-usda-v1-2'
+const wstxUsdaPoolAddress = 'arkadiko-stake-pool-wstx-usda-v1-1'
 
 Clarinet.test({
   name: "stake-registry: pause rewards and resume with gap",
@@ -52,7 +58,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(454.139319);  
 
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(151);   
+    call.result.expectUint(152);   
 
     // Shut down rewards
     // Need to call "increaseCumulativeRewardPerStake" first so rewards are updated
@@ -81,7 +87,7 @@ Clarinet.test({
 
     // Last reward block
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(151);   
+    call.result.expectUint(152);   
 
     // RESTART STEP 2 - Increase cumm rewards per stake to increase last reward block
     result = poolStxUsda.increaseCumulativeRewardPerStake()
@@ -101,14 +107,14 @@ Clarinet.test({
 
     // Pending rewards still the same
     call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(46353.5304);  
+    call.result.expectOk().expectUintWithDecimals(46666.73);  
 
     // Advance 144 block
     chain.mineEmptyBlock(144);
 
     // Rewards distributed again
     call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);
-    call.result.expectOk().expectUintWithDecimals(91454.2629); 
+    call.result.expectOk().expectUintWithDecimals(91767.4624); 
   }
 });
 
@@ -142,7 +148,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(454.139319);  
 
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(151);   
+    call.result.expectUint(152);   
 
     // Shut down rewards
     // Need to call "increaseCumulativeRewardPerStake" first so rewards are updated
@@ -166,7 +172,7 @@ Clarinet.test({
 
     // Last reward block
     call = poolStxUsda.getLastRewardIncreaseBlock();
-    call.result.expectUint(151);   
+    call.result.expectUint(152);   
 
     // Pending rewards still the same
     call = stakeRegistry.getPendingRewards(deployer, wstxUsdaPoolAddress);

@@ -128,7 +128,7 @@
 
   ;; DIKO pool - New
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-3 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-4 }
     {
       name: "DIKO",
       deactivated-block: u2000,

@@ -62,8 +62,7 @@
 ;; Get pool rewards per block
 (define-read-only (get-rewards-per-block-for-pool (pool principal))
   (let (
-    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v2-1 get-staking-rewards-per-block))
-
+    (total-staking-rewards (contract-call? .arkadiko-diko-guardian-v3-1 get-staking-rewards-per-stacks-block))
     (pool-percentage (get rewards-percentage (get-pool-data pool)))
     (deactivated-block (get deactivated-block (get-pool-data pool)))
     (deactivated-rewards-per-block (get deactivated-rewards-per-block (get-pool-data pool)))
@@ -188,6 +187,7 @@
 )
 
 ;; ---------------------------------------------------------
+<<<<<<< HEAD
 ;; Migration
 ;; ---------------------------------------------------------
 
@@ -247,7 +247,7 @@
 (begin
   ;; DIKO pool
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-3 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-v1-4 }
     {
       name: "DIKO",
       deactivated-block: u0,
@@ -257,7 +257,7 @@
   )
   ;; DIKO-USDA LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-2 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-diko-usda-v1-1 }
     {
       name: "DIKO-USDA LP",
       deactivated-block: u0,
@@ -267,7 +267,7 @@
   )
   ;; wSTX-USDA LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-2 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-usda-v1-1 }
     {
       name: "wSTX-USDA LP",
       deactivated-block: u0,
@@ -277,7 +277,7 @@
   )
   ;; wSTX-DIKO LP
   (map-set pools-data-map
-    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-2 }
+    { pool: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.arkadiko-stake-pool-wstx-diko-v1-1 }
     {
       name: "wSTX-DIKO LP",
       deactivated-block: u0,

@@ -256,13 +256,13 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.uint(100000000)
       ], deployer.address),
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.uint(100000000)
       ], wallet_1.address)
@@ -343,7 +343,7 @@ name: "stake-pool-wstx-usda - stake DIKO rewards",
 
     // Stake of user in DIKO pool
     result = stakePoolDiko.getStakeOf(deployer, 4134.2337);
-    result.expectOk().expectUintWithDecimals(14615.978178);
+    result.expectOk().expectUintWithDecimals(14720.378023);
 
   }
 });
@@ -378,8 +378,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v2-1", "stake-pending-rewards", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-token')),
     ], deployer.address)
   ]);
@@ -389,8 +389,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v2-1", "stake-pending-rewards", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
       types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
     ], deployer.address)
   ]);
@@ -404,8 +404,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-registry-v2-1", "stake-pending-rewards", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-3')),
-      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-3')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+      types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
       types.principal(Utils.qualifiedName('arkadiko-token')),
     ], deployer.address)
   ]);
@@ -423,7 +423,7 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
         types.principal(Utils.qualifiedName('usda-token')),
         types.uint(100)
       ], wallet_1.address)
@@ -432,7 +432,7 @@ Clarinet.test({
 
     // Try to stake in pool directly as user - unauthorised
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-2", "stake", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
@@ -443,7 +443,7 @@ Clarinet.test({
 
     // Try to unstake in pool directly as user - unauthorised
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-2", "unstake", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-1", "unstake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
@@ -454,7 +454,7 @@ Clarinet.test({
 
     // Try to claim rewards on pool directly - unauthorised
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-2", "claim-pending-rewards", [
+      Tx.contractCall("arkadiko-stake-pool-wstx-usda-v1-1", "claim-pending-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
         types.principal(wallet_1.address)
       ], wallet_1.address)
@@ -603,13 +603,13 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-stake-registry-v2-1", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-swap-token-wstx-usda')),
         types.uint(223606797)
       ], deployer.address),
       Tx.contractCall("arkadiko-stake-registry-v2-1", "claim-pending-rewards", [
         types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-wstx-usda-v1-1')),
       ], deployer.address)
     ]);
     // Should have staked, but no rewards yet as not advanced
