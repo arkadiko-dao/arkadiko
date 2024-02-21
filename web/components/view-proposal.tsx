@@ -60,7 +60,7 @@ export const ViewProposal = ({ match }) => {
         contractName: CONTRACT_NAME,
         functionName: 'get-proposal-by-id',
         functionArgs: [uintCV(match.params.id)],
-        senderAddress: stxAddress || '',
+        senderAddress: stxAddress || contractAddress,
         network: network,
       });
       const json = cvToJSON(proposal);
@@ -98,7 +98,7 @@ export const ViewProposal = ({ match }) => {
         againstVotesPercentage,
       });
 
-      if (data['is-open'].value == false) {
+      if (data['is-open'].value == false && stxAddress) {
         // Get DIKO votes for user
         const votedDiko = await callReadOnlyFunction({
           contractAddress,
@@ -130,6 +130,9 @@ export const ViewProposal = ({ match }) => {
         });
         const votedStdikoResult = cvToJSON(votedStdiko).value['amount'].value;
         setStdikoVoted(votedStdikoResult / 1000000);
+      } else {
+        setDikoVoted(0);
+        setStdikoVoted(0);
       }
 
       setIsLoading(false);
@@ -771,7 +774,7 @@ export const ViewProposal = ({ match }) => {
               </div>
             </div>
             <div className="mt-6 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-max sm:items-center sm:justify-center">
-              {proposal.isOpen ? (
+              {stxAddress && proposal.isOpen ? (
                 <>
                   <button
                     type="button"
