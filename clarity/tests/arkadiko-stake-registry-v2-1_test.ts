@@ -26,8 +26,6 @@ const usdaTokenAddress = 'usda-token'
 const wstxTokenAddress = 'wrapped-stx-token'
 const dikoTokenAddress = 'arkadiko-token'
 const wstxUsdaTokenAddress = 'arkadiko-swap-token-wstx-usda'
-const wstxDikoTokenAddress = 'arkadiko-swap-token-wstx-diko'
-const dikoUsdaTokenAddress = 'arkadiko-swap-token-diko-usda'
 const wstxUsdaPoolAddress = 'arkadiko-stake-pool-wstx-usda-v1-1'
 
 Clarinet.test({

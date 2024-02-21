@@ -190,7 +190,7 @@
 ;; Contract initialisation
 ;; ---------------------------------------------------------
 
-;; Initialize the contract
+;; TODO - UPDATE FOR MAINNET - SET ALL REWARDS-PERCENTAGE TO 0
 (begin
   ;; DIKO pool
   (map-set pools-data-map

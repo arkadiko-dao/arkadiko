@@ -5,6 +5,8 @@ import { StyledIcon } from './ui/styled-icon';
 
 export const Proposal: React.FC<ProposalProps> = ({
   id,
+  proposalId,
+  governanceVersion,
   title,
   proposer,
   isOpen,
@@ -13,7 +15,7 @@ export const Proposal: React.FC<ProposalProps> = ({
   return (
     <li>
       <RouterLink
-        to={`governance/${id}`}
+        to={`governance/${governanceVersion}/${proposalId}`}
         exact
         className="block hover:bg-gray-50 dark:hover:bg-zinc-700"
       >

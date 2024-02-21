@@ -104,7 +104,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Stake funds (100 DIKO)
   let result = stakeRegistry.stake(
-    wallet_1, 
+    wallet_1,
     'arkadiko-stake-pool-diko-v1-4',
     'arkadiko-token',
     100
@@ -145,7 +145,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // New ratio =  601 / 100
   call = stakePoolDiko.getDikoStdikoRatio();
-  call.result.expectOk().expectUintWithDecimals(6.637591);   
+  call.result.expectOk().expectUintWithDecimals(6.637591);
 
   // Unstake funds fails because cooldown not started
   result = stakeRegistry.unstake(
@@ -203,7 +203,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Stake
   let result = stakeRegistry.stake(
-    wallet_1, 
+    wallet_1,
     'arkadiko-stake-pool-diko-v1-4',
     'arkadiko-token',
     100
@@ -246,7 +246,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // 100 / 148 = 68%
   // 68% of (613+62) = ~459
   call = stakePoolDiko.getDikoForStDiko(100, 142.030987);
-  call.result.expectOk().expectUintWithDecimals(519.942413);   
+  call.result.expectOk().expectUintWithDecimals(519.942413);
 
   // Start cooldown period
   result = stakePoolDiko.startCooldown(wallet_1);
@@ -323,7 +323,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
 
   // Stake
   let result = stakeRegistry.stake(
-    wallet_1, 
+    wallet_1,
     'arkadiko-stake-pool-diko-v1-4',
     'arkadiko-token',
     100
@@ -386,7 +386,6 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectUintWithDecimals(100);
     block.receipts[1].result.expectOk().expectUintWithDecimals(48.402769);
-
   }
 });
 
@@ -403,7 +402,7 @@ Clarinet.test({
 
     // Stake funds
     let result = stakeRegistry.stake(
-      deployer, 
+      deployer,
       'arkadiko-stake-pool-diko-v1-4',
       'arkadiko-token',
       100
@@ -518,7 +517,6 @@ Clarinet.test({
       ], deployer.address)
     ]);
     block.receipts[0].result.expectOk().expectUintWithDecimals(475.839436)
-
   }
 });
 
@@ -535,7 +533,7 @@ Clarinet.test({
 
     // Stake funds
     let result = stakeRegistry.stake(
-      deployer, 
+      deployer,
       'arkadiko-stake-pool-diko-v1-4',
       'arkadiko-token',
       100
@@ -634,7 +632,7 @@ Clarinet.test({
     // Stake DIKO as wallet_1
     // Only 1, so total pool balance is mostly rewards
     stakeRegistry.stake(
-      wallet_1, 
+      wallet_1,
       'arkadiko-stake-pool-diko-v1-4',
       'arkadiko-token',
       (1 / 1000000)
@@ -693,7 +691,7 @@ Clarinet.test({
     
     // Stake funds
     let result = stakeRegistry.stake(
-      deployer, 
+      deployer,
       'arkadiko-stake-pool-diko-v1-4',
       'arkadiko-token',
       100000
@@ -745,7 +743,7 @@ Clarinet.test({
     
     // Stake funds
     let result = stakeRegistry.stake(
-      deployer, 
+      deployer,
       'arkadiko-stake-pool-diko-v1-4',
       'arkadiko-token',
       100000
@@ -754,7 +752,7 @@ Clarinet.test({
   
     // Stake funds (1 DIKO)
     result = stakeRegistry.stake(
-      wallet_1, 
+      wallet_1,
       'arkadiko-stake-pool-diko-v1-4',
       'arkadiko-token',
       1
@@ -774,8 +772,7 @@ Clarinet.test({
 
     // BUG: Should get at least 1
     result = stakePoolDiko.getStakeOf(wallet_1, 100000.996256);
-    result.expectOk().expectUintWithDecimals(1.001248);   
-    
+    result.expectOk().expectUintWithDecimals(1.001248);
   }
 });
 
@@ -892,7 +889,7 @@ Clarinet.test({
 
 //     // Can not stake in V2
 //     result = stakeRegistry.stake(
-//       wallet_1, 
+//       wallet_1,
 //       'arkadiko-stake-pool-diko-v1-4',
 //       'arkadiko-token',
 //       100
@@ -994,7 +991,7 @@ Clarinet.test({
 
 //     // Stake funds (100 DIKO)
 //     result = stakeRegistry.stake(
-//       wallet_1, 
+//       wallet_1,
 //       'arkadiko-stake-pool-diko-v1-4',
 //       'arkadiko-token',
 //       100

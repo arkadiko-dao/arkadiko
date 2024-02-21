@@ -217,7 +217,7 @@ export const ManageVault = ({ match }) => {
           functionArgs: [
             uintCV(vault.id),
             contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
-            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-2'),
+            contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-3'),
             falseCV(),
           ],
           senderAddress: senderAddress || contractAddress,
