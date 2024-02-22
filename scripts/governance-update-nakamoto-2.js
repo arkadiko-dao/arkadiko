@@ -41,6 +41,8 @@ async function transact() {
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
+    fee: new BN(300000, 10),
+    nonce: new BN(3685, 10),
     postConditionMode: 1,
     network
   };

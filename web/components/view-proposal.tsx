@@ -53,7 +53,7 @@ export const ViewProposal = ({ match }) => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       let data = await response.json();
-      setStacksTipHeight(data['stacks_tip_height']);
+      setStacksTipHeight(data['burn_block_height']);
 
       const proposal = await callReadOnlyFunction({
         contractAddress,
