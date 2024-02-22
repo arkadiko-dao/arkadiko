@@ -195,7 +195,7 @@ export const Stake = () => {
         contractName: poolContract,
         functionName: 'get-pending-rewards',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
           standardPrincipalCV(stxAddress || contractAddress),
         ],
         senderAddress: stxAddress || contractAddress,
@@ -389,10 +389,10 @@ export const Stake = () => {
 
       const userStakedDikoCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-2',
+        contractName: 'arkadiko-stake-pool-diko-v1-4',
         functionName: 'get-stake-of',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
           standardPrincipalCV(stxAddress || contractAddress),
           uintCV(stDikoSupply),
         ],
@@ -408,10 +408,10 @@ export const Stake = () => {
     const getDikoToStDiko = async () => {
       const stDikoToDikoCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-2',
+        contractName: 'arkadiko-stake-pool-diko-v1-4',
         functionName: 'diko-for-stdiko',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
           uintCV(1000000 * 10),
           uintCV(stDikoSupply),
         ],
@@ -615,7 +615,7 @@ export const Stake = () => {
 
       const dikoCooldownInfo = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-2',
+        contractName: 'arkadiko-stake-pool-diko-v1-4',
         functionName: 'get-cooldown-info-of',
         functionArgs: [standardPrincipalCV(stxAddress || contractAddress)],
         senderAddress: stxAddress || contractAddress,
@@ -678,7 +678,7 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-pool-diko-v1-2',
+      contractName: 'arkadiko-stake-pool-diko-v1-4',
       functionName: 'start-cooldown',
       functionArgs: [],
       onFinish: data => {
@@ -697,10 +697,10 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
       ],
       onFinish: data => {
@@ -719,10 +719,10 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
       ],
       onFinish: data => {
@@ -741,10 +741,10 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
       ],
       onFinish: data => {
@@ -763,12 +763,12 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'stake-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -788,10 +788,10 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
       ],
       onFinish: data => {
@@ -810,12 +810,12 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'stake-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -835,10 +835,10 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
       ],
       onFinish: data => {
@@ -860,7 +860,7 @@ export const Stake = () => {
       contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1')
       ],
       onFinish: data => {
         setState(prevState => ({
@@ -881,7 +881,7 @@ export const Stake = () => {
       contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1')
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1')
       ],
       onFinish: data => {
         setState(prevState => ({
@@ -899,12 +899,12 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'stake-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -927,8 +927,8 @@ export const Stake = () => {
       contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
       functionName: 'stake-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -951,8 +951,8 @@ export const Stake = () => {
       contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
       functionName: 'stake-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -972,12 +972,12 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'stake-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -997,12 +997,12 @@ export const Stake = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'stake-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,

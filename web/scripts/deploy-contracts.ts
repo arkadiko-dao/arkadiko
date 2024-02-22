@@ -66,7 +66,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stacker-3-v1-1' },
   { name: 'arkadiko-stacker-4-v1-1' },
   { name: 'arkadiko-stacker-v1-1' },
-  { name: 'arkadiko-stake-registry-v1-1' },
+  { name: 'arkadiko-stake-registry-v2-1' },
   { name: 'arkadiko-stake-pool-diko-v1-1' },
   { name: 'arkadiko-stake-pool-diko-v1-2' },
   { name: 'arkadiko-swap-token-diko-usda' },

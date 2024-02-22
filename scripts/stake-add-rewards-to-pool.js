@@ -11,7 +11,7 @@ async function transact() {
     contractName: 'arkadiko-stake-pool-diko-v1-1',
     functionName: 'add-rewards-to-pool',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-registry-v1-1')
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-registry-v2-1')
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     fee: new BN(300000, 10),
