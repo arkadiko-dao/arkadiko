@@ -12,7 +12,7 @@ async function transact() {
     contractName: 'arkadiko-governance-v4-2',
     functionName: 'propose',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
       tx.uintCV(134865),
       tx.uintCV(720),
       tx.stringUtf8CV('AIP 16 - New DIKO Emissions'),
