@@ -23,6 +23,7 @@ import { Alert } from './ui/alert';
 import axios from 'axios';
 import { StakeDikoSection } from './stake-diko-section';
 import { StakeUsdaSection } from './stake-usda-section';
+import { getRPCClient } from '@common/utils';
 
 export const Stake = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
@@ -626,6 +627,11 @@ export const Stake = () => {
       const redeemStartBlock = cooldownInfo['redeem-period-start-block']['value'];
       const redeemEndBlock = cooldownInfo['redeem-period-end-block']['value'];
 
+      const client = getRPCClient();
+      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response.json();
+      const bitcoinCurrentBlock = data['burn_block_height'];
+
       // Helper to create countdown text
       function blockDiffToTimeLeft(blockDiff: number) {
         const minDiff = blockDiff * 10;
@@ -645,16 +651,16 @@ export const Stake = () => {
         return text;
       }
 
-      if (redeemEndBlock == 0 || redeemEndBlock < currentBlock) {
+      if (redeemEndBlock == 0 || redeemEndBlock < bitcoinCurrentBlock) {
         setDikoCooldown('Not started');
-      } else if (redeemStartBlock < currentBlock) {
-        const blockDiff = redeemEndBlock - currentBlock;
+      } else if (redeemStartBlock < bitcoinCurrentBlock) {
+        const blockDiff = redeemEndBlock - bitcoinCurrentBlock;
         let text = blockDiffToTimeLeft(blockDiff);
         text += ' left to unstake';
         setDikoCooldown(text);
         setCanUnstake(true);
       } else {
-        const blockDiff = redeemStartBlock - currentBlock;
+        const blockDiff = redeemStartBlock - bitcoinCurrentBlock;
         let text = 'about 10 minutes';
         if (blockDiff > 0) {
           text = blockDiffToTimeLeft(blockDiff);
