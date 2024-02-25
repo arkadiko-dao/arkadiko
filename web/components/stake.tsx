@@ -311,7 +311,7 @@ export const Stake = () => {
     const getStakingData = async () => {
       const userStakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-ui-stake-v1-3',
+        contractName: 'arkadiko-ui-stake-v1-4',
         functionName: 'get-stake-amounts',
         functionArgs: [standardPrincipalCV(stxAddress || contractAddress)],
         senderAddress: stxAddress || contractAddress,
@@ -420,6 +420,7 @@ export const Stake = () => {
       });
       const stDikoToDiko = cvToJSON(stDikoToDikoCall).value.value / 10;
       setStDikoToDiko(Number(stDikoToDiko) / 1000000);
+      // setStDikoToDiko(2.184134);
       setLoadingDikoToStDiko(false);
 
       return stDikoToDiko;
@@ -590,10 +591,10 @@ export const Stake = () => {
         fetchLpPendingRewards('arkadiko-stake-pool-diko-usda-v1-1'),
         fetchLpPendingRewards('arkadiko-stake-pool-wstx-usda-v1-1'),
         fetchLpPendingRewards('arkadiko-stake-pool-wstx-diko-v1-1'),
-        fetchLpPendingRewards('arkadiko-stake-pool-wstx-xbtc-v1-1'),
-        fetchLpPendingRewards('arkadiko-stake-pool-xbtc-usda-v1-1'),
-        fetchLpPendingRewards('arkadiko-stake-pool-xusd-usda-v1-4'),
-        fetchLpPendingRewards('arkadiko-stake-pool-xusd-usda-v1-5'),
+        0,
+        0,
+        0,
+        0
       ]);
 
       setLpDikoUsdaPendingRewards(dikoUsdaLpPendingRewards);
