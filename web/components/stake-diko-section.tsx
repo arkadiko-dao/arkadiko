@@ -184,14 +184,14 @@ export const StakeDikoSection = ({
                                       ? 'bg-indigo-500 text-white'
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
-                                  disabled={true || !(dikoBalance > 0)}
+                                  disabled={!(dikoBalance > 0)}
                                   onClick={() => setShowStakeModal(true)}
                                 >
-                                  {true || !(dikoBalance > 0) ? (
+                                  {!(dikoBalance > 0) ? (
                                     <Tooltip
                                       placement="left"
                                       className="mr-2"
-                                      label={`Stake is temporarily unavailable due to a pool migration`}
+                                      label={`You don't have any available DIKO to stake in your wallet.`}
                                     >
                                       <div className="flex items-center w-full">
                                         <StyledIcon
