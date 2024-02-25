@@ -13,6 +13,7 @@
     (asserts! (not (var-get ran-fix)) (err ERR-ALREADY-RAN))
 
     (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token AMOUNT .arkadiko-stake-pool-diko-v1-4)))
+    (var-set ran-fix true)
     (ok true)
   )
 )
