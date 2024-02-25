@@ -53,7 +53,7 @@ export const ViewProposal = ({ match }) => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       let data = await response.json();
-      setStacksTipHeight(data['stacks_tip_height']);
+      setStacksTipHeight(data['burn_block_height']);
 
       const proposal = await callReadOnlyFunction({
         contractAddress,
@@ -164,7 +164,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id),
@@ -201,7 +201,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id),
@@ -291,7 +291,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id),
@@ -328,7 +328,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id),

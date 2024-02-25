@@ -3,20 +3,22 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
+const BN = require('bn.js');
 
-async function transact() {
+async function initiateStacking() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-stake-registry-v2-1',
-    functionName: 'set-pool-data',
+    contractName: "arkadiko-governance-v4-2",
+    functionName: "add-contract-address",
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-xusd-usda-v1-4'),
-      tx.stringAsciiCV('xUSD-USDA LP'),
-      tx.uintCV(0),
-      tx.uintCV(0),
-      tx.uintCV(0)
+      tx.stringAsciiCV('diko-repair-ratio'),
+      tx.standardPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR'),
+      tx.contractPrincipalCV('SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR', 'arkadiko-diko-repair-ratio'),
+      tx.falseCV(),
+      tx.trueCV(),
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
+    fee: new BN(100000, 10),
     postConditionMode: 1,
     network
   };
@@ -24,6 +26,6 @@ async function transact() {
   const transaction = await tx.makeContractCall(txOptions);
   const result = tx.broadcastTransaction(transaction, network);
   await utils.processing(result, transaction.txid(), 0);
-};
+}
 
-transact();
+initiateStacking();

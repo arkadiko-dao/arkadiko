@@ -9,7 +9,7 @@ const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
   contractName: 'arkadiko-stake-pool-wstx-usda-v1-1',
   functionName: 'increase-cumm-reward-per-stake',
-  functionArgs: [tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-registry-v1-1')],
+  functionArgs: [tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-registry-v2-1')],
   nonce: new BN(280, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
