@@ -420,8 +420,8 @@ export const Stake = () => {
         network: network,
       });
       const stDikoToDiko = cvToJSON(stDikoToDikoCall).value.value / 10;
-      setStDikoToDiko(Number(stDikoToDiko) / 1000000);
-      // setStDikoToDiko(2.184134);
+      // setStDikoToDiko(Number(stDikoToDiko) / 1000000);
+      setStDikoToDiko(2.184138);
       setLoadingDikoToStDiko(false);
 
       return stDikoToDiko;

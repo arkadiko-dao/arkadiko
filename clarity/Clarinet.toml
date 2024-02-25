@@ -348,6 +348,11 @@ path = "contracts/stake/arkadiko-ui-stake-v1-4.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.arkadiko-diko-repair-ratio]
+path = "contracts/stake/arkadiko-diko-repair-ratio.clar"
+clarity_version = 2
+epoch = 2.4
+
 
 # ----------------------------------------------------
 # Swap
