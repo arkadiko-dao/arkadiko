@@ -9,25 +9,27 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v4-1',
-    functionName: 'propose-dao',
+    contractName: 'arkadiko-governance-v4-2',
+    functionName: 'propose',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-2'),
-      tx.uintCV(137815),
-      tx.stringUtf8CV('AIP - Fix leftover collateral on vault liquidation'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/567'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
+      tx.uintCV(134865),
+      tx.uintCV(720),
+      tx.stringUtf8CV('AIP 16 - New DIKO Emissions'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/565'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("stacker-payer"),
+          'name': tx.stringAsciiCV("arkadiko-governance-aip-16"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stacker-payer-v3-8"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-16-arkadiko-governance-emissions"),
           'can-mint': tx.falseCV(),
-          'can-burn': tx.trueCV()
+          'can-burn': tx.falseCV()
         }),
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(2000001, 10),
+    fee: new BN(2000000, 10),
+    nonce: new BN(3521, 10),
     postConditionMode: 1,
     network
   };

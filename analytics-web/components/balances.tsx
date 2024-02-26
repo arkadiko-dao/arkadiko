@@ -49,7 +49,7 @@ export const Balances = () => {
         'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
     },
     {
-      address: `${contractAddress}.arkadiko-governance-v4-1`,
+      address: `${contractAddress}.arkadiko-governance-v4-2`,
       name: 'Governance v4',
       description:
         'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',

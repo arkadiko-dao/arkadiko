@@ -52,7 +52,7 @@ Clarinet.test({
 
     // DIKO rewards per block = ~51
     call = vaultsPoolLiquidation.getDikoRewardsToAdd();
-    call.result.expectUintWithDecimals(51.364723);
+    call.result.expectUintWithDecimals(102.729446);
 
     //
     // Stake
@@ -338,7 +338,7 @@ Clarinet.test({
 
     call = vaultsPoolLiquidation.getDikoRewardsInfo();
     call.result.expectTuple()["percentage"].expectUint(0.041 * 10000);
-    call.result.expectTuple()["last-block"].expectUint(5);
+    call.result.expectTuple()["last-block"].expectUint(6);
 
     call = vaultsPoolLiquidation.getFragmentsInfo();
     call.result.expectTuple()["per-token"].expectUintWithDecimals(100000000);
@@ -359,7 +359,7 @@ Clarinet.test({
 
     call = vaultsPoolLiquidation.getDikoRewardsInfo();
     call.result.expectTuple()["percentage"].expectUint(0.041 * 10000);
-    call.result.expectTuple()["last-block"].expectUint(8);
+    call.result.expectTuple()["last-block"].expectUint(9);
 
     call = vaultsPoolLiquidation.getFragmentsInfo();
     call.result.expectTuple()["per-token"].expectUintWithDecimals(100000000);

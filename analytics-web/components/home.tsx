@@ -10,6 +10,7 @@ import { MarketCap } from './market-cap';
 import { TokenPriceSelect } from './token-price-select';
 import { callReadOnlyFunction, stringAsciiCV, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
+import { DefiLlama } from './defillama';
 
 async function asyncForEach(array: any, callback: any) {
   for (let index = 0; index < array.length; index++) {
@@ -27,8 +28,8 @@ const getPrice = async (symbol: string) => {
   const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
   const fetchedPrice = await callReadOnlyFunction({
     contractAddress,
-    contractName: "arkadiko-oracle-v2-2",
-    functionName: "get-price",
+    contractName: 'arkadiko-oracle-v2-3',
+    functionName: 'get-price',
     functionArgs: [stringAsciiCV(symbol || 'stx')],
     senderAddress: contractAddress,
     network: network,
@@ -73,7 +74,7 @@ const decimals = (token: string) => {
   } else {
     return 6;
   }
-}
+};
 
 export const Home: React.FC = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
@@ -92,17 +93,17 @@ export const Home: React.FC = () => {
   const [tokenGraph, setTokenGraph] = useState(tokenPrices[1]);
 
   useEffect(() => {
-    const fetchPoolTvl = async (pool) => {
+    const fetchPoolTvl = async pool => {
       const nameX = tokenToName(pool['token_x_name']);
       const nameY = tokenToName(pool['token_y_name']);
 
-      const priceX = await getPrice(nameX) / Math.pow(10, 6);
-      const priceY = await getPrice(nameY) / Math.pow(10, 6);
+      const priceX = (await getPrice(nameX)) / Math.pow(10, 6);
+      const priceY = (await getPrice(nameY)) / Math.pow(10, 6);
       // setPriceX(priceX);
       // setPriceY(priceY);
-      const tvlX = pool['tvl_token_x'] * priceX / Math.pow(10, decimals(nameX));
-      const tvlY = pool['tvl_token_y'] * priceY / Math.pow(10, decimals(nameY));
-      const tvl = (tvlX + tvlY);
+      const tvlX = (pool['tvl_token_x'] * priceX) / Math.pow(10, decimals(nameX));
+      const tvlY = (pool['tvl_token_y'] * priceY) / Math.pow(10, decimals(nameY));
+      const tvl = tvlX + tvlY;
       // setTvl(tvl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
       return [priceX, priceY, tvl, nameX, nameY];
@@ -110,8 +111,8 @@ export const Home: React.FC = () => {
 
     const fetchPools = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools`);
-      const array:any = [];
-      await asyncForEach(response.data.pools, async (pool:any) => {
+      const array: any = [];
+      await asyncForEach(response.data.pools, async (pool: any) => {
         if (pool['token_x_name'] !== 'wxusd' && !pool['token_x_name'].includes('lydian-token')) {
           const poolData = await fetchPoolTvl(pool);
           pool['priceX'] = poolData[0];
@@ -123,8 +124,8 @@ export const Home: React.FC = () => {
         }
       });
 
-      const sortedTvl = array.sort(function(a, b) {
-        return Number(b['tvl']) - Number(a['tvl'])
+      const sortedTvl = array.sort(function (a, b) {
+        return Number(b['tvl']) - Number(a['tvl']);
       });
       console.log('uff', sortedTvl);
       setPools(sortedTvl);
@@ -137,7 +138,7 @@ export const Home: React.FC = () => {
       const dikoResponse = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
       const prices = dikoResponse.data.prices;
       setLastDikoPrice(prices[prices.length - 1][1].toFixed(2));
-    }
+    };
 
     fetchPools();
     fetchVaults();
@@ -155,7 +156,7 @@ export const Home: React.FC = () => {
       }
       setHighchartsOptions({
         rangeSelector: {
-          selected: 0
+          selected: 0,
         },
         chart: {
           zoomType: 'x',
@@ -164,14 +165,14 @@ export const Home: React.FC = () => {
           spacingBottom: 32,
           spacingLeft: 24,
           style: {
-            fontFamily: 'Montserrat'
+            fontFamily: 'Montserrat',
           },
         },
         navigator: {
-          enabled: false
+          enabled: false,
         },
         scrollbar: {
-          enabled: false
+          enabled: false,
         },
         tooltip: {
           valueDecimals: decimals,
@@ -181,30 +182,31 @@ export const Home: React.FC = () => {
           shadow: false,
           style: {
             color: '#FFF',
-          }
+          },
         },
         title: {
-          text: null
+          text: null,
         },
-        xAxis: {
-    
-        },
-        yAxis: [{
-          lineWidth: 1,
-          min: 0,
-          title: {
-            text: 'Exchange rate',
+        xAxis: {},
+        yAxis: [
+          {
+            lineWidth: 1,
+            min: 0,
+            title: {
+              text: 'Exchange rate',
+            },
+            labels: {
+              overflow: 'justify',
+            },
           },
-          labels: {
-            overflow: 'justify'
-          }
-        },{
-          lineWidth: 1,
-          linkedTo: 0,
-          opposite: false
-        }],
+          {
+            lineWidth: 1,
+            linkedTo: 0,
+            opposite: false,
+          },
+        ],
         legend: {
-          enabled: false
+          enabled: false,
         },
         plotOptions: {
           area: {
@@ -213,12 +215,12 @@ export const Home: React.FC = () => {
                 x1: 0,
                 y1: 0,
                 x2: 0,
-                y2: 1
+                y2: 1,
               },
               stops: [
                 [0, '#6366f1'], //indigo-500
-                [1, 'rgba(67, 56, 202, .05)']
-              ]
+                [1, 'rgba(67, 56, 202, .05)'],
+              ],
             },
             marker: {
               radius: 1,
@@ -228,9 +230,9 @@ export const Home: React.FC = () => {
               states: {
                 hover: {
                   radiusPlus: 2,
-                  lineWidthPlus: 2
-                }
-              }
+                  lineWidthPlus: 2,
+                },
+              },
             },
             lineColor: '#4f46e5', //indigo-600
             lineWidth: 1,
@@ -238,18 +240,20 @@ export const Home: React.FC = () => {
               hover: {
                 lineWidth: 1,
                 lineColor: '#4338ca', //indigo-700
-              }
+              },
             },
-            threshold: null
+            threshold: null,
           },
         },
-    
-        series: [{
-          type: 'area',
-          name: `${tokenGraph.name}`,
-          data: prices,
-          color: '#6366f1'
-        }]
+
+        series: [
+          {
+            type: 'area',
+            name: `${tokenGraph.name}`,
+            data: prices,
+            color: '#6366f1',
+          },
+        ],
       });
     };
 
@@ -266,7 +270,9 @@ export const Home: React.FC = () => {
 
         <section className="mt-8">
           <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
-            <h3 className="text-lg leading-6 text-gray-900 font-headings">{tokenGraph.name} price</h3>
+            <h3 className="text-lg leading-6 text-gray-900 font-headings">
+              {tokenGraph.name} price
+            </h3>
             <div className="w-full max-w-[180px]">
               <TokenPriceSelect
                 tokenPrices={tokenPrices}
@@ -278,20 +284,20 @@ export const Home: React.FC = () => {
           <div className="mt-4 border border-gray-200 rounded-lg">
             <HighchartsReact
               highcharts={Highcharts}
-              containerProps={{className:'rounded-lg'}}
+              containerProps={{ className: 'rounded-lg' }}
               constructorType={'stockChart'}
               options={highchartsOptions}
             />
           </div>
         </section>
 
-        <MarketCap lastDikoPrice={lastDikoPrice} lastUsdaPrice={1.00} />
+        <DefiLlama />
+
+        <MarketCap lastDikoPrice={lastDikoPrice} lastUsdaPrice={1.0} />
 
         <Pools pools={pools} />
 
-        {vaultData && vaultData.count > 0 ? (
-          <Vaults vaultData={vaultData} />
-        ) : null}
+        {vaultData && vaultData.count > 0 ? <Vaults vaultData={vaultData} /> : null}
 
         <Prices />
       </div>

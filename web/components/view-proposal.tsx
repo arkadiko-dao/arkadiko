@@ -38,14 +38,7 @@ export const ViewProposal = ({ match }) => {
   const [dikoVoted, setDikoVoted] = useState('');
   const [stdikoVoted, setStdikoVoted] = useState('');
 
-  const CONTRACT_NAME =
-    match.params.id <= 2
-      ? 'arkadiko-governance-v1-1'
-      : match.params.id <= 6
-      ? 'arkadiko-governance-v2-1'
-      : match.params.id == 22
-      ? 'arkadiko-governance-v3-1'
-      : 'arkadiko-governance-v4-1';
+  const CONTRACT_NAME = "arkadiko-governance-" + match.params.version
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -60,14 +53,14 @@ export const ViewProposal = ({ match }) => {
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       let data = await response.json();
-      setStacksTipHeight(data['stacks_tip_height']);
+      setStacksTipHeight(data['burn_block_height']);
 
       const proposal = await callReadOnlyFunction({
         contractAddress,
         contractName: CONTRACT_NAME,
         functionName: 'get-proposal-by-id',
         functionArgs: [uintCV(match.params.id)],
-        senderAddress: stxAddress || '',
+        senderAddress: stxAddress || contractAddress,
         network: network,
       });
       const json = cvToJSON(proposal);
@@ -105,7 +98,7 @@ export const ViewProposal = ({ match }) => {
         againstVotesPercentage,
       });
 
-      if (data['is-open'].value == false) {
+      if (data['is-open'].value == false && stxAddress) {
         // Get DIKO votes for user
         const votedDiko = await callReadOnlyFunction({
           contractAddress,
@@ -137,6 +130,9 @@ export const ViewProposal = ({ match }) => {
         });
         const votedStdikoResult = cvToJSON(votedStdiko).value['amount'].value;
         setStdikoVoted(votedStdikoResult / 1000000);
+      } else {
+        setDikoVoted(0);
+        setStdikoVoted(0);
       }
 
       setIsLoading(false);
@@ -168,7 +164,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id),
@@ -205,7 +201,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id),
@@ -295,7 +291,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id),
@@ -332,7 +328,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-2'
+          'arkadiko-stake-pool-diko-v1-4'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id),
@@ -778,7 +774,7 @@ export const ViewProposal = ({ match }) => {
               </div>
             </div>
             <div className="mt-6 sm:grid sm:grid-flow-col sm:gap-4 sm:auto-cols-max sm:items-center sm:justify-center">
-              {proposal.isOpen ? (
+              {stxAddress && proposal.isOpen ? (
                 <>
                   <button
                     type="button"

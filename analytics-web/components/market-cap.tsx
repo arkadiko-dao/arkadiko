@@ -27,10 +27,10 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const json = cvToJSON(supplyCall);
 
       const totalSupply = Number(json.value.value) / 1000000;
-      const investorTokens = 1104000 + 3330518;
+      const investorTokens = 6482362 + 600000 + 200000 + 600000 + 600000;
       const mmTokens = 0;
-      const foundationTokens = 29000000 - 5800000;
-      const teamTokens = 14437500;
+      const foundationTokens = 29000000 - investorTokens - 5800000;
+      const teamTokens = 21000000 - (30 * 475000);
       const lockedTokens = foundationTokens + teamTokens;
       const emissionTokens = totalSupply - lockedTokens;
       const burnedTokens = 58000;

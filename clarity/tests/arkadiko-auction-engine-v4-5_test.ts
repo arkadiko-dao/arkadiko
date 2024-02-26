@@ -617,7 +617,7 @@ Clarinet.test({ name: "auction engine: liquidate STX vault without enough USDA t
 
     // Reward data
     call = await liquidationRewards.getRewardData(1);
-    call.result.expectTuple()["share-block"].expectUint(17);
+    call.result.expectTuple()["share-block"].expectUint(18);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(222.222222);
 
     call = await liquidationRewards.getRewardsOf(wallet_1.address, 1);

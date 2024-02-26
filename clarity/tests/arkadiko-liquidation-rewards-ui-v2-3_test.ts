@@ -64,7 +64,7 @@ Clarinet.test({
 
     // User last reward ID is updated
     call = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(25);
+    call.result.expectTuple()['last-reward-id'].expectUint(50);
 
     // Claim rewards
     var rewardIds = [];
@@ -76,6 +76,6 @@ Clarinet.test({
 
     // User last reward ID is updated
     call = await liquidationUI.getUserTracking(deployer.address);
-    call.result.expectTuple()['last-reward-id'].expectUint(75);
+    call.result.expectTuple()['last-reward-id'].expectUint(100);
   }
 });

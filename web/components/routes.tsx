@@ -49,7 +49,7 @@ export function Routes() {
       <Route exact path="/stake" component={Stake} />
       <Route exact path="/vaults/new" component={NewVault} />
       <Route path="/vaults/:owner/:collateral" component={ManageVault} />
-      <Route path="/governance/:id" component={ViewProposal} />
+      <Route path="/governance/:version/:id" component={ViewProposal} />
       <Route exact path="/lydian-airdrop" component={LydianAirdrop} />
 
       <Redirect to="/" />

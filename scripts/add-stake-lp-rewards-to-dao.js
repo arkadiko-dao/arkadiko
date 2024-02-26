@@ -8,7 +8,7 @@ const network = utils.resolveNetwork();
 async function burn() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-governance-v4-1",
+    contractName: "arkadiko-governance-v4-2",
     functionName: "add-contract-address",
     functionArgs: [
       tx.stringAsciiCV("arkadiko-alex-dual-yield-v1-1"),

@@ -56,7 +56,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(2000);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(6);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(7);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -84,7 +84,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(3000);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(1000);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(7);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(8);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -111,7 +111,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(1500);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(8);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(9);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
 
@@ -138,7 +138,7 @@ Clarinet.test({
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(0);
     call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(0);
-    call.result.expectOk().expectTuple()["last-block"].expectUint(9);
+    call.result.expectOk().expectTuple()["last-block"].expectUint(10);
     call.result.expectOk().expectTuple()["status"].expectUint(102);
   },
 });
