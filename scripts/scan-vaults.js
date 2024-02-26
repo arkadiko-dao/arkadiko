@@ -41,7 +41,7 @@ async function getCollateralizationRatio(vaultId) {
       functionArgs: [
         tx.uintCV(vaultId),
         tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v3-1'),
-        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-2'),
+        tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-3'),
         tx.falseCV()
       ],
       senderAddress: CONTRACT_ADDRESS,
@@ -88,7 +88,7 @@ async function liquidateVault(vaultId, tokenName, stacking, nonce) {
       tx.uintCV(vaultId),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-freddie-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-collateral-types-v3-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-2'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-3'),
       tx.contractPrincipalCV(tokenAddress, token),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, reserve),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-liquidation-pool-v1-1'),

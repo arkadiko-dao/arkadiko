@@ -34,7 +34,7 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // Add funds to DIKO pool first (100 DIKO)
   let result = stakeRegistry.stake(
     wallet_1, 
-    'arkadiko-stake-pool-diko-v1-2',
+    'arkadiko-stake-pool-diko-v1-4',
     'arkadiko-token',
     100
   );
@@ -52,42 +52,42 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   result.expectOk().expectBool(true);
 
   // Vote for wallet_1
-  result = governance.voteForProposal(deployer, 7, 100000);
+  result = governance.voteForProposal(deployer, 1, 100000);
   result.expectOk().expectUint(3200);
 
-  result = governance.voteForProposal(wallet_1, 7, 100000);
+  result = governance.voteForProposal(wallet_1, 1, 100000);
   result.expectOk().expectUint(3200);
 
   // Advance
   chain.mineEmptyBlock(1500);
 
   // End proposal
-  result = governance.endProposal(7);
+  result = governance.endProposal(1);
   result.expectOk().expectUint(3200);
 
   // Check if proposal updated
-  let call:any = governance.getProposalByID(7);
+  let call:any = governance.getProposalByID(1);
   call.result.expectTuple()["is-open"].expectBool(false);
 
   // Check total DIKO pool balance (as rewards have auto compounded)
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
-  call.result.expectOk().expectUintWithDecimals(475.839436);
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4'));
+  call.result.expectOk().expectUintWithDecimals(538.479342);
 
   // Now that the contract is active in the DAO, we can execute it
   // 30% of 475 DIKO = ~142
   let block = chain.mineBlock([
     Tx.contractCall("arkadiko-stake-pool-diko-slash-v1-1", "execute", [], wallet_1.address)
   ]);
-  block.receipts[0].result.expectOk().expectUintWithDecimals(142.751830);
+  block.receipts[0].result.expectOk().expectUintWithDecimals(161.543802);
 
   // Foundation (still deployer in this case) should have received the funds
   call = dikoToken.balanceOf(deployer.address);
-  call.result.expectOk().expectUintWithDecimals(790142.751830);
+  call.result.expectOk().expectUintWithDecimals(790161.543802);
 
   // Check total DIKO pool balance
-  // 70% of 475 DIKO = ~333
-  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-2'));
-  call.result.expectOk().expectUintWithDecimals(333.087606);
+  // 70% of 413 DIKO = ~289
+  call = dikoToken.balanceOf(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4'));
+  call.result.expectOk().expectUintWithDecimals(376.935540);
 
   // Can not execute slash again
   block = chain.mineBlock([

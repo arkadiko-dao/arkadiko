@@ -7,7 +7,7 @@ const network = utils.resolveNetwork();
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-stake-registry-v1-1',
+    contractName: 'arkadiko-stake-registry-v2-1',
     functionName: 'set-pool-data',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-xusd-usda-v1-5'),

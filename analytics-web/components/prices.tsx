@@ -30,12 +30,11 @@ export const Prices: React.FC = () => {
 
   useEffect(() => {
     const fetchPrices = async () => {
-
       // Get current block height
       const client = getRPCClient();
       const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response.json();
-      const currentBlock = data['stacks_tip_height'];
+      const currentBlock = data['burn_block_height'];
 
       const stxPrice = await getPriceInfo('STX');
       setStxPrice(stxPrice['last-price'].value);

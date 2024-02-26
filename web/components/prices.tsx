@@ -16,6 +16,7 @@ import { Placeholder } from './ui/placeholder';
 import axios from 'axios';
 import { Tooltip } from '@blockstack/ui';
 import { StyledIcon } from './ui/styled-icon';
+import { getRPCClient } from '@common/utils';
 
 export const Prices = () => {
   const address = useSTXAddress();
@@ -44,7 +45,11 @@ export const Prices = () => {
     const fetchPrices = async () => {
       let response: any = await axios.get(`${apiUrl}/api/v1/pages/oracle`);
       response = response['data'];
-      const currentBlock = response['block_height'];
+      // Get current block height
+      const client = getRPCClient();
+      const response2 = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
+      const data = await response2.json();
+      const currentBlock = data['burn_block_height'];
 
       setStxPrice(response['wstx']['last_price']);
       setStxBlockUpdate(response['wstx']['price_last_updated']);

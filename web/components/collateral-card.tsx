@@ -222,7 +222,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               </div>
             </dl>
 
-            {state.userData ? (
+            {state.userData && ((collateral.maximumDebt - collateral.totalDebt) / 1000000) > 0 ? (
               <RouterLink
                 to={collateral.path}
                 exact
@@ -230,6 +230,13 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               >
                 Borrow
               </RouterLink>
+            ) : state.userData ? (
+              <button
+                type="button"
+                className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                No liquidity available!
+              </button>
             ) : (
               <button
                 type="button"
@@ -239,7 +246,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                 Connect Wallet
               </button>
             )}
-
           </div>
         </div>
       ))}

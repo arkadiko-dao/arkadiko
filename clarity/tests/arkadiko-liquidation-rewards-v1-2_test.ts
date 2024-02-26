@@ -53,16 +53,16 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(20000);
 
     // Add rewards
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
 
     // Add rewards
-    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(8, 0, "arkadiko-token", 300);
     result.expectOk().expectBool(true);
 
     // Reward data
     let call:any = await liquidationRewards.getRewardData(0);
-    call.result.expectTuple()["share-block"].expectUint(6);
+    call.result.expectTuple()["share-block"].expectUint(7);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(100);
 
     // Rewards 0
@@ -131,16 +131,16 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(10000);
 
     // Add rewards - unlock block 50
-    result = liquidationRewards.addReward(6, 50, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 50, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
 
     // Add rewards - unlock block 100
-    result = liquidationRewards.addReward(7, 100, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(8, 100, "arkadiko-token", 300);
     result.expectOk().expectBool(true);
 
     // Reward data
     let call:any = await liquidationRewards.getRewardData(0);
-    call.result.expectTuple()["share-block"].expectUint(6);
+    call.result.expectTuple()["share-block"].expectUint(7);
     call.result.expectTuple()["unlock-block"].expectUint(50);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(100);
 
@@ -239,7 +239,7 @@ Clarinet.test({
 
     // Reward data
     call = await liquidationRewards.getRewardData(0);
-    call.result.expectTuple()["share-block"].expectUint(14);
+    call.result.expectTuple()["share-block"].expectUint(15);
     call.result.expectTuple()["unlock-block"].expectUint(2100);
     call.result.expectTuple()["total-amount"].expectUintWithDecimals(1111.111111);
 
@@ -491,11 +491,11 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(10000);
 
     // Add rewards
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
     result.expectOk().expectBool(true);
 
     // Add rewards
-    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 300);
+    result = liquidationRewards.addReward(8, 0, "arkadiko-token", 300);
     result.expectOk().expectBool(true);
 
     // Rewards 0
@@ -586,7 +586,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(20000);
 
     // Add rewards
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
 
     // Combined pending rewards for user + reward info
     let call:any = await liquidationRewards.getUserRewardInfo(wallet_1.address, 0)
@@ -612,25 +612,25 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(20000);
 
     // Add rewards
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
-    result = liquidationRewards.addReward(6, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
+    result = liquidationRewards.addReward(7, 0, "arkadiko-token", 100);
 
     // Combined pending rewards for user + reward info
     let call:any = await liquidationRewards.getUserRewardInfo(wallet_1.address, 0)

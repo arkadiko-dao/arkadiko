@@ -16,7 +16,7 @@ function setTrustedOracles(chain: Chain, deployer: Account) {
   // Private key: 0x7e49e3061e04403cf9488419c3d165424df89c78eb51ec32acbe7f6b018348b3
   // Public key: 0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74
   let block = chain.mineBlock([
-    Tx.contractCall("arkadiko-oracle-v2-2", "set-trusted-oracle", [
+    Tx.contractCall("arkadiko-oracle-v2-3", "set-trusted-oracle", [
       "0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74",
       types.bool(true)
     ], deployer.address)
@@ -26,7 +26,7 @@ function setTrustedOracles(chain: Chain, deployer: Account) {
   // Private key: 0x642b73572da1fad94d7b878ad2b34e797c0255d2fdac97e110769aa99a39883a
   // Public key: 0x03ef31e82184edb6ce19b77bf44bcb53340243aa0190d9688466760cd5af2fded2
   block = chain.mineBlock([
-    Tx.contractCall("arkadiko-oracle-v2-2", "set-trusted-oracle", [
+    Tx.contractCall("arkadiko-oracle-v2-3", "set-trusted-oracle", [
       "0x03ef31e82184edb6ce19b77bf44bcb53340243aa0190d9688466760cd5af2fded2",
       types.bool(true)
     ], deployer.address)
@@ -36,7 +36,7 @@ function setTrustedOracles(chain: Chain, deployer: Account) {
   // Private key: 0xf7e4b0a94984a61f8d4e65fc8272dbd50c65ac8420e06c1627fae9f10c8a197f
   // Public key: 0x029f3a1023151193a31eb36575601151df8706c8b3b50c243fee5e03abe2cf3107
   block = chain.mineBlock([
-    Tx.contractCall("arkadiko-oracle-v2-2", "set-trusted-oracle", [
+    Tx.contractCall("arkadiko-oracle-v2-3", "set-trusted-oracle", [
       "0x029f3a1023151193a31eb36575601151df8706c8b3b50c243fee5e03abe2cf3107",
       types.bool(true)
     ], deployer.address)
@@ -57,7 +57,7 @@ Clarinet.test({
 
     // Message hash
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "get-signable-message-hash", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "get-signable-message-hash", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -68,7 +68,7 @@ Clarinet.test({
 
     // Update price
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -84,14 +84,14 @@ Clarinet.test({
 
     // Check new prices
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "get-price", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "get-price", [
         types.ascii("STX")
       ], deployer.address)
     ]);
     block.receipts[0].result.expectTuple()["last-price"].expectUint(300000);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "get-price", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "get-price", [
         types.ascii("xSTX")
       ], deployer.address)
     ]);
@@ -107,7 +107,7 @@ Clarinet.test({
     setTrustedOracles(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "set-token-id", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "set-token-id", [
         types.uint(1),
         types.ascii("BTC")
       ], deployer.address)
@@ -116,7 +116,7 @@ Clarinet.test({
 
     // Update price
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "get-signable-message-hash", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "get-signable-message-hash", [
         types.uint(80100),
         types.uint(1),
         types.uint(20343),
@@ -126,7 +126,7 @@ Clarinet.test({
     block.receipts[0].result.expectBuff(hexToBytes("0x78124709d15ef20a7d8d28ce25e8dbeeedb379da1d6b8e484db5651437a947b5"))
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(20343),
@@ -141,7 +141,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "get-price", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "get-price", [
         types.ascii("BTC")
       ], deployer.address)
     ]);
@@ -149,7 +149,7 @@ Clarinet.test({
 
     // Update price
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "get-signable-message-hash", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "get-signable-message-hash", [
         types.uint(80200),
         types.uint(1),
         types.uint(20143),
@@ -159,7 +159,7 @@ Clarinet.test({
     block.receipts[0].result.expectBuff(hexToBytes("0xde687244ff02c254e19f8738be991a4d6a510fecce8534f75d4f55b23094eecc"))
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80200),
         types.uint(1),
         types.uint(20143),
@@ -174,7 +174,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "get-price", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "get-price", [
         types.ascii("BTC")
       ], deployer.address)
     ]);
@@ -194,7 +194,7 @@ Clarinet.test({
     // Private key: 0x7e49e3061e04403cf9488419c3d165424df89c78eb51ec32acbe7f6b018348b3
     // Public key: 0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "pubkey-price-signer", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "pubkey-price-signer", [
         types.uint(80100),
         types.uint(1),
         types.uint(20343),
@@ -207,7 +207,7 @@ Clarinet.test({
     // Private key: 0x642b73572da1fad94d7b878ad2b34e797c0255d2fdac97e110769aa99a39883a
     // Public key: 0x03ef31e82184edb6ce19b77bf44bcb53340243aa0190d9688466760cd5af2fded2
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "pubkey-price-signer", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "pubkey-price-signer", [
         types.uint(80100),
         types.uint(1),
         types.uint(20343),
@@ -220,7 +220,7 @@ Clarinet.test({
     // Private key: 0xf7e4b0a94984a61f8d4e65fc8272dbd50c65ac8420e06c1627fae9f10c8a197f
     // Public key: 0x029f3a1023151193a31eb36575601151df8706c8b3b50c243fee5e03abe2cf3107
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "pubkey-price-signer", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "pubkey-price-signer", [
         types.uint(80100),
         types.uint(1),
         types.uint(20343),
@@ -233,13 +233,67 @@ Clarinet.test({
 });
 
 Clarinet.test({
+  name: "oracle: can not use same signature twice",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    setTrustedOracles(chain, deployer);
+
+    // Duplicate signatures in list
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400",
+          "0xfe243aa0a991327f6922417959c40fc82be6852e60eb66ce380c4fe9c6866ffd6af83ccd082e17abbcaddd1d95286ba8a10ff7d8a93fbbb1bde29d7e8c21752f01",
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(8403);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400",
+          "0xfe243aa0a991327f6922417959c40fc82be6852e60eb66ce380c4fe9c6866ffd6af83ccd082e17abbcaddd1d95286ba8a10ff7d8a93fbbb1bde29d7e8c21752f01",
+          "0x7b08fe12a53b175af72e5a8318bac89a6f72e328e5985887a6c8747ca7aa1e2108719d7c1bae45cef7840ee22ce669753e73f2a7bbddb6ef73cfb0d85577d02a01"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Signature that was already used before
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(8403);
+  }
+});
+
+Clarinet.test({
   name: "oracle: owner can update prices with owner method",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
     // Update price
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-owner", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-owner", [
         types.uint(3),
         types.uint(1000000),
         types.uint(1000000)
@@ -261,7 +315,7 @@ Clarinet.test({
     setTrustedOracles(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "set-minimum-valid-signers", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "set-minimum-valid-signers", [
         types.uint(2)
       ], deployer.address)
     ]);
@@ -269,7 +323,7 @@ Clarinet.test({
 
     // Update price
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -293,7 +347,7 @@ Clarinet.test({
     setTrustedOracles(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "set-trusted-oracle", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "set-trusted-oracle", [
         "0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74",
         types.bool(false)
       ], deployer.address)
@@ -302,7 +356,7 @@ Clarinet.test({
 
     // Update price
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -329,7 +383,7 @@ Clarinet.test({
 
     // Update price
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-owner", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-owner", [
         types.uint(3),
         types.uint(1000000),
         types.uint(1000000)
@@ -345,7 +399,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "set-token-id", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "set-token-id", [
         types.uint(1),
         types.ascii("BTC")
       ], wallet_1.address)
@@ -360,7 +414,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "set-minimum-valid-signers", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "set-minimum-valid-signers", [
         types.uint(1)
       ], wallet_1.address)
     ]);
@@ -374,7 +428,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "set-trusted-oracle", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "set-trusted-oracle", [
         "0x021ebedfa96c656445f79ebda84b19e8be419679bd16fa78f31d945e1c77822d74",
         types.bool(true)
       ], wallet_1.address)
@@ -390,7 +444,7 @@ Clarinet.test({
 
     // Update price
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -414,7 +468,7 @@ Clarinet.test({
     setTrustedOracles(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -438,7 +492,7 @@ Clarinet.test({
     setTrustedOracles(chain, deployer);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -463,7 +517,7 @@ Clarinet.test({
     chain.mineEmptyBlock(80200);
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -487,7 +541,7 @@ Clarinet.test({
 
     // Duplicate signatures in list
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -502,7 +556,7 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(8403);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),
@@ -518,7 +572,7 @@ Clarinet.test({
 
     // Signature that was already used before
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-2", "update-price-multi", [
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
         types.uint(1),
         types.uint(300000),

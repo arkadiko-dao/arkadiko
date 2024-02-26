@@ -1,5 +1,5 @@
 ;; @contract Arkadiko multisig oracle
-;; @version 2.0
+;; @version 2.3
 
 (impl-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
@@ -108,7 +108,7 @@
 
     (check-result (fold + (map check-price-signer block-list token-id-list price-list decimals-list signatures) u0))
   )
-    (asserts! (< block-height (+ block u10)) (err ERR-OLD-MESSAGE))
+    (asserts! (< burn-block-height (+ block u10)) (err ERR-OLD-MESSAGE))
     (asserts! (is-eq (fold and (map check-unique-signatures-iter signatures) true) true) (err ERR-SIGNATURES-NOT-UNIQUE))
 
     (if (>= check-result (var-get minimum-valid-signers))
@@ -134,7 +134,7 @@
 ;; Helper method to iterate over all token names and update prices
 (define-private (update-price-token-iter (token (string-ascii 12)) (price uint) (decimals uint))
   (begin
-    (map-set prices { token: token } { last-price: price, last-block: block-height, decimals: decimals })
+    (map-set prices { token: token } { last-price: price, last-block: burn-block-height, decimals: decimals })
     (ok true)
   )
 )
