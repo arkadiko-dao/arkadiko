@@ -10,7 +10,8 @@ if (selectedNetwork) {
   const network = JSON.parse(selectedNetwork);
   if (network['url']) {
     console.log('Arkadiko Stacks Node URL:', network['url']);
-    coreApiUrl = network['url'];
+    // TODO: do not use nodes lower than 30 read count
+    // coreApiUrl = network['url'];
   }
 }
 if (env.includes('mocknet')) {
