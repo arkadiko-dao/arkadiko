@@ -141,6 +141,11 @@
     (print { action: "burn-tokens", burn-amount: burn-amount, burn-from : burn-from  })
     (ft-burn? wrapped-bitcoin burn-amount burn-from)))
 
+(define-public (mint-for-protocol (amount uint) (recipient principal))
+  (begin
+    (ft-mint? wrapped-bitcoin amount recipient)
+  )
+)
 
 ;; Revoking Tokens
 ;; --------------------------------------------------------------------------
