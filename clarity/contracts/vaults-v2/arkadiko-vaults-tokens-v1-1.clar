@@ -136,15 +136,15 @@
 (begin
   (var-set token-list (list 
     ;; TODO: update for mainnet
-    'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.wstx-token
-    'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.ststx-token 
-    'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.Wrapped-Bitcoin
+    'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token
+    'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token 
+    'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.Wrapped-Bitcoin
   ))
 
   (map-set tokens
     { 
       ;; TODO: update for mainnet
-      token: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.wstx-token 
+      token: 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token 
     }
     {
       token-name: "STX",
@@ -163,7 +163,7 @@
   (map-set tokens
     { 
       ;; TODO: update for mainnet
-      token: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.ststx-token
+      token: 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token
     }
     {
       token-name: "stSTX",
@@ -182,7 +182,7 @@
   (map-set tokens
     { 
       ;; TODO: update for mainnet
-      token: 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.Wrapped-Bitcoin
+      token: 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.Wrapped-Bitcoin
     }
     {
       token-name: "xBTC",

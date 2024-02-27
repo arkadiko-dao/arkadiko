@@ -73,8 +73,8 @@
 (define-public (migrate-to-ststx (prev-owner-hint (optional principal)))
   (let (
     ;; TODO: update for mainnet
-    (stx-token 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.wstx-token)
-    (ststx-token 'ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ.ststx-token)
+    (stx-token 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token)
+    (ststx-token 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token)
 
     (current-stx-vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault tx-sender stx-token))
     (current-ststx-vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault tx-sender ststx-token))

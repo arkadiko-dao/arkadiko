@@ -10,7 +10,7 @@ const txOptions = {
   contractName: "arkadiko-vaults-tokens-v1-1",
   functionName: "set-token",
   functionArgs: [
-    tx.contractPrincipalCV('ST17YH9X6E2JYS51CB8HA73FAHWWYMMYKEHB2E2HQ', 'ststx-token'),
+    tx.contractPrincipalCV('STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4', 'ststx-token'),
     tx.stringAsciiCV('stSTX'),
     tx.uintCV(1300000000),
     tx.uintCV(500000000),
