@@ -17,7 +17,7 @@ async function exec(ownerAddress) {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-active-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-liq-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-helpers-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-2'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-3'),
       tx.standardPrincipalCV(ownerAddress),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'Wrapped-Bitcoin'),
     ],

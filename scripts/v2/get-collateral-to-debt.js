@@ -13,7 +13,7 @@ async function exec() {
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-tokens-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-data-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-2'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-3'),
       tx.standardPrincipalCV(CONTRACT_ADDRESS),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wstx-token'),
       tx.uintCV(100000000),

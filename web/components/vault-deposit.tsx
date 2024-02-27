@@ -145,7 +145,7 @@ export const VaultDeposit: React.FC<Props> = ({
       ),
       contractPrincipalCV(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
-        'arkadiko-oracle-v2-2'
+        'arkadiko-oracle-v2-3'
       ),
       contractPrincipalCV(tokenAddress, token),
       uintCV(collateralAmount),
