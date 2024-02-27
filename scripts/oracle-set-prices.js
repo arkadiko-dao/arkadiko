@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-oracle-v2-2';
+const CONTRACT_NAME = 'arkadiko-oracle-v2-3';
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
 const utils = require('./utils');
@@ -32,14 +32,14 @@ async function start() {
   let nonce = await utils.getNonce(CONTRACT_ADDRESS);
 
   await Promise.all([
-    setPrice(1, 4500000, 1000000, nonce),
-    setPrice(2, 25000000000, 100000000, nonce+1),
+    setPrice(1, 3000000, 1000000, nonce),
+    setPrice(2, 50000000000, 100000000, nonce+1),
     setPrice(3, 1000000, 1000000, nonce+2),
     setPrice(4, 1000000, 1000000, nonce+3),
-    setPrice(5, 50000, 1000000, nonce+4),
+    setPrice(5, 500000, 1000000, nonce+4),
     setPrice(6, 7500000, 10000000000, nonce+5),
     setPrice(7, 5000000, 10000000000, nonce+6),
-    setPrice(8, 500000, 1000000, nonce+7),
+    setPrice(8, 3100000, 1000000, nonce+7),
   ])
   
 }
