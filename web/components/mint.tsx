@@ -11,6 +11,7 @@ import { EmptyState } from './ui/empty-state';
 import { ArchiveIcon } from '@heroicons/react/outline';
 import { Placeholder } from './ui/placeholder';
 import { Prices } from './prices';
+import { PricesTestnet } from './prices-testnet';
 import { CollateralCard } from './collateral-card';
 
 // TODO: extract to utils
@@ -49,7 +50,6 @@ export const Mint = () => {
 
   useEffect(() => {
     const fetchVaults = async () => {
-      console.log('FETCHING VAULTS...');
       const vaults = {};
       await asyncForEach(state.definedCollateralTypes, async tokenAddress => {
         const tokenParts = tokenAddress.split('.');
@@ -163,7 +163,11 @@ export const Mint = () => {
           </div>
         </section>
 
-        <Prices />
+        {env === 'testnet' ? (
+          <PricesTestnet />
+        ) : (
+          <Prices />
+        )}
       </main>
     </div>
   );
