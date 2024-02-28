@@ -45,24 +45,35 @@ export const Mint = () => {
   const [state, setState] = useContext(AppContext);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [loadingVaults, setLoadingVaults] = useState(true);
+  const env = process.env.REACT_APP_NETWORK_ENV;
 
   useEffect(() => {
     const fetchVaults = async () => {
+      console.log('FETCHING VAULTS...');
       const vaults = {};
       await asyncForEach(state.definedCollateralTypes, async tokenAddress => {
         const tokenParts = tokenAddress.split('.');
 
-        const vaultCall = await callReadOnlyFunction({
-          contractAddress,
-          contractName: 'arkadiko-vaults-data-v1-1',
-          functionName: 'get-vault',
-          functionArgs: [standardPrincipalCV(address || ''), contractPrincipalCV(tokenParts[0], tokenParts[1])],
-          senderAddress: address || '',
-          network: network,
-        });
-        const json = cvToJSON(vaultCall);
-        const vault = json.value.value;
-        console.log('vault', tokenAddress, vault, tokenParts[1]);
+        let vault;
+        if (address) {
+          const vaultCall = await callReadOnlyFunction({
+            contractAddress,
+            contractName: 'arkadiko-vaults-data-v1-1',
+            functionName: 'get-vault',
+            functionArgs: [standardPrincipalCV(address || ''), contractPrincipalCV(tokenParts[0], tokenParts[1])],
+            senderAddress: address || '',
+            network: network,
+          });
+          const json = cvToJSON(vaultCall);
+          vault = json.value.value;
+          console.log('vault', tokenAddress, vault, tokenParts[1]);
+        } else {
+          vault = {
+            'collateral': { 'value': 0 },
+            'status': { 'value': 100 },
+            'debt': { 'value': 0 }
+          };
+        }
         const collateralToken = tokenToName(tokenParts[1]);
         vaults[collateralToken] = {
           key: tokenAddress,
@@ -76,6 +87,7 @@ export const Mint = () => {
         };
       });
 
+      console.log('setting vaults...', vaults);
       setState(prevState => ({
         ...prevState,
         vaults: vaults,
@@ -83,9 +95,7 @@ export const Mint = () => {
       setLoadingVaults(false);
     };
 
-    if (address != undefined) {
-      fetchVaults();
-    }
+    fetchVaults();
   }, []);
 
   return (
@@ -97,12 +107,28 @@ export const Mint = () => {
       <main className="py-12">
         <section id="borrow">
           <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-              Start borrowing
-            </h3>
-            <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              Borrow against your favorite assets now.
-            </p>
+            {env === 'testnet' ? (
+              <>
+                <h3 className="text-3xl font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                  Welcome to Arkadiko 2.0 Testnet!
+                </h3>
+                <p className="max-w-4xl mt-2 text-lg text-gray-900 font-headings dark:text-zinc-50">
+                  Testnet functionality is limited to vaults only (no swaps or governance).
+                </p>
+                <p className="max-w-4xl mt-2 text-lg text-gray-900 font-headings dark:text-zinc-50">
+                  Please mint tokens using the faucets below.
+                </p>
+              </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                    Start borrowing
+                  </h3>
+                  <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
+                    Borrow against your favorite assets now.
+                  </p>
+                </>
+              )}
           </header>
           <div className="mt-4 space-y-8 sm:space-x-8 sm:flex sm:items-center sm:justify-center sm:space-y-0">
             {loadingVaults ? (

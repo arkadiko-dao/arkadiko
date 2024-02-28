@@ -10,8 +10,8 @@ import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
-import { stacksNetwork as network, asyncForEach } from '@common/utils';
+import { AnchorMode, callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
 import { Placeholder } from './ui/placeholder';
 
 export interface VaultProps {
@@ -120,13 +120,39 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
   const [state, _] = useContext(AppContext);
   const [startedLoading, setStartedLoading] = useState(false);
   const [{ collateralTypes }, _x] = useContext(AppContext);
-  const { doOpenAuth } = useConnect();
+  const { doOpenAuth, doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const [collateralItems, setCollateralItems]: CollateralTypeProps[] = useState([]);
   const [prices, setPrices] = useState({});
   const [isLoading, setLoading] = useState(true);
+  const env = process.env.REACT_APP_NETWORK_ENV;
+
+  const mintToken = async (tokenName: string) => {
+    console.log('mint for', tokenName);
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress,
+      contractName: 'ststx-token',
+      functionName: 'mint-for-protocol',
+      functionArgs: [
+        uintCV(10000000000),
+        standardPrincipalCV(stxAddress)
+      ],
+      onFinish: data => {
+        console.log('finished mint!', data, data.txId);
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+        setShowMintModal(false);
+      },
+      anchorMode: AnchorMode.Any,
+    }, resolveProvider() || window.StacksProvider);
+  };
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -152,6 +178,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
     };
 
     const fetchData = async () => {
+      console.log('blub blub');
       setStartedLoading(true);
       setLoading(true);
 
@@ -164,7 +191,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           contractName: 'arkadiko-vaults-data-v1-1',
           functionName: 'get-total-debt',
           functionArgs: [contractPrincipalCV(tokenParts[0], tokenParts[1])],
-          senderAddress: stxAddress || '',
+          senderAddress: stxAddress || contractAddress,
           network: network,
         });
 
@@ -194,6 +221,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       setLoading(false);
     }
 
+    console.log('yap yap');
     if (!startedLoading && Object.keys(state?.collateralTypes).length > 0) fetchData();
   }, [state.collateralTypes]);
 
@@ -515,6 +543,21 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                         size={4}
                       />
                     </RouterLink>
+                  )}
+
+                  {env === 'testnet' && collateral.name === 'STX' ? (
+                    <a
+                      className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                      href="https://explorer.hiro.so/sandbox/faucet?chain=testnet"
+                      target="_blank"
+                    >Mint STX</a>
+                  ) : (
+                    <button
+                      onClick={() => mintToken(collateral.name)}
+                      className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                    >
+                      Mint {collateral.name}
+                    </button>
                   )}
                 </>
               ) : (
