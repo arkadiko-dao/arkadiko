@@ -117,7 +117,7 @@ const vaultStatusToTooltip = (status: number) => {
 }
 
 export const CollateralCard: React.FC<CollateralTypeProps> = () => {
-  const [state, _] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const [startedLoading, setStartedLoading] = useState(false);
   const [{ collateralTypes }, _x] = useContext(AppContext);
   const { doOpenAuth, doContractCall } = useConnect();
@@ -131,14 +131,20 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
 
   const mintToken = async (tokenName: string) => {
     console.log('mint for', tokenName);
+    let amount = 10000000000;
+    let contractName = 'ststx-token';
+    if (tokenName?.toLowerCase() === 'xbtc') {
+      amount = 100000000;
+      contractName = 'Wrapped-Bitcoin';
+    }
     await doContractCall({
       network,
       contractAddress,
       stxAddress,
-      contractName: 'ststx-token',
+      contractName,
       functionName: 'mint-for-protocol',
       functionArgs: [
-        uintCV(10000000000),
+        uintCV(amount),
         standardPrincipalCV(stxAddress)
       ],
       onFinish: data => {
@@ -148,7 +154,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-        setShowMintModal(false);
       },
       anchorMode: AnchorMode.Any,
     }, resolveProvider() || window.StacksProvider);
@@ -178,7 +183,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
     };
 
     const fetchData = async () => {
-      console.log('blub blub');
       setStartedLoading(true);
       setLoading(true);
 
@@ -221,7 +225,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       setLoading(false);
     }
 
-    console.log('yap yap');
     if (!startedLoading && Object.keys(state?.collateralTypes).length > 0) fetchData();
   }, [state.collateralTypes]);
 

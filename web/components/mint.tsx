@@ -87,7 +87,6 @@ export const Mint = () => {
         };
       });
 
-      console.log('setting vaults...', vaults);
       setState(prevState => ({
         ...prevState,
         vaults: vaults,
@@ -116,7 +115,7 @@ export const Mint = () => {
                   Testnet functionality is limited to vaults only (no swaps or governance).
                 </p>
                 <p className="max-w-4xl mt-2 text-lg text-gray-900 font-headings dark:text-zinc-50">
-                  Please mint tokens using the faucets below.
+                  Please mint tokens using the faucets below (after connecting wallet).
                 </p>
               </>
               ) : (
