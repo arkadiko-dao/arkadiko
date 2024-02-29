@@ -6,7 +6,7 @@ import { AppContext } from '@common/context';
 import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network, asyncForEach } from '@common/utils';
+import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
 import { AnchorMode, callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
