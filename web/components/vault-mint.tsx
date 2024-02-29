@@ -33,6 +33,7 @@ export const VaultMint: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
+  console.log('dR:', collateralType?.collateralToDebtRatio);
 
   const callMint = async () => {
     const tokenAddress = tokenInfo['address'];
@@ -132,7 +133,7 @@ export const VaultMint: React.FC<Props> = ({
       collateralLocked(),
       outstandingDebt(),
       collateralType?.collateralToDebtRatio
-    ) * 0.98;
+    );
     setUsdToMint(
       tokens.toFixed(6)
     );
@@ -149,7 +150,7 @@ export const VaultMint: React.FC<Props> = ({
       <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
         Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
         <span className="font-semibold">
-          {(0.98 * availableCoinsToMint(
+          {(availableCoinsToMint(
             price * 100,
             collateralLocked(),
             outstandingDebt(),
@@ -165,7 +166,7 @@ export const VaultMint: React.FC<Props> = ({
 
       <div className="mt-6">
         <InputAmount
-          balance={(0.98 * availableCoinsToMint(
+          balance={(availableCoinsToMint(
             price * 100,
             collateralLocked(),
             outstandingDebt(),

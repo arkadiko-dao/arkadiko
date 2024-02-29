@@ -21,7 +21,7 @@ import {
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { debtClass, VaultProps } from './collateral-card';
 import { getPrice } from '@common/get-price';
-import { getLiquidationPrice, availableCoinsToMint, tokenTraits } from '@common/vault-utils';
+import { getLiquidationPrice, tokenTraits } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
 import { getRPCClient } from '@common/utils';
 import { microToReadable, availableCollateralToWithdraw, getCollateralToDebtRatio } from '@common/vault-utils';
