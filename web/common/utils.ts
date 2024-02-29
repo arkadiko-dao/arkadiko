@@ -5,7 +5,8 @@ const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
 const selectedNetwork = localStorage.getItem('arkadiko-stacks-node');
 // let coreApiUrl = 'https://api.hiro.so';
-let coreApiUrl = 'https://stacks-blockchain-lb.alexlab.co';
+// let coreApiUrl = 'https://stacks-blockchain-lb.alexlab.co';
+let coreApiUrl = 'https://small-solemn-frost.stacks-mainnet.quiknode.pro/deaf86bafdfbef850e40cdf5fa22c41cd447cdff';
 if (selectedNetwork) {
   const network = JSON.parse(selectedNetwork);
   if (network['url']) {
