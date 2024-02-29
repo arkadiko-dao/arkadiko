@@ -701,15 +701,21 @@ export const ManageVault = ({ match }) => {
                             />
                           ) : (
                             <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
-                              {availableCoinsToMint(
-                                vault?.collateralToken === 'auto-alex' ? price / 100 : price,
-                                collateralLocked(),
-                                outstandingDebt(),
-                                collateralType?.collateralToDebtRatio
-                              ).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 6,
-                              })}{' '}
+                              {((collateralType?.maximumDebt - collateralType?.totalDebt) / 1000000) > 0 ? (
+                                <span>
+                                  {availableCoinsToMint(
+                                    vault?.collateralToken === 'auto-alex' ? price / 100 : price,
+                                    collateralLocked(),
+                                    outstandingDebt(),
+                                    collateralType?.collateralToDebtRatio
+                                  ).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 6,
+                                  })}{' '}
+                                </span>
+                              ) : (
+                                <span>0{' '}</span>
+                              )}
                               <span className="text-sm font-normal">USDA</span>
                             </p>
                           )}

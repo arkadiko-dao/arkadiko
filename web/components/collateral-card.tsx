@@ -6,6 +6,7 @@ import { AppContext } from '@common/context';
 import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
+import { Tooltip } from '@blockstack/ui';
 
 export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
   const [state, _] = useContext(AppContext);
@@ -222,7 +223,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
               </div>
             </dl>
 
-            {state.userData && ((collateral.maximumDebt - collateral.totalDebt) / 1000000) > 0 ? (
+            {state.userData && ((collateral.maximumDebt - collateral.totalDebt) / 1000000) > 100 ? (
               <RouterLink
                 to={collateral.path}
                 exact
@@ -231,12 +232,19 @@ export const CollateralCard: React.FC<CollateralTypeProps> = ({ types }) => {
                 Borrow
               </RouterLink>
             ) : state.userData ? (
-              <button
-                type="button"
-                className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              <Tooltip
+                className=""
+                shouldWrapChildren={true}
+                label={`Minting caps will be raised soon`}
               >
-                No liquidity available!
-              </button>
+                <button
+                  type="button"
+                  disabled="true"
+                  className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 bg-opacity-[.5] border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  No liquidity available!
+                </button>
+              </Tooltip>
             ) : (
               <button
                 type="button"
