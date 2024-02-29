@@ -469,6 +469,104 @@ export const ManageVault = ({ match }) => {
                               color={Placeholder.color.GRAY}
                               width={Placeholder.width.HALF}
                             />
+                          ) : (
+                            <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                              {((collateralType?.maximumDebt - collateralType?.totalDebt) / 1000000) > 0 ? (
+                                <span>
+                                  {availableCoinsToMint(
+                                    vault?.collateralToken === 'auto-alex' ? price / 100 : price,
+                                    collateralLocked(),
+                                    outstandingDebt(),
+                                    collateralType?.collateralToDebtRatio
+                                  ).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 6,
+                                  })}{' '}
+                                </span>
+                              ) : (
+                                <span>0{' '}</span>
+                              )}
+                              <span className="text-sm font-normal">USDA</span>
+                            </p>
+                          )}
+                        </div>
+                        {isVaultOwner &&
+                        !loadingVaultData &&
+                        Number(
+                          availableCoinsToMint(
+                            price,
+                            collateralLocked(),
+                            outstandingDebt(),
+                            collateralType?.collateralToDebtRatio
+                          )
+                        ) > 0 ? (
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => setShowMintModal(true)}
+                          >
+                            Mint
+                          </button>
+                        ) : null}
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="text-base font-normal leading-6 text-gray-500 sm:flex sm:items-center dark:text-zinc-400">
+                              Outstanding USDA debt
+                              <Tooltip
+                                className="ml-2"
+                                shouldWrapChildren={true}
+                                label={`Includes a ${
+                                  collateralType?.stabilityFeeApy / 100
+                                }% yearly stability fee.`}
+                              >
+                                <StyledIcon
+                                  as="InformationCircleIcon"
+                                  size={5}
+                                  className="block ml-2 text-gray-400"
+                                />
+                              </Tooltip>
+                            </p>
+                            {loadingFeesData || loadingVaultData ? (
+                              <Placeholder
+                                className="py-2"
+                                color={Placeholder.color.INDIGO}
+                                width={Placeholder.width.THIRD}
+                              />
+                            ) : (
+                              <p className="mt-1 text-lg font-semibold leading-none text-gray-900 dark:text-zinc-100">
+                                {totalDebt.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                                })}{' '}
+                                <span className="text-sm font-normal">USDA</span>
+                              </p>
+                            )}
+                          </div>
+                          {!loadingStackerData &&
+                          isVaultOwner &&
+                          canWithdrawCollateral &&
+                          Number(vault?.stackedTokens) === 0 &&
+                          Number(totalDebt) <= 3 ? (
+                            <button
+                              type="button"
+                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              onClick={() => setShowCloseModal(true)}
+                            >
+                              Withdraw Collateral & Close Vault
+                            </button>
+                          ) : !loadingStackerData && isVaultOwner ? (
+                            <button
+                              type="button"
+                              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              onClick={() => setShowBurnModal(true)}
+                            >
+                              Pay back
+                            </button>
+                          ) : loadingStackerData ? (
+>>>>>>> nd/vaults-v2
                             <Placeholder
                               className="py-2"
                               color={Placeholder.color.GRAY}
