@@ -3,7 +3,7 @@ import { CollateralTypeProps } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { StyledIcon } from './ui/styled-icon';
 import { AppContext } from '@common/context';
-import { microToReadable } from '@common/vault-utils';
+import { microToReadable, getCollateralToDebtRatio } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
@@ -11,7 +11,7 @@ import { AnchorMode, callReadOnlyFunction, cvToJSON, standardPrincipalCV, contra
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Placeholder } from './ui/placeholder';
-import { Status } from './ui/health-status';
+import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
 
 export interface VaultProps {
   key: string;
