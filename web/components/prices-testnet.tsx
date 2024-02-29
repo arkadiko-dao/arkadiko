@@ -9,6 +9,9 @@ import {
   standardPrincipalCV,
   makeSTXTokenTransfer,
   privateKeyToString,
+  callReadOnlyFunction,
+  stringAsciiCV,
+  cvToJSON
 } from '@stacks/transactions';
 import { AppContext } from '@common/context';
 import { tokenList } from '@components/token-swap-list';
@@ -38,20 +41,35 @@ export const PricesTestnet = () => {
   const [loadingPrices, setLoadingPrices] = useState(true);
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
 
+  const getPrice = async (symbol: string) => {
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+    const fetchedPrice = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-oracle-v2-3',
+      functionName: 'get-price',
+      functionArgs: [stringAsciiCV(symbol || 'STX')],
+      senderAddress: contractAddress,
+      network: network,
+    });
+    const json = cvToJSON(fetchedPrice);
+
+    return json.value['last-price'].value;
+  };
+
   useEffect(() => {
     const fetchPrices = async () => {
-      let response: any = await axios.get(`${apiUrl}/api/v1/pages/oracle`);
-      response = response['data'];
       // Get current block height
       const client = getRPCClient();
       const response2 = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
       const data = await response2.json();
       const currentBlock = data['burn_block_height'];
 
-      setStxPrice(response['wstx']['last_price']);
+      const stxP = await getPrice('STX');
+      setStxPrice(stxP);
       setStxBlockUpdate(currentBlock);
 
-      setXbtcPrice(response['xbtc']['last_price']);
+      const xbtcP = await getPrice('BTC');
+      setXbtcPrice(xbtcP);
       setXbtcBlockUpdate(currentBlock);
 
       setUsdaPrice(100000000);
