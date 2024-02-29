@@ -6,8 +6,12 @@ import { AppContext } from '@common/context';
 import { microToReadable } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
 import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network, asyncForEach } from '@common/utils';
 import { AnchorMode, callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { Tooltip } from '@blockstack/ui';
+import { useSTXAddress } from '@common/use-stx-address';
+import { Placeholder } from './ui/placeholder';
+import { Status } from './ui/health-status';
 
 export interface VaultProps {
   key: string;
@@ -220,7 +224,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       setLoading(false);
     }
 
-    if (!startedLoading && Object.keys(state?.collateralTypes).length > 0) fetchData();
+    if (!startedLoading && Object.keys(state?.collateralTypes).length >= 3) fetchData();
   }, [state.collateralTypes]);
 
   return (
@@ -255,7 +259,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       )}
       <div className="grid grid-cols-1 gap-8 mt-4 sm:grid-cols-3 w-full">
         {collateralItems.length > 0 && !isLoading && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
-          <div key={collateral.tokenType} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
+          <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
             <div className="flex flex-col flex-1 px-6 py-8">
               <div className="flex items-center">
                 <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/80 rounded-md shadow-2xl ${collateral.classes.tokenShadow} border border-gray-400/30`}>
