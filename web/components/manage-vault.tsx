@@ -21,7 +21,7 @@ import {
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { debtClass, VaultProps } from './collateral-card';
 import { getPrice } from '@common/get-price';
-import { getLiquidationPrice, tokenTraits } from '@common/vault-utils';
+import { getLiquidationPrice, tokenTraits, tokenNameToTicker } from '@common/vault-utils';
 import { Redirect } from 'react-router-dom';
 import { getRPCClient } from '@common/utils';
 import { microToReadable, availableCollateralToWithdraw, getCollateralToDebtRatio } from '@common/vault-utils';
@@ -223,7 +223,7 @@ export const ManageVault = ({ match }) => {
         label: 'Collateral amount',
         help: 'The amount of collateral you deposited in this vault',
         data: collateralLocked(),
-        unit: vault?.collateralToken.toUpperCase()
+        unit: tokenNameToTicker(vault?.collateralToken)
       },
       {
         label: 'Outstanding debt',

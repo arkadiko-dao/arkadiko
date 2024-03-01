@@ -18,7 +18,7 @@ import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import BN from 'bn.js';
 import { VaultProps } from './vault';
-import { tokenTraits } from '@common/vault-utils';
+import { tokenTraits, tokenNameToTicker } from '@common/vault-utils';
 
 interface Props {
   vault: VaultProps;
@@ -197,7 +197,7 @@ export const VaultDeposit: React.FC<Props> = ({
         You have a balance of{' '}
         <span className="font-semibold">
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
-          {vault?.collateralToken.toUpperCase()}
+          {tokenNameToTicker(vault?.collateralToken)}
         </span>
         . Depositing extra collateral allows you to mint more USDA. Depositing will include a stability fee of maximum <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
       </p>
@@ -211,7 +211,7 @@ export const VaultDeposit: React.FC<Props> = ({
               maximumFractionDigits: 6,
             }
           )}
-          token={vault?.collateralToken.toUpperCase()}
+          token={tokenNameToTicker(vault?.collateralToken)}
           inputName="depositCollateral"
           inputId="depositExtraStxAmount"
           inputValue={extraCollateralDeposit}
