@@ -118,7 +118,7 @@ export const VaultWithdraw: React.FC<Props> = ({
         <span className="font-semibold">
           {maximumCollateralToWithdraw} {vault?.collateralToken.toUpperCase()}
         </span>
-        .
+        . Withdrawing will include a stability fee of maximum <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
       </p>
 
       <div className="mt-6">

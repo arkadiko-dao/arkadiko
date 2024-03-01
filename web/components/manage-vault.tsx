@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { Tooltip } from '@blockstack/ui';
 import { Container } from './home';
 import { VaultDeposit } from '@components/vault-deposit';
@@ -57,6 +57,20 @@ export const ManageVault = ({ match }) => {
 
   const [loadingVaultData, setLoadingVaultData] = useState(true);
   const [loadingFeesData, setLoadingFeesData] = useState(true);
+
+  const minimimumStabilityFee = useMemo(
+    () => {
+      // If stability fee is 0 (i.e. no blocks have passed), we need to make sure a minimum is calculated
+      // e.g. ~3 blocks of stability fees worth
+      // (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365))
+      const yearlyFee = 400; // 4% in bps
+      const numBlocks = 3;
+      const minFee = 1000000 * totalDebt * yearlyFee * numBlocks / (10000 * 144 * 365);
+      console.log('MIN FEE:', minFee.toFixed(0));
+      return Math.max(stabilityFee, minFee.toFixed(1));
+    },
+    [stabilityFee]
+  );
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -558,13 +572,13 @@ export const ManageVault = ({ match }) => {
                         reserveName={reserveName}
                         price={price}
                         collateralType={collateralType}
-                        stabilityFee={stabilityFee}
+                        stabilityFee={minimimumStabilityFee}
                       />
                     </div>
                     <div className="flex flex-col px-4 py-5 sm:p-6">
                       <VaultBurn
                         outstandingDebt={outstandingDebt}
-                        stabilityFee={stabilityFee}
+                        stabilityFee={minimimumStabilityFee}
                         match={match}
                         vault={vault}
                         reserveName={reserveName}
@@ -595,7 +609,7 @@ export const ManageVault = ({ match }) => {
                         vault={vault}
                         reserveName={reserveName}
                         decimals={decimals}
-                        stabilityFee={stabilityFee}
+                        stabilityFee={minimimumStabilityFee}
                       />
                     </div>
                     <div className="flex flex-col px-4 py-5 sm:p-6">
@@ -604,7 +618,7 @@ export const ManageVault = ({ match }) => {
                         maximumCollateralToWithdraw={maximumCollateralToWithdraw}
                         vault={vault}
                         reserveName={reserveName}
-                        stabilityFee={stabilityFee}
+                        stabilityFee={minimimumStabilityFee}
                       />
                     </div>
                   </div>
