@@ -37,7 +37,7 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
     return 'text-red-600';
   }
 
-  return 'text-dark-600';
+  return 'text-red-600';
 };
 
 export const collExtraInfo = {

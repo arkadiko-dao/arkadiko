@@ -47,7 +47,7 @@ export const debtClassToType = (debtClass: string) => {
     return StatusType.SUCCESS;
   } else if (debtClass.includes('orange-500')) {
     return StatusType.WARNING;
-  } else if (debtClass.includes('dark-600')) {
+  } else if (debtClass.includes('red-600')) {
     return StatusType.ERROR;
   }
 
@@ -59,7 +59,7 @@ export const debtClassToLabel = (debtClass: string) => {
     return 'Healthy';
   } else if (debtClass.includes('orange-500')) {
     return 'Danger';
-  } else if (debtClass.includes('dark-600')) {
+  } else if (debtClass.includes('red-600')) {
     return 'Liquidation Close';
   }
 

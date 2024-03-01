@@ -199,7 +199,7 @@ export const VaultDeposit: React.FC<Props> = ({
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
           {tokenNameToTicker(vault?.collateralToken || '')}
         </span>
-        . Depositing extra collateral allows you to mint more USDA. Depositing will include a stability fee of maximum <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
+        . Depositing extra collateral allows you to mint more USDA. Depositing will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
       </p>
 
       <div className="mt-6">

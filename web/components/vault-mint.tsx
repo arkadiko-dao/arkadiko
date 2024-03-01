@@ -160,7 +160,7 @@ export const VaultMint: React.FC<Props> = ({
           })}{' '}
           USDA
         </span>
-        . Minting will include a stability fee of maximum <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
+        . Minting will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
       </p>
 
       <div className="mt-6">
