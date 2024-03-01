@@ -73,7 +73,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       amount,
       uintCV(debtAmount),
       someCV(standardPrincipalCV(hint['prevOwner'])),
-      uintCV(mintFee)
+      uintCV(parseInt(mintFee, 10))
     ];
 
     let postConditions: any[] = [];

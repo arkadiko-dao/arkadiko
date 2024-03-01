@@ -76,7 +76,7 @@ export const VaultMint: React.FC<Props> = ({
       uintCV(collateralAmount),
       uintCV(debtAmount),
       someCV(standardPrincipalCV(hint['prevOwner'])),
-      uintCV(mintFee)
+      uintCV(parseInt(mintFee, 10))
     ];
 
     const postConditions = [
