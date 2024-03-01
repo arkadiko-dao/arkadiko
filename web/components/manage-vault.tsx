@@ -223,7 +223,7 @@ export const ManageVault = ({ match }) => {
         label: 'Collateral amount',
         help: 'The amount of collateral you deposited in this vault',
         data: collateralLocked(),
-        unit: tokenNameToTicker(vault?.collateralToken)
+        unit: tokenNameToTicker(vault?.collateralToken || '')
       },
       {
         label: 'Outstanding debt',

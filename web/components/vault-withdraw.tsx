@@ -116,7 +116,7 @@ export const VaultWithdraw: React.FC<Props> = ({
       <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
         The amount of collateral you are able to withdraw while keeping a healthy collateralization level is{' '}
         <span className="font-semibold">
-          {maximumCollateralToWithdraw} {tokenNameToTicker(vault?.collateralToken)}
+          {maximumCollateralToWithdraw} {tokenNameToTicker(vault?.collateralToken || '')}
         </span>
         . Withdrawing will include a stability fee of maximum <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
       </p>
@@ -124,7 +124,7 @@ export const VaultWithdraw: React.FC<Props> = ({
       <div className="mt-6">
         <InputAmount
           balance={maximumCollateralToWithdraw}
-          token={tokenNameToTicker(vault?.collateralToken)}
+          token={tokenNameToTicker(vault?.collateralToken || '')}
           inputName="withdrawCollateral"
           inputId="withdrawCollateralAmount"
           inputValue={collateralToWithdraw}
