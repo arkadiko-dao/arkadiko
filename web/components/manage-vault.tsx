@@ -372,6 +372,10 @@ export const ManageVault = ({ match }) => {
                                         <Status
                                           type={Status.type.SUCCESS}
                                         />
+                                      ) : debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) == 'text-orange-500' ? (
+                                        <Status
+                                          type={Status.type.WARNING}
+                                        />
                                       ) : (
                                         <Status
                                           type={Status.type.ERROR}
