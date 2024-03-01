@@ -33,7 +33,6 @@ export const VaultMint: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-  console.log('dR:', collateralType?.collateralToDebtRatio);
 
   const callMint = async () => {
     const tokenAddress = tokenInfo['address'];

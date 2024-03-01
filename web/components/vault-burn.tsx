@@ -42,7 +42,7 @@ export const VaultBurn: React.FC<Props> = ({
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 
   const callBurn = async () => {
-    let totalToBurn = Number(usdToBurn) + stabilityFee / 1000000;
+    let totalToBurn = Number(usdToBurn) + parseFloat(1.3 * stabilityFee / 1000000);
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
@@ -54,12 +54,6 @@ export const VaultBurn: React.FC<Props> = ({
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
     ];
-    let burnAmount = 0;
-    if (usdToBurn * 1000000 < 1.5 * stabilityFee) {
-      burnAmount = parseInt(1.3 * stabilityFee, 10);
-    } else {
-      burnAmount = parseInt(parseFloat(usdToBurn) * 1000000 - 1.5 * stabilityFee, 10);
-    }
 
     const tokenAddress = tokenInfo['address'];
     const token = tokenInfo['name'];
@@ -119,7 +113,6 @@ export const VaultBurn: React.FC<Props> = ({
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-        setShowBurnModal(false);
       },
       anchorMode: AnchorMode.Any,
     }, resolveProvider() || window.StacksProvider);
