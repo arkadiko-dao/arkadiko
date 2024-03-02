@@ -1449,6 +1449,165 @@ export const ManageVault = ({ match }) => {
             </div>
           </div>
         </section>
+
+        <section className="mt-12">
+          <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
+            <h3 className="text-lg font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
+              Transaction history
+            </h3>
+          </header>
+
+          <div className="mt-4">
+            <div className="flex flex-col hidden mt-4 lg:block">
+              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                  <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-zinc-700">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
+                      <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
+                        <tr>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                          >
+                            Amount
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                          >
+                            Date
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                          >
+                            Type
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-zinc-400"
+                          >
+                            Status
+                          </th>
+                          <th scope="col" className="relative px-6 py-3 ">
+                            <span className="sr-only">Details</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-800 dark:divide-zinc-600">
+                        <tr className="bg-white dark:bg-zinc-800">
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <p className="text-base font-semibold leading-none text-gray-900 dark:text-zinc-100">37.298347 <span className="text-sm font-normal">USDA</span></p>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            31/08/2023
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-semibold text-orange-700 rounded-md bg-orange-50 ring-1 ring-inset ring-orange-600/20">
+                              Repayment
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            Pending
+                          </td>
+                          <td className="relative px-6 py-4 pr-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a href="#" className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-900">
+                              View details
+                            </a>
+                          </td>
+                        </tr>
+                        <tr className="bg-white dark:bg-zinc-800">
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <p className="text-base font-semibold leading-none text-gray-900 dark:text-zinc-100">983.363820 <span className="text-sm font-normal">STX</span></p>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            24/08/2023
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-semibold text-pink-700 rounded-md bg-pink-50 ring-1 ring-inset ring-pink-600/20">
+                              Unstack
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            Confirmed
+                          </td>
+                          <td className="relative px-6 py-4 pr-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a href="#" className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-900">
+                              View details
+                            </a>
+                          </td>
+                        </tr>
+                        <tr className="bg-white dark:bg-zinc-800">
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <p className="text-base font-semibold leading-none text-gray-900 dark:text-zinc-100">74.512465 <span className="text-sm font-normal">USDA</span></p>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            20/08/2023
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-md text-lime-700 bg-lime-50 ring-1 ring-inset ring-lime-600/20">
+                              Mint
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            Confirmed
+                          </td>
+                          <td className="relative px-6 py-4 pr-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a href="#" className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-900">
+                              View details
+                            </a>
+                          </td>
+                        </tr>
+                        <tr className="bg-white dark:bg-zinc-800">
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <p className="text-base font-semibold leading-none text-gray-900 dark:text-zinc-100">2,459.738338 <span className="text-sm font-normal">STX</span></p>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            18/08/2023
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-md text-sky-700 bg-sky-50 ring-1 ring-inset ring-sky-600/20">
+                              Stack
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            Confirmed
+                          </td>
+                          <td className="relative px-6 py-4 pr-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a href="#" className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-900">
+                              View details
+                            </a>
+                          </td>
+                        </tr>
+                        <tr className="bg-white dark:bg-zinc-800">
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <p className="text-base font-semibold leading-none text-gray-900 dark:text-zinc-100">14.983345 <span className="text-sm font-normal">USDA</span></p>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            18/08/2023
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2 py-1 text-xs font-semibold text-orange-700 rounded-md bg-orange-50 ring-1 ring-inset ring-orange-600/20">
+                              Repayment
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-zinc-100 whitespace-nowrap">
+                            Confirmed
+                          </td>
+                          <td className="relative px-6 py-4 pr-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a href="#" className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-900">
+                              View details
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </Container>
   );
