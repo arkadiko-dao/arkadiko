@@ -64,8 +64,9 @@ export const ManageVault = ({ match }) => {
       // e.g. ~3 blocks of stability fees worth
       // (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365))
       const yearlyFee = 400; // 4% in bps
-      const numBlocks = 6;
+      const numBlocks = 12;
       const minFee = 1000000 * totalDebt * yearlyFee * numBlocks / (10000 * 144 * 365);
+      console.log('Minimum fee', minFee);
       return Math.max(stabilityFee, minFee.toFixed(1));
     },
     [stabilityFee]

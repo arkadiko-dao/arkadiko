@@ -103,7 +103,6 @@ export const VaultMint: React.FC<Props> = ({
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-        setShowMintModal(false);
       },
       anchorMode: AnchorMode.Any,
     }, resolveProvider() || window.StacksProvider);
