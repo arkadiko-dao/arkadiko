@@ -5,6 +5,9 @@ import BN from 'bn.js';
 import {
   AnchorMode,
   broadcastTransaction,
+  callReadOnlyFunction,
+  contractPrincipalCV,
+  cvToJSON,
   createStacksPrivateKey,
   standardPrincipalCV,
   makeSTXTokenTransfer,
@@ -25,21 +28,44 @@ export const Prices = () => {
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
-  const [usdaPrice, setUsdaPrice] = useState(1.0);
   const [stxUsdaPrice, setStxUsdaPrice] = useState(0.0);
-  const [atAlexPrice, setAtAlexPrice] = useState(0.0);
+
   const [stxBlockUpdate, setStxBlockUpdate] = useState(0.0);
   const [xbtcBlockUpdate, setXbtcBlockUpdate] = useState(0.0);
-  const [usdaBlockUpdate, setUsdaBlockUpdate] = useState(0.0);
   const [dikoBlockUpdate, setDikoBlockUpdate] = useState(0.0);
-  const [atAlexBlockUpdate, setAtAlexBlockUpdate] = useState(0.0);
+
   const [stxBlockAgoUpdate, setStxBlockAgoUpdate] = useState(0.0);
   const [xbtcBlockAgoUpdate, setXbtcBlockAgoUpdate] = useState(0.0);
-  const [usdaBlockAgoUpdate, setUsdaBlockAgoUpdate] = useState(0.0);
   const [dikoBlockAgoUpdate, setDikoBlockAgoUpdate] = useState(0.0);
-  const [atAlexBlockAgeUpdate, setAtAlexBlockAgeUpdate] = useState(0.0);
   const [loadingPrices, setLoadingPrices] = useState(true);
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
+
+  const getStxUsdaAmmPrice = async () => {
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+    const fetchPair = async () => {
+      const details = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'get-pair-details',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'wrapped-stx-token'),
+          contractPrincipalCV(contractAddress, 'usda-token'),
+        ],
+        senderAddress: contractAddress,
+        network: network,
+      });
+
+      return cvToJSON(details);
+    };
+
+    const pair = await fetchPair();
+    if (pair.success) {
+      const pairDetails = pair.value.value.value;
+      return (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+    } else {
+      return 0;
+    }
+  };
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -60,20 +86,19 @@ export const Prices = () => {
       setXbtcBlockAgoUpdate(currentBlock - response['xbtc']['price_last_updated']);
 
       setDikoPrice(response['diko']['last_price'] / 1000000);
-      setDikoBlockUpdate(response['diko']['price_last_updated']);
-      setDikoBlockAgoUpdate(currentBlock - response['diko']['price_last_updated']);
+      setDikoBlockUpdate(response['wstx']['price_last_updated']);
+      setDikoBlockAgoUpdate(currentBlock - response['wstx']['price_last_updated']);
 
-      setUsdaPrice(response['usda']['last_price'] * 100);
-      setUsdaBlockUpdate(response['usda']['price_last_updated']);
-      setUsdaBlockAgoUpdate(currentBlock - response['usda']['price_last_updated']);
+      // setUsdaPrice(response['usda']['last_price'] * 100);
+      // setUsdaBlockUpdate(response['usda']['price_last_updated']);
+      // setUsdaBlockAgoUpdate(currentBlock - response['usda']['price_last_updated']);
 
-      if (response['stxusda']) {
-        setStxUsdaPrice(response['stxusda']['last_price'] / 1000000);
-      }
+      const stxUsdaPrice = await getStxUsdaAmmPrice();
+      setStxUsdaPrice((response['wstx']['last_price'] / stxUsdaPrice).toFixed(2));
 
-      setAtAlexPrice(response['auto-alex']['last_price'] / 100);
-      setAtAlexBlockUpdate(response['auto-alex']['price_last_updated']);
-      setAtAlexBlockAgeUpdate(currentBlock - response['auto-alex']['price_last_updated']);
+      // setAtAlexPrice(response['auto-alex']['last_price'] / 100);
+      // setAtAlexBlockUpdate(response['auto-alex']['price_last_updated']);
+      // setAtAlexBlockAgeUpdate(currentBlock - response['auto-alex']['price_last_updated']);
 
       setLoadingPrices(false);
     };
@@ -130,20 +155,12 @@ export const Prices = () => {
       blockAgo: xbtcBlockAgoUpdate,
     },
     {
-      token: 'atALEX',
-      logo: tokenList[7].logo,
-      price: atAlexPrice / 1000000,
-      unit: '$',
-      block: atAlexBlockUpdate,
-      blockAgo: atAlexBlockAgeUpdate,
-    },
-    {
       token: 'USDA',
       logo: tokenList[0].logo,
-      price: usdaPrice / 100000000,
+      price: stxUsdaPrice / 100000000,
       unit: '$',
-      block: usdaBlockUpdate,
-      blockAgo: usdaBlockAgoUpdate,
+      block: stxBlockUpdate,
+      blockAgo: stxBlockAgoUpdate,
     },
   ];
 
@@ -196,25 +213,6 @@ export const Prices = () => {
                         <Placeholder className="justify-end py-2" width={Placeholder.width.HALF} />
                       ) : asset.token == 'USDA' ? (
                         <div>
-                          <div className="flex items-center">
-                            <Tooltip
-                              className=""
-                              shouldWrapChildren={true}
-                              label={`Using ALEX xUSD/USDA stable pool`}
-                            >
-                              <StyledIcon
-                                as="InformationCircleIcon"
-                                size={5}
-                                className="block mt-3 mr-2 text-gray-400"
-                              />
-                            </Tooltip>
-                            <p>
-                              <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
-                              <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                                {asset.price}
-                              </span>
-                            </p>
-                          </div>
                           {stxUsdaPrice != 0 ? (
                             <div className="flex items-center">
                               <Tooltip
@@ -231,7 +229,7 @@ export const Prices = () => {
                               <p>
                                 <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
                                 <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                                  {stxUsdaPrice}
+                                  {(stxUsdaPrice / 1000000.0).toFixed(2)}
                                 </span>
                               </p>
                             </div>
@@ -341,26 +339,10 @@ export const Prices = () => {
                           <Placeholder className="py-2" width={Placeholder.width.HALF} />
                         ) : asset.token == 'USDA' ? (
                           <>
-                            <div className="flex items-center">
-                              <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
-                              {asset.price}
-
-                              <Tooltip
-                                className=""
-                                shouldWrapChildren={true}
-                                label={`Using ALEX xUSD/USDA stable pool`}
-                              >
-                                <StyledIcon
-                                  as="InformationCircleIcon"
-                                  size={5}
-                                  className="block ml-2 text-gray-400"
-                                />
-                              </Tooltip>
-                            </div>
                             {stxUsdaPrice != 0 ? (
                               <div className="flex items-center mt-2">
                                 <span className="text-gray-500 dark:text-zinc-300">{asset.unit}</span>
-                                {stxUsdaPrice}
+                                {(stxUsdaPrice / 1000000.0).toFixed(2)}
 
                                 <Tooltip
                                   className=""

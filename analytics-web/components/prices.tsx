@@ -85,7 +85,6 @@ export const Prices: React.FC = () => {
       // setAtAlexBlockAgeUpdate(currentBlock - atAlexPrice['last-block'].value);
 
       const stxUsdaPrice = await getStxUsdaAmmPrice();
-      console.log('PRICE::', (stxPrice['last-price'].value / stxUsdaPrice).toFixed(2));
       setStxUsdaPrice((stxPrice['last-price'].value / stxUsdaPrice).toFixed(2));
 
       setLoadingPrices(false);
