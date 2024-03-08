@@ -1,32 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { getRPCClient } from '@common/utils';
+import { getRPCClient, stacksNetwork as network } from '@common/utils';
 import { tokenList } from '../../web/components/token-swap-list';
 import { getPriceInfo, getDikoAmmPrice } from '../../web/common/get-price';
 import { Placeholder } from '../../web/components/ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { StyledIcon } from '../../web/components/ui/styled-icon';
+import { callReadOnlyFunction, contractPrincipalCV, cvToJSON } from '@stacks/transactions';
 
 export const Prices: React.FC = () => {
   const [stxPrice, setStxPrice] = useState(0.0);
   const [dikoPrice, setDikoPrice] = useState(0.0);
   const [xbtcPrice, setXbtcPrice] = useState(0.0);
-  const [usdaPrice, setUsdaPrice] = useState(1.0);
-  const [atAlexPrice, setAtAlexPrice] = useState(0.0);
   const [stxUsdaPrice, setStxUsdaPrice] = useState(1.0);
 
   const [stxBlockUpdate, setStxBlockUpdate] = useState(0.0);
   const [xbtcBlockUpdate, setXbtcBlockUpdate] = useState(0.0);
-  const [usdaBlockUpdate, setUsdaBlockUpdate] = useState(0.0);
   const [dikoBlockUpdate, setDikoBlockUpdate] = useState(0.0);
-  const [atAlexBlockUpdate, setAtAlexBlockUpdate] = useState(0.0);
 
   const [stxBlockAgoUpdate, setStxBlockAgoUpdate] = useState(0.0);
   const [xbtcBlockAgoUpdate, setXbtcBlockAgoUpdate] = useState(0.0);
-  const [usdaBlockAgoUpdate, setUsdaBlockAgoUpdate] = useState(0.0);
   const [dikoBlockAgoUpdate, setDikoBlockAgoUpdate] = useState(0.0);
-  const [atAlexBlockAgeUpdate, setAtAlexBlockAgeUpdate] = useState(0.0);
 
   const [loadingPrices, setLoadingPrices] = useState(true);
+
+  const getStxUsdaAmmPrice = async () => {
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+    const fetchPair = async () => {
+      const details = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'get-pair-details',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'wrapped-stx-token'),
+          contractPrincipalCV(contractAddress, 'usda-token'),
+        ],
+        senderAddress: contractAddress,
+        network: network,
+      });
+
+      return cvToJSON(details);
+    };
+
+    const pair = await fetchPair();
+    if (pair.success) {
+      const pairDetails = pair.value.value.value;
+      return (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+    } else {
+      return 0;
+    }
+  };
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -51,19 +73,20 @@ export const Prices: React.FC = () => {
       setDikoBlockUpdate(currentBlock);
       setDikoBlockAgoUpdate(1)
 
-      const usdaPrice = await getPriceInfo('USDA');
-      setUsdaPrice(usdaPrice['last-price'].value * 100);
-      setUsdaBlockUpdate(usdaPrice['last-block'].value);
-      setUsdaBlockAgoUpdate(currentBlock - usdaPrice['last-block'].value)
+      // const usdaPrice = await getPriceInfo('USDA');
+      // setUsdaPrice(usdaPrice['last-price'].value * 100);
+      // setUsdaBlockUpdate(usdaPrice['last-block'].value);
+      // setUsdaBlockAgoUpdate(currentBlock - usdaPrice['last-block'].value)
 
-      const atAlexPrice = await getPriceInfo('auto-alex');
-      console.log(atAlexPrice);
-      setAtAlexPrice(atAlexPrice['last-price'].value / 100);
-      setAtAlexBlockUpdate(atAlexPrice['last-block'].value);
-      setAtAlexBlockAgeUpdate(currentBlock - atAlexPrice['last-block'].value);
+      // const atAlexPrice = await getPriceInfo('auto-alex');
+      // console.log(atAlexPrice);
+      // setAtAlexPrice(atAlexPrice['last-price'].value / 100);
+      // setAtAlexBlockUpdate(atAlexPrice['last-block'].value);
+      // setAtAlexBlockAgeUpdate(currentBlock - atAlexPrice['last-block'].value);
 
-      const stxUsdaPrice = await getPriceInfo('STX/USDA');
-      setStxUsdaPrice(stxUsdaPrice['last-price'].value);
+      const stxUsdaPrice = await getStxUsdaAmmPrice();
+      console.log('PRICE::', (stxPrice['last-price'].value / stxUsdaPrice).toFixed(2));
+      setStxUsdaPrice((stxPrice['last-price'].value / stxUsdaPrice).toFixed(2));
 
       setLoadingPrices(false);
     };
@@ -98,20 +121,12 @@ export const Prices: React.FC = () => {
       blockAgo: xbtcBlockAgoUpdate,
     },
     {
-      token: 'atALEX',
-      logo: tokenList[7].logo,
-      price: atAlexPrice / 1000000,
-      unit: '$',
-      block: atAlexBlockUpdate,
-      blockAgo: atAlexBlockAgeUpdate,
-    },
-    {
       token: 'USDA',
       logo: tokenList[0].logo,
-      price: usdaPrice / 100000000,
+      price: (stxUsdaPrice / 100000000).toFixed(2),
       unit: '$',
-      block: usdaBlockUpdate,
-      blockAgo: usdaBlockAgoUpdate,
+      block: stxBlockUpdate,
+      blockAgo: stxBlockAgoUpdate,
     },
   ];
 
@@ -146,25 +161,6 @@ export const Prices: React.FC = () => {
                         <Placeholder className="justify-end py-2" width={Placeholder.width.HALF} />
                       ) : asset.token == 'USDA' ? (
                         <div>
-                          <div className="flex items-center">
-                            <Tooltip
-                              className=""
-                              shouldWrapChildren={true}
-                              label={`Using ALEX xUSD/USDA stable pool`}
-                            >
-                              <StyledIcon
-                                as="InformationCircleIcon"
-                                size={5}
-                                className="block mt-3 mr-2 text-gray-400"
-                              />
-                            </Tooltip>
-                            <p>
-                              <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
-                              <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                                {asset.price}
-                              </span>
-                            </p>
-                          </div>
                           {stxUsdaPrice != 0 ? (
                             <div className="flex items-center">
                               <Tooltip
@@ -181,7 +177,7 @@ export const Prices: React.FC = () => {
                               <p>
                                 <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
                                 <span className="text-4xl font-extrabold text-gray-700 dark:text-zinc-100">
-                                  {stxUsdaPrice / 1000000}
+                                  {(stxUsdaPrice / 1000000).toFixed(2)}
                                 </span>
                               </p>
                             </div>
@@ -291,25 +287,6 @@ export const Prices: React.FC = () => {
                           <Placeholder className="py-2" width={Placeholder.width.HALF} />
                         ) : asset.token == 'USDA' ? (
                           <div>
-                            <div className="flex items-center">
-                              <Tooltip
-                                className=""
-                                shouldWrapChildren={true}
-                                label={`Using ALEX xUSD/USDA stable pool`}
-                              >
-                                <StyledIcon
-                                  as="InformationCircleIcon"
-                                  size={5}
-                                  className="block mr-2 text-gray-400"
-                                />
-                              </Tooltip>
-                              <p>
-                                <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
-                                <span className="text-gray-700 dark:text-zinc-100">
-                                  {asset.price}
-                                </span>
-                              </p>
-                            </div>
                             {stxUsdaPrice != 0 ? (
                               <div className="flex items-center">
                                 <Tooltip
@@ -326,7 +303,7 @@ export const Prices: React.FC = () => {
                                 <p>
                                   <span className="text-base font-medium text-gray-500">{asset.unit}</span>{' '}
                                   <span className="text-gray-700 dark:text-zinc-100">
-                                    {stxUsdaPrice / 1000000}
+                                    {(stxUsdaPrice / 1000000).toFixed(2)}
                                   </span>
                                 </p>
                               </div>
@@ -343,7 +320,7 @@ export const Prices: React.FC = () => {
 
                             <span className="text-base font-medium text-gray-500">$</span>
                             <span className="text-gray-700 dark:text-zinc-100">
-                              {asset.price * stxUsdaPrice / 1000000}
+                              {(asset.price * stxUsdaPrice / 1000000).toFixed(2)}
                             </span>)
                           </p>
                         ) : (
