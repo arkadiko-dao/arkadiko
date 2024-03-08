@@ -125,7 +125,6 @@ export const Home: React.FC = () => {
       const sortedTvl = array.sort(function (a, b) {
         return Number(b['tvl']) - Number(a['tvl']);
       });
-      console.log('uff', sortedTvl);
       setPools(sortedTvl);
     };
     const fetchVaults = async () => {
