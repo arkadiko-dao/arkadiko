@@ -244,6 +244,11 @@ path = "contracts/vaults/arkadiko-stacker-payer-v3-8.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.arkadiko-stacker-payer-v3-9]
+path = "contracts/vaults/arkadiko-stacker-payer-v3-9.clar"
+clarity_version = 2
+epoch = 2.4
+
 [contracts.arkadiko-mock-stacker-v1-1]
 path = "contracts/vaults/arkadiko-mock-stacker-v1-1.clar"
 clarity_version = 2
