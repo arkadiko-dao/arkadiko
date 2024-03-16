@@ -99,9 +99,9 @@ export const defaultState = (): AppState => {
       balance: defaultBalance(),
       vaults: [],
       definedCollateralTypes: [
-        'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token', // TODO: make dynamic
-        'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.Wrapped-Bitcoin',
-        'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token'
+        'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token',
+        'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin',
+        'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token'
       ],
       collateralTypes: [],
       currentTxId: '',
@@ -116,9 +116,9 @@ export const defaultState = (): AppState => {
     balance: defaultBalance(),
     vaults: [],
     definedCollateralTypes: [
-      'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token',
-      'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.Wrapped-Bitcoin',
-      'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token'
+      'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token',
+      'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin',
+      'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token'
     ],
     collateralTypes: [],
     currentTxId: '',

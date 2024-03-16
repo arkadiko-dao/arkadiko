@@ -553,14 +553,14 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                       href="https://explorer.hiro.so/sandbox/faucet?chain=testnet"
                       target="_blank"
                     >Mint STX</a>
-                  ) : (
+                  ) : env === 'testnet' ? (
                     <button
                       onClick={() => mintToken(collateral.name)}
                       className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                     >
                       Mint {collateral.name}
                     </button>
-                  )}
+                  ) : null}
                 </>
               ) : (
                 <button
