@@ -16,6 +16,7 @@
 (define-constant ERR_NOT_AUTHORIZED u990401)
 (define-constant ERR_MIGRATE_FAILED u990001)
 (define-constant ERR_NO_OPEN_VAULT u990002)
+(define-constant STATUS_CLOSED_BY_OWNER u102)
 
 ;; ---------------------------------------------------------
 ;; Vaults
@@ -72,9 +73,8 @@
 
 (define-public (migrate-to-ststx (prev-owner-hint (optional principal)))
   (let (
-    ;; TODO: update for mainnet
-    (stx-token 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token)
-    (ststx-token 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token)
+    (stx-token .wstx-token)
+    (ststx-token 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token)
 
     (current-stx-vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault tx-sender stx-token))
     (current-ststx-vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault tx-sender ststx-token))
@@ -169,24 +169,23 @@
 ;; Reserves
 ;; ---------------------------------------------------------
 
-;; TODO: Update addresses for mainnet
 (define-public (migrate-reserves (stx-amount-to-stack uint))
   (begin
     (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR_NOT_AUTHORIZED))
 
     ;; First we stack STX, to get stSTX
-    (try! (as-contract (contract-call? .stacking-dao-core-v1 deposit 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.reserve-v1 stx-amount-to-stack none)))
+    (try! (as-contract (contract-call? 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-v1 deposit 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.reserve-v1 stx-amount-to-stack none)))
 
     ;; Now that we have all needed tokens, transfer these to pool-active
     (let (
       (stx-balance (stx-get-balance (as-contract tx-sender)))
-      (ststx-balance (unwrap-panic (contract-call? .ststx-token get-balance (as-contract tx-sender))))
-      (wbtc-balance (unwrap-panic (contract-call? .Wrapped-Bitcoin get-balance (as-contract tx-sender))))
+      (ststx-balance (unwrap-panic (contract-call? 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token get-balance (as-contract tx-sender))))
+      (wbtc-balance (unwrap-panic (contract-call? 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin get-balance (as-contract tx-sender))))
     )
       ;; Transfer tokens to pool-active
       (try! (as-contract (contract-call? .wstx-token transfer stx-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
-      (try! (as-contract (contract-call? .ststx-token transfer ststx-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
-      (try! (as-contract (contract-call? .Wrapped-Bitcoin transfer wbtc-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
+      (try! (as-contract (contract-call? 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token transfer ststx-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
+      (try! (as-contract (contract-call? 'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin transfer wbtc-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
 
       (ok { stx-balance: stx-balance, ststx-balance: ststx-balance, wbtc-balance: wbtc-balance})
     )
