@@ -15,8 +15,6 @@
 
 (define-constant ERR_NOT_AUTHORIZED u990401)
 (define-constant ERR_MIGRATE_FAILED u990001)
-(define-constant ERR_NO_OPEN_VAULT u990002)
-(define-constant STATUS_CLOSED_BY_OWNER u102)
 
 ;; ---------------------------------------------------------
 ;; Vaults
@@ -68,49 +66,6 @@
     (unwrap! (contract-call? .arkadiko-vaults-sorted-v1-1 insert owner token nicr prev-owner-hint) (ok false))
 
     (ok true)
-  )
-)
-
-(define-public (migrate-to-ststx (prev-owner-hint (optional principal)))
-  (let (
-    (stx-token .wstx-token)
-    (ststx-token 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token)
-
-    (current-stx-vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault tx-sender stx-token))
-    (current-ststx-vault (contract-call? .arkadiko-vaults-data-v1-1 get-vault tx-sender ststx-token))
-
-    (stx-collateral (get collateral current-stx-vault))
-    (debt (get debt current-stx-vault))
-    (nicr (/ (* collateral u100000000) debt))
-  )
-    ;; Check if STX vault is open - else error
-    (asserts! (is-eq (get status current-stx-vault) u101) (err ERR_NO_OPEN_VAULT))
-
-    ;; mint stSTX
-    (let (
-      (new-ststx-amount (unwrap! (contract-call? 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-v1 deposit
-        'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.reserve-v1
-        stx-collateral
-        none) (err false))
-      )
-    )
-      ;; Check if stSTX vault is open - if so migrate together
-      (if (is-eq (get status current-ststx-vault) u101)
-        (begin
-          ;; already open vault, merge additional stSTX collateral and debt, close STX vault
-          (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault tx-sender ststx-token u101 (+ (get collateral current-ststx-vault) new-ststx-amount) (+ (get debt current-ststx-vault) debt)))
-        )
-        (begin
-          ;; new vault: create stSTX vault and close STX vault
-          (try! (contract-call? .arkadiko-vaults-data-v1-1 set-vault tx-sender ststx-token u101 new-ststx-amount debt))
-        )
-      )
-      (try! (contract-call? .arkadiko-vaults-sorted-v1-1 insert tx-sender ststx-token nicr prev-owner-hint))
-      (try! (as-contract (contract-call? .arkadiko-vaults-data-v1-1 set-vault tx-sender (contract-of stx-token) STATUS_CLOSED_BY_OWNER u0 u0)))
-      (try! (as-contract (contract-call? .arkadiko-vaults-sorted-v1-1 remove tx-sender (contract-of stx-token))))
-
-      (ok true)
-    )
   )
 )
 
