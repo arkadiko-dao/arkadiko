@@ -1,6 +1,4 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Modal } from '@components/ui/modal';
-import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import {
@@ -10,6 +8,8 @@ import {
   createAssetInfo,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
+  someCV,
+  standardPrincipalCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -18,18 +18,14 @@ import { VaultProps } from './vault';
 import { tokenTraits } from '@common/vault-utils';
 
 interface Props {
-  showBurnModal: boolean;
-  setShowBurnModal: (arg: boolean) => void;
   outstandingDebt: () => void;
   stabilityFee: number;
   vault: VaultProps;
   reserveName: string;
 }
 
-export const VaultBurnModal: React.FC<Props> = ({
+export const VaultBurn: React.FC<Props> = ({
   match,
-  showBurnModal,
-  setShowBurnModal,
   outstandingDebt,
   stabilityFee,
   vault,
@@ -42,11 +38,11 @@ export const VaultBurnModal: React.FC<Props> = ({
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
+  const collateralSymbol = match.params.collateral;
+  const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 
   const callBurn = async () => {
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
-    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
-    let totalToBurn = Number(usdToBurn) + stabilityFee / 1000000;
+    let totalToBurn = Number(usdToBurn) + parseFloat(1.3 * stabilityFee / 1000000);
     if (Number(totalToBurn) >= Number(state.balance['usda'] / 1000000)) {
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
@@ -59,28 +55,56 @@ export const VaultBurnModal: React.FC<Props> = ({
       ),
     ];
 
-    let burnAmount = 0;
-    if (usdToBurn * 1000000 < 1.5 * stabilityFee) {
-      burnAmount = parseInt(1.3 * stabilityFee, 10);
-    } else {
-      burnAmount = parseInt(parseFloat(usdToBurn) * 1000000 - 1.5 * stabilityFee, 10);
-    }
+    const tokenAddress = tokenInfo['address'];
+    const token = tokenInfo['name'];
+    const collateralAmount = vault.collateral;
+    const debtAmount = Number(vault.debt) - Number(usdToBurn * 1000000);
+
+    const BASE_URL = process.env.HINT_API_URL;
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
+    const args = [
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-oracle-v2-3'
+      ),
+      contractPrincipalCV(tokenAddress, token),
+      uintCV(collateralAmount),
+      uintCV(parseInt(debtAmount, 10)),
+      someCV(standardPrincipalCV(hint['prevOwner'])),
+      uintCV(100)
+    ];
+
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'burn',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(burnAmount),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(tokenAddress, token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v3-1'
-        ),
-      ],
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'update-vault',
+      functionArgs: args,
       postConditions,
       onFinish: data => {
         console.log('finished burn!', data);
@@ -89,7 +113,6 @@ export const VaultBurnModal: React.FC<Props> = ({
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-        setShowBurnModal(false);
       },
       anchorMode: AnchorMode.Any,
     }, resolveProvider() || window.StacksProvider);
@@ -110,18 +133,11 @@ export const VaultBurnModal: React.FC<Props> = ({
   };
 
   return (
-    <Modal
-      open={showBurnModal}
-      title="Burn USDA"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
-      closeModal={() => setShowBurnModal(false)}
-      buttonText="Burn"
-      buttonAction={() => callBurn()}
-      initialFocus={inputRef}
-    >
-      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
-        Choose how much USDA you want to burn. Burning will include a stability fee of{' '}
-        <span className="font-semibold">{stabilityFee / 1000000} USDA</span>.
+    <div>
+      <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Repay USDA debt</h3>
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
+        Choose how much USDA you want to burn. Burning will include a stability fee of maximum{' '}
+        <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
       </p>
 
       <div className="mt-6">
@@ -140,6 +156,16 @@ export const VaultBurnModal: React.FC<Props> = ({
           ref={inputRef}
         />
       </div>
-    </Modal>
+
+      <div>
+        <button
+          type="button"
+          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={() => callBurn()}
+        >
+          Repay
+        </button>
+      </div>
+    </div>
   );
 };

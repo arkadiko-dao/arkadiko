@@ -18,8 +18,10 @@ import { SwapLoadingPlaceholder } from './swap-loading-placeholder';
 import axios from 'axios';
 import { StyledIcon } from './ui/styled-icon';
 import { ChooseWalletModal } from './choose-wallet-modal';
+import { Redirect } from 'react-router-dom';
 
 export const Swap: React.FC = () => {
+  const env = process.env.REACT_APP_NETWORK_ENV;
   const [state, setState] = useContext(AppContext);
   const [tokenX, setTokenX] = useState(tokenList[2]);
   const [tokenY, setTokenY] = useState(tokenList[0]);
@@ -493,6 +495,7 @@ export const Swap: React.FC = () => {
 
   return (
     <>
+      {env === 'testnet' && (<Redirect to={{ pathname: '/vaults' }} />)}
       <Helmet>
         <title>Swap</title>
       </Helmet>

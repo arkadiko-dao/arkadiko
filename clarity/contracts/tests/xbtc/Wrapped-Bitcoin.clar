@@ -1,6 +1,6 @@
 ;; Implement the `ft-trait` trait defined in the `ft-trait` contract - SIP 10
 ;; This can use sugared syntax in real deployment (unit tests do not allow)
-(impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; ;; Implement the token restriction trait
 (impl-trait .restricted-token-trait.restricted-token-trait)
@@ -141,6 +141,11 @@
     (print { action: "burn-tokens", burn-amount: burn-amount, burn-from : burn-from  })
     (ft-burn? wrapped-bitcoin burn-amount burn-from)))
 
+(define-public (mint-for-protocol (amount uint) (recipient principal))
+  (begin
+    (ft-mint? wrapped-bitcoin amount recipient)
+  )
+)
 
 ;; Revoking Tokens
 ;; --------------------------------------------------------------------------
@@ -211,5 +216,5 @@
 
 (try! (initialize "Wrapped Bitcoin" "xBTC" u8 tx-sender))
 
-(try! (ft-mint? wrapped-bitcoin u10000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
+(try! (ft-mint? wrapped-bitcoin u10000000000 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4))
 (try! (ft-mint? wrapped-bitcoin u10000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 100 xBTC (100 with 8 decimals)

@@ -55,6 +55,8 @@ const tokenToName = (token: string) => {
     return 'wLDN';
   } else if (token === 'lydian-token') {
     return 'LDN';
+  } else if (token === 'wstx-token') {
+    return 'STX';
   } else {
     return '';
   }

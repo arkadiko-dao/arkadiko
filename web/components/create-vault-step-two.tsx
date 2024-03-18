@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext, UserBalanceKeys } from '@common/context';
 import { getPrice } from '@common/get-price';
-import { getLiquidationPrice, getCollateralToDebtRatio } from '@common/vault-utils';
+import { getLiquidationPrice, getCollateralToDebtRatio, tokenNameToTicker } from '@common/vault-utils';
 import { InputAmount } from './input-amount';
 import { useLocation } from 'react-router-dom';
 import {
@@ -25,7 +25,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [decimals, setDecimals] = useState(1000000);
 
   const search = useLocation().search;
-  const tokenType = new URLSearchParams(search).get('type');
   const tokenName = new URLSearchParams(search).get('token');
   const currentSection = 1;
 
@@ -37,7 +36,6 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       'liquidation-ratio': liquidationRatio,
       'liquidation-penalty': liquidationPenalty,
       'stability-fee-apy': stabilityFeeApy,
-      'token-type': tokenType,
       'token-name': tokenName,
       'stack-pox': true,
       'auto-payoff': true,
@@ -57,31 +55,38 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const maximumCoinsToMint = (value: string) => {
-    const collateralType = state.collateralTypes[tokenType?.toLocaleUpperCase()];
+  const fetchPrice = async (tokenKey: string) => {
+    if (!tokenName) return;
+
+    const price = await getPrice(tokenNameToTicker(tokenName));
+    const decimals = tokenKey === 'auto-alex' ? 100000000 : 1000000;
+    setPrice(price / decimals);
+
+    return price / decimals;
+  };
+
+  const maximumCoinsToMint = async (value: string) => {
+    const collateralType = state.collateralTypes[tokenNameToTicker(tokenName)];
     if (collateralType) {
-      const minColl = collateralType['collateralToDebtRatio'];
+      const minColl = liquidationRatio;
       const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
       const uCollateralAmount = parseInt(value * 1000000, 10);
-      setMaximumToMint(Math.floor((uCollateralAmount * price * 100) / maxRatio));
+
+      let collateralPrice = price;
+      if (Number(collateralPrice) === 0) {
+        collateralPrice = await fetchPrice(tokenName.toLowerCase());
+      }
+      const maxDebt = Number(collateralType['maximumDebt']);
+      const maxMint = Math.floor((uCollateralAmount * collateralPrice * 100) / maxRatio);
+      setMaximumToMint(Math.min(maxDebt, maxMint));
     }
   };
 
   useEffect(() => {
-    const fetchPrice = async (tokenKey: string) => {
-      if (!tokenName) {
-        return;
-      }
-
-      const price = await getPrice(tokenName);
-      const decimals = tokenKey === 'auto-alex' ? 100000000 : 1000000;
-      setPrice(price / decimals);
-    };
-
     if (tokenName) {
       const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
       setTokenKey(tokenKey);
-      setDecimals(tokenKey === 'stx' ? 1000000 : 100000000);
+      setDecimals(tokenKey === 'stx' || tokenKey === 'ststx' ? 1000000 : 100000000);
       fetchPrice(tokenKey);
       setIsLoading(false);
     }
@@ -117,19 +122,23 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
       setCoinAmount(value);
-      const error = [`You cannot mint more than ${maximumToMint / 1000000} USDA`];
-      const funnyError = [`You need to mint at least 5% LTV`];
-      const filteredAry = errors.filter(e => e !== error[0] && e !== funnyError[0]);
-      if (parseFloat(value) > maximumToMint / 1000000) {
-        setErrors(filteredAry.concat(error));
-      } else if (value <= parseFloat(maximumToMint / 10000000)) {
-        setErrors(filteredAry.concat(funnyError));
-      } else {
-        setErrors(filteredAry);
-      }
+      checkForErrors(value);
     },
     [state, maximumToMint, errors]
   );
+
+  const checkForErrors = (value: number) => {
+    const error = [`You cannot mint more than ${maximumToMint / 1000000} USDA`];
+    const funnyError = [`You need to mint at least 500 USDA`];
+    const filteredAry = errors.filter(e => e !== error[0] && e !== funnyError[0]);
+    if (parseFloat(value) > maximumToMint / 1000000) {
+      setErrors(filteredAry.concat(error));
+    } else if (value < 500) {
+      setErrors(filteredAry.concat(funnyError));
+    } else {
+      setErrors(filteredAry);
+    }
+  }
 
   const setMaxBalance = useCallback(() => {
     let balance = state.balance[tokenKey] / decimals;
@@ -143,6 +152,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
   const setMaxCoins = useCallback(() => {
     setCoinAmount((maximumToMint / 1000000).toString());
+    checkForErrors(maximumToMint / 1000000);
   }, [state, maximumToMint]);
 
   useEffect(() => {
@@ -161,12 +171,13 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   }, [price, tokenName, collateralAmount, coinAmount]);
 
   useEffect(() => {
-    if (tokenType && state.collateralTypes[tokenType.toUpperCase()]) {
-      setStabilityFeeApy(state.collateralTypes[tokenType.toUpperCase()].stabilityFeeApy);
-      setLiquidationPenalty(state.collateralTypes[tokenType.toUpperCase()].liquidationPenalty);
-      setLiquidationRatio(state.collateralTypes[tokenType.toUpperCase()].liquidationRatio);
+    const key = tokenNameToTicker(tokenName);
+    if (tokenName && state.collateralTypes[key]) {
+      setStabilityFeeApy(state.collateralTypes[key].stabilityFeeApy);
+      setLiquidationPenalty(state.collateralTypes[key].liquidationPenalty);
+      setLiquidationRatio(state.collateralTypes[key].liquidationRatio / 100);
     }
-  }, [tokenType, state.collateralTypes]);
+  }, [tokenName, state.collateralTypes]);
 
   return (
     <>
@@ -179,7 +190,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
               Create a new vault
             </h2>
             <p className="max-w-4xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              Deposit {tokenName} and generate USDA
+              Deposit {tokenNameToTicker(tokenName)} and mint USDA
             </p>
           </div>
           <div>
@@ -244,17 +255,16 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
                       <div className="space-y-6 sm:col-span-3">
                         <div>
                           <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                            How much {tokenName} do you want to collateralize?
+                            How much {tokenNameToTicker(tokenName)} do you want to collateralize?
                           </h3>
                           <p className="mt-2 text-sm">
-                            The amount of {tokenName} you deposit determines how much USDA you can
-                            generate.
+                            The amount of {tokenNameToTicker(tokenName)} you deposit determines how much USDA you can mint.
                           </p>
 
                           <div className="mt-4">
                             <InputAmount
                               balance={state.balance[tokenKey] / decimals}
-                              token={tokenName}
+                              token={tokenNameToTicker(tokenName)}
                               inputName="collateral"
                               inputId="collateralAmount"
                               inputValue={collateralAmount}
@@ -332,7 +342,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
 
                           <div className="p-3 sm:flex sm:items-center sm:flex-1 sm:flex-wrap sm:p-4">
                             <dt className="inline-flex items-center text-sm font-medium text-indigo-500 shrink-0 sm:mr-2">
-                              Current {tokenName} Price
+                              Current {tokenNameToTicker(tokenName)} Price
                             </dt>
                             <dd className="mt-1 text-sm text-indigo-900 sm:mt-0 sm:ml-auto">
                               ${price}

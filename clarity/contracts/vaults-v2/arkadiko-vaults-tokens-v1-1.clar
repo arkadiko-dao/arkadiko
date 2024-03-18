@@ -135,15 +135,16 @@
 
 (begin
   (var-set token-list (list 
-    .wstx-token
-    .ststx-token 
-    .Wrapped-Bitcoin
-    .auto-alex-v2
+    ;; TODO: update for mainnet
+    'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token
+    'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token 
+    'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.Wrapped-Bitcoin
   ))
 
   (map-set tokens
     { 
-      token: .wstx-token 
+      ;; TODO: update for mainnet
+      token: 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.wstx-token 
     }
     {
       token-name: "STX",
@@ -161,7 +162,8 @@
 
   (map-set tokens
     { 
-      token: .ststx-token 
+      ;; TODO: update for mainnet
+      token: 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.ststx-token
     }
     {
       token-name: "stSTX",
@@ -179,7 +181,8 @@
 
   (map-set tokens
     { 
-      token: .Wrapped-Bitcoin 
+      ;; TODO: update for mainnet
+      token: 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4.Wrapped-Bitcoin
     }
     {
       token-name: "xBTC",
@@ -188,24 +191,6 @@
       stability-fee: u400,                    ;; 4% in bps
       liquidation-ratio: u13000,              ;; 130% in bps
       liquidation-penalty: u1000,             ;; 10% in bps
-      redemption-fee-min: u50,                ;; 0.5% in bps
-      redemption-fee-max: u400,               ;; 4% in bps
-      redemption-fee-block-interval: u144,    ;; Fee decay 1 day
-      redemption-fee-block-rate: u500000000   ;; Decrease last block with 1, per 500 USDA redeemed
-    }
-  )
-
-  (map-set tokens
-    { 
-      token: .auto-alex-v2
-    }
-    {
-      token-name: "atALEXv2",
-      max-debt: u500000000000,                ;; 500k
-      vault-min-debt: u500000000,             ;; 500 usda
-      stability-fee: u400,                    ;; 4% in bps
-      liquidation-ratio: u18000,              ;; 180% in bps
-      liquidation-penalty: u2000,             ;; 20% in bps
       redemption-fee-min: u50,                ;; 0.5% in bps
       redemption-fee-max: u400,               ;; 4% in bps
       redemption-fee-block-interval: u144,    ;; Fee decay 1 day

@@ -31,6 +31,12 @@ export const getRPCClient = () => {
 export const stacksNetwork = env === 'mainnet' ? new StacksMainnet() : new StacksTestnet();
 stacksNetwork.coreApiUrl = coreApiUrl;
 
+export const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+
 export const blocksToTime = (blocks:number) => {
   const minutesPerBlock = 10;
   const minutesLeft = blocks * minutesPerBlock;

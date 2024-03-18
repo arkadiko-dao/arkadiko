@@ -12,6 +12,7 @@ interface UserBalance {
   wldn: number;
   ldn: number;
   welsh: number;
+  ststx: number;
   'auto-alex': number;
   dikousda: number;
   wstxusda: number;
@@ -45,12 +46,21 @@ export interface AppState {
   userData: UserData | null;
   balance: UserBalance;
   vaults: VaultProps[];
-  definedCollateralTypes: [string, string, string, string];
+  definedCollateralTypes: [string, string, string];
   collateralTypes: object;
   showTxModal: boolean;
   currentTxId: string;
   currentTxStatus: string;
   currentTxMessage: string;
+}
+
+export const VaultStatuses = () => {
+  return {
+    100: 'Inactive',
+    101: 'Active',
+    201: 'Liquidated',
+    202: 'Redeemed'
+  };
 }
 
 export const defaultBalance = () => {
@@ -64,6 +74,7 @@ export const defaultBalance = () => {
     wldn: 0,
     ldn: 0,
     welsh: 0,
+    ststx: 0,
     'auto-alex': 0,
     dikousda: undefined,
     stxusda: undefined,
@@ -87,7 +98,11 @@ export const defaultState = (): AppState => {
       userData: userSession.loadUserData(),
       balance: defaultBalance(),
       vaults: [],
-      definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'],
+      definedCollateralTypes: [
+        'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token',
+        'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin',
+        'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token'
+      ],
       collateralTypes: [],
       currentTxId: '',
       currentTxStatus: '',
@@ -100,7 +115,11 @@ export const defaultState = (): AppState => {
     userData: null,
     balance: defaultBalance(),
     vaults: [],
-    definedCollateralTypes: ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'],
+    definedCollateralTypes: [
+      'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token',
+      'SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin',
+      'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token'
+    ],
     collateralTypes: [],
     currentTxId: '',
     currentTxStatus: '',

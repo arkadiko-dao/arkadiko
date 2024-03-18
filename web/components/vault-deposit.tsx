@@ -1,6 +1,4 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Modal } from '@components/ui/modal';
-import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { Alert } from './ui/alert';
@@ -11,30 +9,30 @@ import {
   FungibleConditionCode,
   makeStandardSTXPostCondition,
   makeStandardFungiblePostCondition,
-  createAssetInfo
+  createAssetInfo,
+  someCV,
+  standardPrincipalCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import BN from 'bn.js';
 import { VaultProps } from './vault';
-import { tokenTraits } from '@common/vault-utils';
+import { tokenTraits, tokenNameToTicker } from '@common/vault-utils';
 
 interface Props {
-  showDepositModal: boolean;
-  setShowDepositModal: (arg: boolean) => void;
   vault: VaultProps;
   reserveName: string;
   decimals: number;
+  stabilityFee: number;
 }
 
-export const VaultDepositModal: React.FC<Props> = ({
+export const VaultDeposit: React.FC<Props> = ({
   match,
-  showDepositModal,
-  setShowDepositModal,
   vault,
   reserveName,
   decimals,
+  stabilityFee
 }) => {
   const [state, setState] = useContext(AppContext);
   const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
@@ -42,18 +40,23 @@ export const VaultDepositModal: React.FC<Props> = ({
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+  const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
 
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
+  const collateralSymbol = match.params.collateral;
+  const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
       return;
     }
-    const token = tokenTraits[vault['collateralToken'].toLowerCase()]['name'];
+    const tokenAddress = tokenInfo['address'];
+    const token = tokenInfo['name'];
     const decimals = token === 'Wrapped-Bitcoin' || token === 'auto-alex' ? 100000000 : 1000000;
-    const tokenAddress = tokenTraits[vault['collateralToken'].toLowerCase()]['address'];
+    const collateralAmount = Number(vault.collateral) + Number(parseFloat(extraCollateralDeposit) * decimals);
+    const debtAmount = Number(vault.debt);
 
     let postConditions: any[] = [];
     if (vault['collateralToken'].toLowerCase() === 'stx') {
@@ -77,6 +80,19 @@ export const VaultDepositModal: React.FC<Props> = ({
           )
         ),
       ];
+    } else if (vault['collateralToken'].toLowerCase() === 'ststx') {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          senderAddress || '',
+          FungibleConditionCode.LessEqual,
+          new BN(parseFloat(extraCollateralDeposit) * decimals),
+          createAssetInfo(
+            stStxContractAddress,
+            'ststx-token',
+            'ststx'
+          )
+        ),
+      ];
     } else {
       postConditions = [
         makeStandardFungiblePostCondition(
@@ -91,23 +107,60 @@ export const VaultDepositModal: React.FC<Props> = ({
         ),
       ];
     }
+    postConditions.push(
+      makeStandardFungiblePostCondition(
+        senderAddress || '',
+        FungibleConditionCode.LessEqual,
+        uintCV(parseInt(stabilityFee * 1.3, 10)).value,
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      )
+    );
+
+    const BASE_URL = process.env.HINT_API_URL;
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
+    const args = [
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-oracle-v2-3'
+      ),
+      contractPrincipalCV(tokenAddress, token),
+      uintCV(collateralAmount),
+      uintCV(debtAmount),
+      someCV(standardPrincipalCV(hint['prevOwner'])),
+      uintCV(100)
+    ];
 
     await doContractCall({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-freddie-v1-1',
-      functionName: 'deposit',
-      functionArgs: [
-        uintCV(match.params.id),
-        uintCV(parseFloat(extraCollateralDeposit) * decimals),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', reserveName),
-        contractPrincipalCV(tokenAddress, token),
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-collateral-types-v3-1'
-        ),
-      ],
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'update-vault',
+      functionArgs: args,
       postConditions,
       onFinish: data => {
         console.log('finished deposit!', data);
@@ -116,7 +169,6 @@ export const VaultDepositModal: React.FC<Props> = ({
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-        setShowDepositModal(false);
       },
       anchorMode: AnchorMode.Any,
     }, resolveProvider() || window.StacksProvider);
@@ -138,35 +190,16 @@ export const VaultDepositModal: React.FC<Props> = ({
   };
 
   return (
-    <Modal
-      open={showDepositModal}
-      title="Deposit Extra Collateral"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[2].logo} alt="" />}
-      closeModal={() => setShowDepositModal(false)}
-      buttonText="Add deposit"
-      buttonAction={() => addDeposit()}
-      initialFocus={inputRef}
-    >
-      <p className="text-sm text-center text-gray-500 dark:text-zinc-400">
-        Choose how much extra collateral you want to post. You have a balance of{' '}
+    <div>
+      <h3 className="text-base font-normal leading-6 text-gray-900 font-headings dark:text-zinc-50">Deposit extra collateral</h3>
+      <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
+        You have a balance of{' '}
         <span className="font-semibold">
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
-          {vault?.collateralToken.toUpperCase()}
+          {tokenNameToTicker(vault?.collateralToken || '')}
         </span>
-        .
+        . Depositing extra collateral allows you to mint more USDA. Depositing will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
       </p>
-
-      {vault && vault['collateralToken'] && vault['collateralToken'].toLowerCase() === 'stx' ? (
-        <div className="my-4">
-          <Alert>
-            <p>
-              When depositing in a vault that is already stacking, keep in mind that your extra
-              collateral will be <span className="font-semibold">locked but not stacked</span>. You
-              won't be able to stack these STX until the cooldown cycle!
-            </p>
-          </Alert>
-        </div>
-      ) : null}
 
       <div className="mt-6">
         <InputAmount
@@ -177,7 +210,7 @@ export const VaultDepositModal: React.FC<Props> = ({
               maximumFractionDigits: 6,
             }
           )}
-          token={vault?.collateralToken.toUpperCase()}
+          token={tokenNameToTicker(vault?.collateralToken || '')}
           inputName="depositCollateral"
           inputId="depositExtraStxAmount"
           inputValue={extraCollateralDeposit}
@@ -187,6 +220,16 @@ export const VaultDepositModal: React.FC<Props> = ({
           ref={inputRef}
         />
       </div>
-    </Modal>
+
+      <div>
+        <button
+          type="button"
+          className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          onClick={() => addDeposit()}
+        >
+          Deposit
+        </button>
+      </div>
+    </div>
   );
 };

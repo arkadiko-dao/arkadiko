@@ -1,4 +1,4 @@
-(impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
 
 ;; Defines the Stacked STX according to the SIP010 Standard
 (define-fungible-token ststx)
@@ -58,7 +58,7 @@
 ;; Initialize the contract
 (begin
   ;; TODO: do not do this on testnet or mainnet
-  (try! (ft-mint? ststx u10000000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)) ;; 10 million USDA
+  (try! (ft-mint? ststx u10000000000000 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4)) ;; 10 million USDA
   (try! (ft-mint? ststx u10000000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 10 million USDA
   (try! (ft-mint? ststx u10000000000000 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)) ;; 10 million USDA
   (try! (ft-mint? ststx u10000000000000 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)) ;; 10 million USDA
