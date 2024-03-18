@@ -230,7 +230,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
   return (
     <>
       {isLoading ? (
-        <div className="min-w-full mt-4 ml-24 overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
+        <div className="min-w-full overflow-hidden overflow-x-auto align-middle rounded-lg sm:shadow">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-600">
             <thead className="bg-gray-50 dark:bg-zinc-800 dark:bg-opacity-80">
               <tr>
