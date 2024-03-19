@@ -3,7 +3,7 @@
 ;;
 
 (use-trait oracle-trait .arkadiko-oracle-trait-v1.oracle-trait)
-(use-trait ft-trait .sip-010-trait-ft-standard.sip-010-trait)
+(use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 (use-trait vaults-tokens-trait .arkadiko-vaults-tokens-trait-v1-1.vaults-tokens-trait)
 (use-trait vaults-data-trait .arkadiko-vaults-data-trait-v1-1.vaults-data-trait)
 (use-trait vaults-sorted-trait .arkadiko-vaults-sorted-trait-v1-1.vaults-sorted-trait)

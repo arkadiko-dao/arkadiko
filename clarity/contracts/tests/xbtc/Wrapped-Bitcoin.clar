@@ -1,6 +1,6 @@
 ;; Implement the `ft-trait` trait defined in the `ft-trait` contract - SIP 10
 ;; This can use sugared syntax in real deployment (unit tests do not allow)
-(impl-trait .sip-010-trait-ft-standard.sip-010-trait)
+(impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 ;; ;; Implement the token restriction trait
 (impl-trait .restricted-token-trait.restricted-token-trait)
