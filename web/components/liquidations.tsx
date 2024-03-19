@@ -240,22 +240,21 @@ export const Liquidations: React.FC = () => {
 
   useEffect(() => {
     const getDikoPrice = async () => {
-      // const call = await callReadOnlyFunction({
-      //   contractAddress,
-      //   contractName: 'arkadiko-swap-v2-1',
-      //   functionName: 'get-pair-details',
-      //   functionArgs: [
-      //     contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      //     contractPrincipalCV(contractAddress, 'usda-token'),
-      //   ],
-      //   senderAddress: stxAddress || '',
-      //   network: network,
-      // });
-      // const resultPairDetails = cvToJSON(call).value.value.value;
-      // const balanceX = resultPairDetails["balance-x"].value;
-      // const balanceY = resultPairDetails["balance-y"].value;
-      // return balanceY / balanceX;
-      return 0.33;
+      const call = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'get-pair-details',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+          contractPrincipalCV(contractAddress, 'usda-token'),
+        ],
+        senderAddress: stxAddress || '',
+        network: network,
+      });
+      const resultPairDetails = cvToJSON(call).value.value.value;
+      const balanceX = resultPairDetails["balance-x"].value;
+      const balanceY = resultPairDetails["balance-y"].value;
+      return balanceY / balanceX;
     };
 
     const getTotalPooled = async () => {
@@ -307,7 +306,7 @@ export const Liquidations: React.FC = () => {
       setButtonUnstakeDisabled(userPooled == 0)
 
       const dikoPerYear = 612500000; // 10% of all emissions
-      setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
+      setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100000.0);
       setIsLoading(false);
     };
 
