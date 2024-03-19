@@ -228,7 +228,7 @@ export const ManageVault = ({ match }) => {
       contractName: 'arkadiko-vaults-operations-v1-1',
       functionName: 'close-vault',
       functionArgs: args,
-      postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished burn!', data);
         setState(prevState => ({
