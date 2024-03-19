@@ -212,7 +212,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           liquidationPenalty: coll['liquidationPenalty'],
           collateralToDebtRatio: coll['collateralToDebtRatio'],
           maximumDebt: coll['maximumDebt'],
-          liquidityAvailable: Number(coll['maximumDebt']) - Number(debtCall.value.value),
+          liquidityAvailable: Math.max(0, Number(coll['maximumDebt']) - Number(debtCall.value.value)),
           label: collExtraInfo[tokenSymbol]?.['label'],
           logo: collExtraInfo[tokenSymbol]?.['logo'],
           path: collExtraInfo[tokenSymbol]?.['path'],
