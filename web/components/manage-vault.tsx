@@ -184,7 +184,7 @@ export const ManageVault = ({ match }) => {
 
   const closeVault = async () => {
     const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-    const totalToBurn = Number(vault.debt) + parseFloat(1.3 * stabilityFee / 1000000);
+    const totalToBurn = Number(totalDebt * 1.1) * 1000000;
     const postConditions = [
       makeStandardFungiblePostCondition(
         senderAddress || '',
