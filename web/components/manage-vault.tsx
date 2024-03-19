@@ -17,6 +17,9 @@ import {
   cvToJSON,
   callReadOnlyFunction,
   falseCV,
+  makeStandardFungiblePostCondition,
+  FungibleConditionCode,
+  createAssetInfo
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { debtClass, VaultProps } from './collateral-card';
@@ -32,11 +35,13 @@ import { PoxTimeline } from '@components/pox-timeline';
 import { StyledIcon } from './ui/styled-icon';
 import { Status } from './ui/health-status';
 import { collExtraInfo } from './collateral-card';
+import { useConnect } from '@stacks/connect-react';
 
 export const ManageVault = ({ match }) => {
   const senderAddress = useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const [{ collateralTypes }, _x] = useContext(AppContext);
+  const { doContractCall } = useConnect();
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const vaultOwner = match.params.owner;
@@ -176,6 +181,65 @@ export const ManageVault = ({ match }) => {
       window.location.reload();
     }
   }, [state.currentTxStatus]);
+
+  const closeVault = async () => {
+    const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
+    const totalToBurn = Number(vault.debt) + parseFloat(1.3 * stabilityFee / 1000000);
+    const postConditions = [
+      makeStandardFungiblePostCondition(
+        senderAddress || '',
+        FungibleConditionCode.LessEqual,
+        uintCV(parseInt(totalToBurn, 10)).value,
+        createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
+    ];
+
+    const tokenAddress = tokenInfo['address'];
+    const token = tokenInfo['name'];
+
+    const args = [
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-tokens-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-data-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-sorted-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-pool-active-v1-1'
+      ),
+      contractPrincipalCV(
+        process.env.REACT_APP_CONTRACT_ADDRESS || '',
+        'arkadiko-vaults-helpers-v1-1'
+      ),
+      contractPrincipalCV(tokenAddress, token)
+    ];
+
+    await doContractCall({
+      network,
+      contractAddress,
+      stxAddress: senderAddress,
+      contractName: 'arkadiko-vaults-operations-v1-1',
+      functionName: 'close-vault',
+      functionArgs: args,
+      postConditions,
+      onFinish: data => {
+        console.log('finished burn!', data);
+        setState(prevState => ({
+          ...prevState,
+          currentTxId: data.txId,
+          currentTxStatus: 'pending',
+        }));
+      },
+      anchorMode: AnchorMode.Any,
+    }, resolveProvider() || window.StacksProvider);
+  };
 
   const liquidationPrice = () => {
     if (vault) {
@@ -323,7 +387,15 @@ export const ManageVault = ({ match }) => {
                   </div>
                 )}
               </h2>
-
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => closeVault()}
+                >
+                  Close Vault
+                </button>
+              </div>
             </div>
           </header>
 

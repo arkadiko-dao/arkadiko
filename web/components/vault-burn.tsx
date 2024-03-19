@@ -93,7 +93,7 @@ export const VaultBurn: React.FC<Props> = ({
       ),
       contractPrincipalCV(tokenAddress, token),
       uintCV(collateralAmount),
-      uintCV(parseInt(debtAmount, 10)),
+      uintCV(Math.max(0, parseInt(debtAmount, 10))),
       someCV(standardPrincipalCV(hint['prevOwner'])),
       uintCV(100)
     ];
