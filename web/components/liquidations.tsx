@@ -493,176 +493,160 @@ export const Liquidations: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                <div className="relative p-8 border border-gray-200 rounded-md dark:border-zinc-600">
-                  <div className="relative">
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 blur-[8px]">
-                      <div className="w-full p-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
-                        <h4 className="text-xs text-indigo-700 uppercase font-headings">Pool info</h4>
-                        <dl className="mt-2 space-y-1">
-                          <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                              Total tokens in pool
-                              <div className="ml-2">
-                                <Tooltip
-                                  className="z-10"
-                                  shouldWrapChildren={true}
-                                  label={`Amount of USDA that is currently in the pool, ready to be used for liquidations.`}
-                                >
-                                  <InformationCircleIcon
-                                    className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                                    aria-hidden="true"
-                                  />
-                                </Tooltip>
-                              </div>
-                            </dt>
-                            <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                              {isLoading ? (
-                                <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                              ) : (
-                                <>
-                                  {microToReadable(totalPooled).toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 6,
-                                  })} USDA
-                                </>
-                              )}
-                            </dt>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="w-full p-4 border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
+                    <h4 className="text-xs text-indigo-700 uppercase font-headings">Pool info</h4>
+                    <dl className="mt-2 space-y-1">
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                          Total tokens in pool
+                          <div className="ml-2">
+                            <Tooltip
+                              className="z-10"
+                              shouldWrapChildren={true}
+                              label={`Amount of USDA that is currently in the pool, ready to be used for liquidations.`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                                aria-hidden="true"
+                              />
+                            </Tooltip>
                           </div>
-
-                          <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                            <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                              Your tokens in pool
-                              <div className="ml-2">
-                                <Tooltip
-                                  className="z-10"
-                                  shouldWrapChildren={true}
-                                  label={`The amount of USDA you still have in the pool. Will decrease if USDA is used in liquidations`}
-                                >
-                                  <InformationCircleIcon
-                                    className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                                    aria-hidden="true"
-                                  />
-                                </Tooltip>
-                              </div>
-                            </dt>
-                            <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                              {isLoading ? (
-                                <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                              ) : (
-                                <>
-                                  {microToReadable(userPooled).toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 6,
-                                  })} USDA
-                                </>
-                              )}
-                            </dt>
-                          </div>
-                        </dl>
+                        </dt>
+                        <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
+                          {isLoading ? (
+                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                          ) : (
+                            <>
+                              {microToReadable(totalPooled).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })} USDA
+                            </>
+                          )}
+                        </dt>
                       </div>
 
-                      <div className="sm:col-span-2">
-                        <div className="relative bg-white rounded-lg shadow dark:bg-zinc-800">
-                          <div className="flex flex-col p-4">
-                            <Tab.Group>
-                              <Tab.List className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100 dark:bg-zinc-300 dark:hover:bg-zinc-200">
-                                {tabs.map((tab, tabIdx) => (
-                                  <Tab as={Fragment} key={tabIdx}>
-                                    {({ selected }) => (
-                                      <button className={
-                                        classNames(
-                                          `p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 ${tabIdx === 1 ? 'ml-0.5': ''}`,
-                                          selected
-                                          ? 'text-sm text-gray-600 font-medium bg-white ring-1 ring-black ring-opacity-5'
-                                          : ''
-                                        )}
-                                      >
-                                        <span className="inline-flex items-center text-sm font-medium rounded-md">
-                                          <span className={
-                                              selected
-                                                ? 'text-indigo-500'
-                                                : 'text-gray-500 group-hover:text-gray-900 dark:group-hover:text-zinc-900'
-                                            }
-                                          >
-                                            {tab.icon}
-                                          </span>
-                                          <span className="text-gray-900">{tab.name}</span>
-                                        </span>
-                                      </button>
+                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
+                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
+                          Your tokens in pool
+                          <div className="ml-2">
+                            <Tooltip
+                              className="z-10"
+                              shouldWrapChildren={true}
+                              label={`The amount of USDA you still have in the pool. Will decrease if USDA is used in liquidations`}
+                            >
+                              <InformationCircleIcon
+                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
+                                aria-hidden="true"
+                              />
+                            </Tooltip>
+                          </div>
+                        </dt>
+                        <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
+                          {isLoading ? (
+                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                          ) : (
+                            <>
+                              {microToReadable(userPooled).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })} USDA
+                            </>
+                          )}
+                        </dt>
+                      </div>
+                    </dl>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <div className="relative bg-white rounded-lg shadow dark:bg-zinc-800">
+                      <div className="flex flex-col p-4">
+                        <Tab.Group>
+                          <Tab.List className="group p-0.5 rounded-lg flex w-full bg-gray-50 hover:bg-gray-100 dark:bg-zinc-300 dark:hover:bg-zinc-200">
+                            {tabs.map((tab, tabIdx) => (
+                              <Tab as={Fragment} key={tabIdx}>
+                                {({ selected }) => (
+                                  <button className={
+                                    classNames(
+                                      `p-1.5 lg:pl-2.5 lg:pr-3.5 rounded-md flex items-center justify-center flex-1 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus:outline-none focus-visible:ring-offset-gray-100 ${tabIdx === 1 ? 'ml-0.5': ''}`,
+                                      selected
+                                      ? 'text-sm text-gray-600 font-medium bg-white ring-1 ring-black ring-opacity-5'
+                                      : ''
                                     )}
-                                  </Tab>
-                                ))}
-                              </Tab.List>
-                              <Tab.Panels className="mt-4">
-                                <Tab.Panel>
-                                  {isLoading ? (
-                                    <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                                  ) : (
-                                    <>
-                                      <InputAmount
-                                        balance={microToReadable(state.balance['usda']).toLocaleString(undefined, {
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 6,
-                                        })}
-                                        token='USDA'
-                                        inputValue={stakeAmount}
-                                        onInputChange={onInputStakeChange}
-                                        onClickMax={stakeMaxAmount}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                                        disabled={buttonStakeDisabled}
-                                        onClick={stake}
+                                  >
+                                    <span className="inline-flex items-center text-sm font-medium rounded-md">
+                                      <span className={
+                                          selected
+                                            ? 'text-indigo-500'
+                                            : 'text-gray-500 group-hover:text-gray-900 dark:group-hover:text-zinc-900'
+                                        }
                                       >
-                                        Add USDA to pool
-                                      </button>
-                                    </>
-                                  )}
-                                </Tab.Panel>
+                                        {tab.icon}
+                                      </span>
+                                      <span className="text-gray-900">{tab.name}</span>
+                                    </span>
+                                  </button>
+                                )}
+                              </Tab>
+                            ))}
+                          </Tab.List>
+                          <Tab.Panels className="mt-4">
+                            <Tab.Panel>
+                              {isLoading ? (
+                                <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                              ) : (
+                                <>
+                                  <InputAmount
+                                    balance={microToReadable(state.balance['usda']).toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                    })}
+                                    token='USDA'
+                                    inputValue={stakeAmount}
+                                    onInputChange={onInputStakeChange}
+                                    onClickMax={stakeMaxAmount}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                    disabled={buttonStakeDisabled}
+                                    onClick={stake}
+                                  >
+                                    Add USDA to pool
+                                  </button>
+                                </>
+                              )}
+                            </Tab.Panel>
 
-                                <Tab.Panel>
-                                  {isLoading ? (
-                                    <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                                  ) : (
-                                    <>
-                                      <InputAmount
-                                        balance={microToReadable(userPooled).toLocaleString(undefined, {
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 6,
-                                        })}
-                                        token='USDA'
-                                        inputValue={unstakeAmount}
-                                        onInputChange={onInputUnstakeChange}
-                                        onClickMax={unstakeMaxAmount}
-                                      />
-                                      <button
-                                        type="button"
-                                        className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                                        disabled={buttonUnstakeDisabled}
-                                        onClick={unstake}
-                                      >
-                                        Remove USDA from pool
-                                      </button>
-                                    </>
-                                  )}
-                                </Tab.Panel>
-                              </Tab.Panels>
-                            </Tab.Group>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="absolute flex items-center p-6 -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-md dark:border-zinc-600 top-1/2 justity-center left-1/2">
-                      <div className="text-lg text-center">
-                        <svg className="w-auto h-6 mx-auto mb-3 sm:h-8 text-zinc-900" viewBox="0 0 60 46" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.03 1.54A2.68 2.68 0 0121.46 0h11.48c.95 0 1.82.49 2.3 1.29L59.62 41.6c.5.82.5 1.84.03 2.66a2.69 2.69 0 01-2.33 1.34h-12a2.7 2.7 0 01-1.9-.77 31.32 31.32 0 00-16.15-8.17c-6.8-1.09-14.81.4-22.7 8.17a2.71 2.71 0 01-3.42.3 2.62 2.62 0 01-.9-3.28L19.02 1.54zm7.1 3.75L46.86 40.3h5.74L31.42 5.3h-5.29zm10.89 28.89L21.75 8.37 9.55 34.55a29.17 29.17 0 0118.58-3.1c3.2.5 6.2 1.5 8.89 2.73z" fill="currentColor"></path></svg>
-                        <p className="font-semibold">Arkadiko 2.0</p>
-                        <p>USDA Stake pool migration in progress...</p>
-                        <svg className="w-5 h-5 mx-auto my-3 text-indigo-800 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <p className="text-sm"><a className="font-medium text-indigo-500 hover:text-indigo-700" target="_blank" href="https://twitter.com/ArkadikoFinance/status/1769034597394710594">Learn more</a></p>
+                            <Tab.Panel>
+                              {isLoading ? (
+                                <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                              ) : (
+                                <>
+                                  <InputAmount
+                                    balance={microToReadable(userPooled).toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                    })}
+                                    token='USDA'
+                                    inputValue={unstakeAmount}
+                                    onInputChange={onInputUnstakeChange}
+                                    onClickMax={unstakeMaxAmount}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                    disabled={buttonUnstakeDisabled}
+                                    onClick={unstake}
+                                  >
+                                    Remove USDA from pool
+                                  </button>
+                                </>
+                              )}
+                            </Tab.Panel>
+                          </Tab.Panels>
+                        </Tab.Group>
                       </div>
                     </div>
                   </div>
