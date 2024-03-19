@@ -107,3 +107,4 @@ typings/
 .requirements
 clarity/contracts/external/deps
 clarity/contracts/external/gen
+clarity/contracts/external/requirements
