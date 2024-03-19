@@ -3,12 +3,14 @@ import { getRPCClient } from '@common/utils';
 
 export const SmartContractBalance = ({ address, description, name }) => {
   const [stxBalance, setStxBalance] = useState(0.0);
+  const [wstxBalance1, setWstxBalance1] = useState(0.0);
   const [dikoBalance, setDikoBalance] = useState(0.0);
   const [usdaBalance, setUsdaBalance] = useState(0.0);
   const [wStxBalance, setWStxBalance] = useState(0.0);
   const [xStxBalance, setXStxBalance] = useState(0.0);
   const [xBtcBalance, setXbtcBalance] = useState(0.0);
   const [atAlexBalance, setAtAlexBalance] = useState(0.0);
+  const [stStxBalance, setStStxBalance] = useState(0.0);
 
   const [stDikoBalance, setStDikoBalance] = useState(0.0);
   const [wstxDikoBalance, setWstxDikoBalance] = useState(0.0);
@@ -42,6 +44,13 @@ export const SmartContractBalance = ({ address, description, name }) => {
         setUsdaBalance(0.0);
       }
 
+      const wstxBalance1 = data.fungible_tokens[`${contractAddress}.wstx-token::wstx`];
+      if (wstxBalance1) {
+        setWstxBalance1(wstxBalance1.balance / 1000000);
+      } else {
+        setWstxBalance1(0.0);
+      }
+
       const wStxBalance = data.fungible_tokens[`${contractAddress}.wrapped-stx-token::wstx`];
       if (wStxBalance) {
         setWStxBalance(wStxBalance.balance / 1000000);
@@ -61,6 +70,13 @@ export const SmartContractBalance = ({ address, description, name }) => {
         setStDikoBalance(stDikoBalance.balance / 1000000);
       } else {
         setStDikoBalance(0.0);
+      }
+
+      const stStxBalance = data.fungible_tokens[`SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token::ststx`];
+      if (stStxBalance) {
+        setStStxBalance(stStxBalance.balance / 1000000);
+      } else {
+        setStStxBalance(0.0);
       }
 
       const atAlexBalance = data.fungible_tokens[`SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex::auto-alex`];
@@ -132,6 +148,15 @@ export const SmartContractBalance = ({ address, description, name }) => {
           {description}
         </p>
         <div className="flex flex-col h-full my-4">
+          {wstxBalance1 ? (
+            <p className="text-lg font-semibold text-gray-800">
+              {wstxBalance1.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+              })}{' '}
+              <span className="text-sm font-normal">STX</span>
+            </p>
+          ) : null}
           {stxBalance ? (
             <p className="text-lg font-semibold text-gray-800">
               {stxBalance.toLocaleString(undefined, {
@@ -139,6 +164,15 @@ export const SmartContractBalance = ({ address, description, name }) => {
                 maximumFractionDigits: 6,
               })}{' '}
               <span className="text-sm font-normal">STX</span>
+            </p>
+          ) : null}
+          {stStxBalance ? (
+            <p className="text-lg font-semibold text-gray-800">
+              {stStxBalance.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+              })}{' '}
+              <span className="text-sm font-normal">stSTX</span>
             </p>
           ) : null}
           {dikoBalance ? (
