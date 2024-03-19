@@ -18,7 +18,8 @@ export const Sidebar: React.FC = ({ children }) => {
   const [navigation, updateNavigation] = useState([
     { name: 'Dashboard', href: '/', icon: TrendingUpIcon, current: true },
     { name: 'Balances', href: '/balances', icon: ScaleIcon, current: false },
-    { name: 'Back to app', href: 'https://app.arkadiko.finance', icon: ExternalLinkIcon, current: false }
+    { name: 'Vaults', href: 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/', icon: ExternalLinkIcon, current: false },
+    { name: 'Back to app', href: 'https://app.arkadiko.finance', icon: ExternalLinkIcon, current: false },
   ])
 
   useEffect(() => {
