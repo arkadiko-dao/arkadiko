@@ -11,10 +11,12 @@ type ComponentProps = {
 };
 
 export const ContractTransaction: React.FC<ComponentProps> = ({ transaction, status }) => {
+  const env = process.env.REACT_APP_NETWORK_ENV;
   const contract_id = transaction.contract_call.contract_id.split('.')[1];
-  const url = location.origin.includes('localhost')
+  let url = location.origin.includes('localhost')
     ? `http://localhost:8000/txid/${transaction.tx_id}`
     : `https://explorer.hiro.so/txid/${transaction.tx_id}`;
+  if (env === 'testnet') url += '?chain=testnet';
 
   return (
     <li className="py-4">

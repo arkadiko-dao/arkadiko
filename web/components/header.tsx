@@ -31,6 +31,7 @@ const shortAddress = (address: string | null) => {
 };
 
 export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
+  const env = process.env.REACT_APP_NETWORK_ENV;
   const [state, _] = useContext(AppContext);
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const { doOpenAuth } = useConnect();
@@ -69,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     const getData = async () => {
       const proposals = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-governance-v4-1',
+        contractName: 'arkadiko-governance-v4-2',
         functionName: 'get-proposals',
         functionArgs: [],
         senderAddress: contractAddress,
@@ -135,13 +136,15 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                   </RouterLink>
                   {state.userData ? (
                     <div className="hidden lg:ml-6 lg:flex lg:space-x-6">
-                      <RouterLink
-                        to="/swap"
-                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                        activeClassName="border-indigo-500 text-gray-900"
-                      >
-                        Swap
-                      </RouterLink>
+                      {env != 'testnet' && (
+                        <RouterLink
+                          to="/swap"
+                          className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                          activeClassName="border-indigo-500 text-gray-900"
+                        >
+                          Swap
+                        </RouterLink>
+                      )}
 
                       <RouterLink
                         to="/vaults"
@@ -151,13 +154,15 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                         Borrow
                       </RouterLink>
 
-                      <RouterLink
-                        to="/stake"
-                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                        activeClassName="border-indigo-500 text-gray-900"
-                      >
-                        Stake
-                      </RouterLink>
+                      {env != 'testnet' && (
+                        <RouterLink
+                          to="/stake"
+                          className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                          activeClassName="border-indigo-500 text-gray-900"
+                        >
+                          Stake
+                        </RouterLink>
+                      )}
 
                       <RouterLink
                         to="/liquidations"
@@ -168,25 +173,27 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                         Liquidations
                       </RouterLink>
 
-                      <RouterLink
-                        to="/governance"
-                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                        activeClassName="border-indigo-500 text-gray-900"
-                      >
-                        {isVotingOpen ? (
-                          <Tooltip
-                            label="A vote is in progress. Check it out and have a say in the future of the protocol!"
-                            shouldWrapChildren={true}
-                            className="z-50"
-                          >
-                            <span className="relative flex w-2 h-2 mr-2">
-                              <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping dark:bg-indigo-300"></span>
-                              <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full dark:bg-indigo-300"></span>
-                            </span>
-                          </Tooltip>
-                        ) : null}
-                        Governance
-                      </RouterLink>
+                      {env != 'testnet' && (
+                        <RouterLink
+                          to="/governance"
+                          className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                          activeClassName="border-indigo-500 text-gray-900"
+                        >
+                          {isVotingOpen ? (
+                            <Tooltip
+                              label="A vote is in progress. Check it out and have a say in the future of the protocol!"
+                              shouldWrapChildren={true}
+                              className="z-50"
+                            >
+                              <span className="relative flex w-2 h-2 mr-2">
+                                <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping dark:bg-indigo-300"></span>
+                                <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full dark:bg-indigo-300"></span>
+                              </span>
+                            </Tooltip>
+                          ) : null}
+                          Governance
+                        </RouterLink>
+                      )}
 
                       <a
                         href="https://info.arkadiko.finance/"
@@ -266,13 +273,15 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                     </div>
                   ) : (
                     <div className="hidden lg:ml-6 lg:flex lg:space-x-6 lg:items-center">
-                      <RouterLink
-                        to="/swap"
-                        className="inline-flex items-center h-full px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                        activeClassName="border-indigo-500 text-gray-900"
-                      >
-                        Swap
-                      </RouterLink>
+                      {env != 'testnet' && (
+                        <RouterLink
+                          to="/swap"
+                          className="inline-flex items-center h-full px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                          activeClassName="border-indigo-500 text-gray-900"
+                        >
+                          Swap
+                        </RouterLink>
+                      )}
 
                       <RouterLink
                         to="/vaults"
@@ -282,13 +291,15 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
                         Borrow
                       </RouterLink>
 
-                      <RouterLink
-                        to="/stake"
-                        className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
-                        activeClassName="border-indigo-500 text-gray-900"
-                      >
-                        Stake
-                      </RouterLink>
+                      {env != 'testnet' && (
+                        <RouterLink
+                          to="/stake"
+                          className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 border-b-2 border-transparent dark:text-zinc-100 hover:border-gray-300 hover:text-gray-700"
+                          activeClassName="border-indigo-500 text-gray-900"
+                        >
+                          Stake
+                        </RouterLink>
+                      )}
 
                       <a
                         href="https://info.arkadiko.finance/"

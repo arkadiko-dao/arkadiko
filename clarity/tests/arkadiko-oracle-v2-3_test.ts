@@ -531,3 +531,57 @@ Clarinet.test({
     block.receipts[0].result.expectErr().expectUint(8402);
   }
 });
+
+Clarinet.test({
+  name: "oracle: can not use same signature twice",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+
+    setTrustedOracles(chain, deployer);
+
+    // Duplicate signatures in list
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400",
+          "0xfe243aa0a991327f6922417959c40fc82be6852e60eb66ce380c4fe9c6866ffd6af83ccd082e17abbcaddd1d95286ba8a10ff7d8a93fbbb1bde29d7e8c21752f01",
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(8403);
+
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400",
+          "0xfe243aa0a991327f6922417959c40fc82be6852e60eb66ce380c4fe9c6866ffd6af83ccd082e17abbcaddd1d95286ba8a10ff7d8a93fbbb1bde29d7e8c21752f01",
+          "0x7b08fe12a53b175af72e5a8318bac89a6f72e328e5985887a6c8747ca7aa1e2108719d7c1bae45cef7840ee22ce669753e73f2a7bbddb6ef73cfb0d85577d02a01"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);
+
+    // Signature that was already used before
+    block = chain.mineBlock([
+      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
+        types.uint(80100),
+        types.uint(1),
+        types.uint(300000),
+        types.uint(6),
+        types.list([
+          "0x909b58eb918031c95e4726387568e25203aa8ed733225219e7561deaa3b071ed755022e7ac6c7ec27acfd63099711e9e10102a05babf4f27ca0c41cc67af201400"
+        ])
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectErr().expectUint(8403);
+  }
+});

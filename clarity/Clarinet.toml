@@ -19,11 +19,19 @@ boot_contracts = ["pox", "costs-v2"]
 contract_id = "SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard"
 
 [[project.requirements]]
+contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-semi-fungible"
+
+[[project.requirements]]
+contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-ownable"
+
+[[project.requirements]]
 contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-amm-swap-pool"
 
 [[project.requirements]]
-contract_id = "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-semi-fungible"
+contract_id = "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.stacking-dao-core-v1"
 
+[[project.requirements]]
+contract_id = "SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.reserve-v1"
 
 # ----------------------------------------------------
 # Core
@@ -88,6 +96,99 @@ path = "contracts/usda-token.clar"
 clarity_version = 2
 epoch = 2.4
 
+[contracts.wstx-token]
+path = "contracts/wstx-token.clar"
+clarity_version = 2
+epoch = 2.4
+
+# ----------------------------------------------------
+# Vaults V2
+# ----------------------------------------------------
+
+[contracts.arkadiko-vaults-data-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-data-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-data-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-data-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-helpers-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-helpers-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-helpers-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-helpers-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-manager-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-manager-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-operations-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-operations-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-pool-active-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-pool-active-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-pool-active-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-pool-active-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-pool-fees-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-pool-fees-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-pool-liq-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-pool-liq-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-pool-liq-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-pool-liq-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-sorted-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-sorted-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-sorted-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-sorted-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-tokens-trait-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-tokens-trait-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-tokens-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-tokens-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-migration-v1-1]
+path = "contracts/vaults-v2/arkadiko-vaults-migration-v1-1.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-vaults-migration-v1-2]
+path = "contracts/vaults-v2/arkadiko-vaults-migration-v1-2.clar"
+clarity_version = 2
+epoch = 2.4
 
 # ----------------------------------------------------
 # Vaults
@@ -145,6 +246,11 @@ epoch = 2.4
 
 [contracts.arkadiko-stacker-payer-v3-8]
 path = "contracts/vaults/arkadiko-stacker-payer-v3-8.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.arkadiko-stacker-payer-v3-9]
+path = "contracts/vaults/arkadiko-stacker-payer-v3-9.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -423,6 +529,17 @@ path = "contracts/tests/arkadiko-governance-tv1-1.clar"
 clarity_version = 2
 epoch = 2.4
 
+# stSTX
+[contracts.ststx-token]
+path = "contracts/tests/ststx/ststx-token.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.stacking-dao-core-v1]
+path = "contracts/tests/ststx/stacking-dao-core-v1.clar"
+clarity_version = 2
+epoch = 2.4
+
 # Tokensoft xBTC
 [contracts.restricted-token-trait]
 path = "contracts/tests/xbtc/restricted-token-trait.clar"
@@ -434,14 +551,13 @@ path = "contracts/tests/xbtc/Wrapped-Bitcoin.clar"
 clarity_version = 2
 epoch = 2.4
 
-# atALEX
-[contracts.trait-ownable]
-path = "contracts/tests/atalex/trait-ownable.clar"
+[contracts.auto-alex]
+path = "contracts/tests/atalex/auto-alex.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.auto-alex]
-path = "contracts/tests/atalex/auto-alex.clar"
+[contracts.auto-alex-v2]
+path = "contracts/tests/atalex/auto-alex-v2.clar"
 clarity_version = 2
 epoch = 2.4
 

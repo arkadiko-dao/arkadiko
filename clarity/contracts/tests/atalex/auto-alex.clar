@@ -1,4 +1,4 @@
-(impl-trait .trait-ownable.ownable-trait)
+(impl-trait 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.trait-ownable.ownable-trait)
 (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
 
 (define-constant ERR-NOT-AUTHORIZED (err u1000))

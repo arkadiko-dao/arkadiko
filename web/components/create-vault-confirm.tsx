@@ -4,38 +4,16 @@ import { useLocation } from 'react-router-dom';
 import { Alert } from './ui/alert';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
 import { StyledIcon } from './ui/styled-icon';
+import { tokenNameToTicker } from '@common/vault-utils';
 
 export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => {
   const [state] = useContext(AppContext);
   const search = useLocation().search;
   const tokenName = new URLSearchParams(search).get('token') || 'STX';
-  const currentSection = 2;
-
-  const endDate = Date.parse(state.endDate);
-  const msInWeek = 7 * 24 * 60 * 60 * 1000;
-  const availableTokensDate = endDate + 6 * msInWeek; // 6-week stacking
-  const tokensAvailability = new Date(availableTokensDate)
-    .toDateString()
-    .split(' ')
-    .slice(1)
-    .join(' ');
-
-  const togglePox = () => {
-    const newState = !coinAmounts['stack-pox'];
-    let autoPayoff = coinAmounts['auto-payoff'];
-    if (!newState) {
-      autoPayoff = false;
-    }
-    setCoinAmounts(prevState => ({
-      ...prevState,
-      'stack-pox': newState,
-      'auto-payoff': autoPayoff,
-    }));
-  };
 
   return (
     <>
-      <NewVaultWizardNav currentSection={currentSection} setStep={setStep} />
+      <NewVaultWizardNav currentSection={2} setStep={setStep} />
 
       <section className="mt-8">
         <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
@@ -65,82 +43,6 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
           </div>
         </header>
 
-        {tokenName.includes('STX') ? (
-          <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
-            <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-800 sm:p-6">
-              <div>
-                <div className="flex items-center">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
-                    Stacking
-                  </h3>
-
-                  {coinAmounts['stack-pox'] ? (
-                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-green-100 text-green-800">
-                      <StyledIcon as="CheckCircleIcon" size={5} className="mr-2" />
-                      Enabled
-                    </span>
-                  ) : (
-                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-sm font-semibold bg-red-100 text-red-800">
-                      <StyledIcon as="XCircleIcon" size={5} className="mr-2" />
-                      Disabled
-                    </span>
-                  )}
-                </div>
-
-                <label className="flex items-center mt-6 space-x-3">
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 border border-gray-300 rounded-md appearance-none form-tick checked:bg-indigo-600 checked:border-transparent focus:outline-none"
-                    checked={coinAmounts['stack-pox']}
-                    onChange={() => togglePox()}
-                  />
-                  <span className="text-gray-900 dark:text-zinc-100">
-                    I want to stack my STX tokens to earn yield
-                  </span>
-                </label>
-
-                {coinAmounts['stack-pox'] ? (
-                  <div className="mt-4">
-                    <Alert type={Alert.type.WARNING} title="Important note">
-                      <p>
-                        Choosing to stack your STX means that they will be{' '}
-                        <span className="font-semibold">
-                          locked and become illiquid immediately
-                        </span>
-                        .
-                      </p>
-                      <p className="mt-1">
-                        They will be available again on:{' '}
-                        <span className="font-semibold">{tokensAvailability}</span> (End of the{' '}
-                        <a
-                          href="https://stacking.club/cycles/next"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-medium text-yellow-700 underline hover:text-yellow-600"
-                        >
-                          next PoX cycle
-                        </a>
-                        : {state.endDate} + 6-week stacking phase + 2-week cooldown period).
-                      </p>
-
-                      <p className="mt-1">
-                        <a
-                          href="https://stacking.club/learn"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-medium text-yellow-700 underline hover:text-yellow-600"
-                        >
-                          Learn more about the PoX cycle.
-                        </a>
-                      </p>
-                    </Alert>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        ) : null}
-
         <div className="max-w-4xl mx-auto mt-4 shadow sm:rounded-md sm:overflow-hidden">
           <div className="px-4 py-5 space-y-6 bg-white dark:bg-zinc-800 sm:p-6">
             <div className="space-y-8 divide-y divide-gray-200 dark:divide-zinc-600">
@@ -151,12 +53,12 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                       Depositing
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-zinc-400 sm:max-w-2xl">
-                      The amount of {coinAmounts['token-name']} tokens that you are depositing into
+                      The amount of {tokenNameToTicker(coinAmounts['token-name'])} tokens that you are depositing into
                       your vault.
                     </p>
                   </div>
                   <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
-                    {coinAmounts['amounts']['collateral']} {coinAmounts['token-name']}
+                    {coinAmounts['amounts']['collateral']} {tokenNameToTicker(coinAmounts['token-name'])}
                   </p>
                 </div>
 
@@ -215,7 +117,7 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                     </p>
                   </div>
                   <p className="mt-1 text-lg font-bold text-gray-600 dark:text-zinc-400 whitespace-nowrap sm:mt-0 sm:ml-3">
-                    ${coinAmounts['liquidation-price']} / {coinAmounts['token-name']}
+                    ${coinAmounts['liquidation-price']} / {tokenNameToTicker(coinAmounts['token-name'])}
                   </p>
                 </div>
 

@@ -220,6 +220,8 @@ Clarinet.test({
     
     let governance = new Governance(chain, deployer);
     let oracleManager = new OracleManager(chain, deployer);
+
+    chain.mineEmptyBlockUntil(100);
  
     // Update xBTC and STX price
     let result = oracleManager.updatePrice("xBTC", 40000, 100000000);
@@ -233,7 +235,7 @@ Clarinet.test({
     let contractChange1 = Governance.contractChange("collateral-types", Utils.qualifiedName('arkadiko-collateral-types-tv1-1'), false, false);
     result = governance.createProposal(
       wallet_1, 
-      9, 
+      chain.blockHeight, 
       "New collateral types",
       "https://discuss.arkadiko.finance/new-collateral-types",
       [contractChange1]

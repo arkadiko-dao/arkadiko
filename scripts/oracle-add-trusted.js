@@ -19,7 +19,7 @@ async function addTrustedOracle(pubKey) {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     nonce: new BN(nonce),
-    fee: new BN(0.001 * 1000000),
+    fee: new BN(0.01 * 1000000),
     postConditionMode: 1,
     network
   };
@@ -31,7 +31,8 @@ async function addTrustedOracle(pubKey) {
 
 async function start() {
   console.log("Add trusted oracle..");
-  addTrustedOracle("024dd9dc4bb64f4ab5dc87fb6b867598fa164b156be8aee54bc40583efec6d718b");
+  addTrustedOracle("03a54738ba7520a7a67aa2f2e00a4c7a3b9ab77497cae6c5542e0c2611c04392ff");
+  // addTrustedOracle("024dd9dc4bb64f4ab5dc87fb6b867598fa164b156be8aee54bc40583efec6d718b");
 }
 
 start()

@@ -206,7 +206,7 @@ class StakePoolDiko {
     return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v1-4", "diko-for-stdiko", [
       types.principal(Utils.qualifiedName('arkadiko-stake-registry-v2-1')),
       types.uint(amount * 1000000),
-      types.uint(stDikoSupply * 1000000),
+      types.uint(Math.round(stDikoSupply * 1000000)),
     ], this.deployer.address);
   }
 

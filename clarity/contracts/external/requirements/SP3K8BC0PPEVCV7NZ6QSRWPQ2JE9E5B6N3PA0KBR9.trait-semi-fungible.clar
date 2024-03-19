@@ -28,7 +28,7 @@
 		(transfer-fixed (uint uint principal principal) (response bool uint))
 		(transfer-memo-fixed (uint uint principal principal (buff 34)) (response bool uint))
     	(get-balance-fixed (uint principal) (response uint uint))
-    	(get-total-supply-fixed (uint) (response uint uint))
+    	;; (get-total-supply-fixed (uint) (response uint uint))
 		(get-total-supply-fixed (uint) (response uint uint))
 		(get-overall-balance-fixed (principal) (response uint uint))		
 		(get-overall-supply-fixed () (response uint uint))	

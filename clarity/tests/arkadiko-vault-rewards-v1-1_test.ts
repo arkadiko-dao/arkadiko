@@ -55,11 +55,11 @@ Clarinet.test({
     vaultManager.createVault(wallet_1, "STX-A", 5, 1);
 
     call = vaultRewards.calculateCummulativeRewardPerCollateral();
-    call.result.expectUintWithDecimals(240158.928910)
+    call.result.expectUintWithDecimals(240119.177370)
 
     // Almost all rewards - 1.2m
     call = vaultRewards.getPendingRewards(deployer);
-    call.result.expectOk().expectUintWithDecimals(1200794.644550)
+    call.result.expectOk().expectUintWithDecimals(1200595.88685)
   },
 });
 

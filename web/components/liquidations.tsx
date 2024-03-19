@@ -15,7 +15,8 @@ import {
   makeStandardFungiblePostCondition,
   makeContractFungiblePostCondition,
   FungibleConditionCode,
-  createAssetInfo
+  createAssetInfo,
+  listCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
@@ -36,26 +37,24 @@ export const Liquidations: React.FC = () => {
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+  const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
 
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
-  const [startLoadingRewards, setStartLoadingRewards] = useState(false);
-  const [isLoadingRewards, setIsLoadingRewards] = useState(true);
-  const [rewardData, setRewardData] = useState([]);
   const [stakeAmount, setStakeAmount] = useState(0);
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [userPooled, setUserPooled] = useState(0);
   const [totalPooled, setTotalPooled] = useState(0);
-  const [currentBlockHeight, setCurrentBlockHeight] = useState(0);
-  const [dikoEndBlock, setDikoEndBlock] = useState(0);
-  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(0);
+  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(612500000000);
   const [dikoApr, setDikoApr] = useState(0);
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
-  const [lockupBlocks, setLockupBlocks] = useState(0);
-  const [stakerLockupBlocks, setStakerLockupBlocks] = useState(0);
-  const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
-  const [burnBlockHeight, setBurnBlockHeight] = useState(0);
+
+  const [loadedRewards, setLoadedRewards] = useState(false);
+  const [isLoadingRewards, setIsLoadingRewards] = useState(false);
+  const [rewardData, setRewardData] = useState([]);
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -96,7 +95,6 @@ export const Liquidations: React.FC = () => {
   };
 
   const stake = async () => {
-
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
@@ -110,10 +108,16 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-pool-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-1',
       functionName: 'stake',
       functionArgs: [
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)))
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))),
+        listCV([
+          contractPrincipalCV(contractAddress, 'wstx-token'),
+          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
+        ])
       ],
       postConditions,
       onFinish: data => {
@@ -128,11 +132,10 @@ export const Liquidations: React.FC = () => {
   };
 
   const unstake = async () => {
-
     const postConditions = [
       makeContractFungiblePostCondition(
         contractAddress,
-        'arkadiko-liquidation-pool-v1-1',
+        'arkadiko-vaults-pool-liq-v1-1',
         FungibleConditionCode.Equal,
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
@@ -143,10 +146,16 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-liquidation-pool-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-1',
       functionName: 'unstake',
       functionArgs: [
-        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0)))
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))),
+        listCV([
+          contractPrincipalCV(contractAddress, 'wstx-token'),
+          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
+        ])
       ],
       postConditions,
       onFinish: data => {
@@ -160,245 +169,76 @@ export const Liquidations: React.FC = () => {
     }, resolveProvider() || window.StacksProvider);
   };
 
-  const getRewardCountV1 = async () => {
+  const getPendingRewards = async (tokenAddress: string, tokenName: string) => {
     const call = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-liquidation-rewards-v1-1',
-      functionName: 'get-total-reward-ids',
-      functionArgs: [],
-      senderAddress: stxAddress || '',
-      network: network,
-    });
-    const maxRewardId = cvToJSON(call).value;
-    console.log("Reward IDs V1: ", maxRewardId);
-    return parseInt(maxRewardId);
-  };
-
-  const getRewardCount = async () => {
-    const call = await callReadOnlyFunction({
-      contractAddress,
-      contractName: 'arkadiko-liquidation-rewards-v1-2',
-      functionName: 'get-total-reward-ids',
-      functionArgs: [],
-      senderAddress: stxAddress || '',
-      network: network,
-    });
-    const maxRewardId = cvToJSON(call).value;
-    console.log("Reward IDs V2: ", maxRewardId);
-    return parseInt(maxRewardId);
-  };
-
-  const getUserFirstRewardId = async () => {
-    const call = await callReadOnlyFunction({
-      contractAddress,
-      contractName: 'arkadiko-liquidation-rewards-ui-v2-2',
-      functionName: 'get-user-tracking',
+      contractName: 'arkadiko-vaults-pool-liq-v1-1',
+      functionName: 'get-pending-rewards',
       functionArgs: [
-        standardPrincipalCV(stxAddress || ''),
+        standardPrincipalCV(stxAddress),
+        contractPrincipalCV(tokenAddress, tokenName),
       ],
       senderAddress: stxAddress || '',
       network: network,
     });
-    const result = cvToJSON(call).value;
-    return result["last-reward-id"].value;
-  };
+    const resultDetails = cvToJSON(call).value.value;
 
-  const getUserFirstRewardIdV1 = async () => {
-    const call = await callReadOnlyFunction({
-      contractAddress,
-      contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
-      functionName: 'get-user-tracking',
-      functionArgs: [
-        standardPrincipalCV(stxAddress || ''),
-      ],
-      senderAddress: stxAddress || '',
-      network: network,
-    });
-    const result = cvToJSON(call).value;
-    return result["last-reward-id"].value;
-  };
-
-  const getRewardsData = async (rewardId: Number) => {
-    try {
-      const callUserPending = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-liquidation-rewards-v1-2',
-        functionName: 'get-user-reward-info',
-        functionArgs: [
-          uintCV(rewardId),
-          principalCV(stxAddress),
-          contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(callUserPending).value.value;
-
-      if (result['pending-rewards'].value > 0){
-        return {
-          version: 2,
-          rewardIds: [rewardId],
-          token: result['token'].value,
-          claimable: result['pending-rewards'].value,
-          tokenIsStx: result['token-is-stx'].value,
-          unlockBlock: result['unlock-block'].value,
-          currentBlock: burnBlockHeight
-        };
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return null;
-  };
-
-  const getRewardsDataV1 = async (rewardId: Number) => {
-    try {
-      const callUserPending = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-liquidation-ui-v1-2',
-        functionName: 'get-user-reward-info',
-        functionArgs: [
-          uintCV(rewardId),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(callUserPending).value.value;
-
-      if (result['pending-rewards'].value > 0){
-        return {
-          version: 1,
-          rewardIds: [rewardId],
-          token: result['token'].value,
-          claimable: result['pending-rewards'].value,
-          tokenIsStx: result['token-is-stx'].value,
-          unlockBlock: 0,
-          currentBlock: burnBlockHeight
-        };
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return null;
-  };
-
-  const createGroups = (rewardsData: LiquidationRewardProps[]) => {
-    // Merge in groups to bulk claim
-    const rewardsDataMerged: LiquidationRewardProps[] = [];
-    for (const rewardData of rewardsData) {
-      const result = rewardsDataMerged.filter(data => {
-        return data.rewardIds.length < 50 
-          && data.version == rewardData.version
-          && data.token == rewardData.token 
-          && data.tokenIsStx == rewardData.tokenIsStx
-          && ((data.unlockBlock < burnBlockHeight && rewardData.unlockBlock < burnBlockHeight) || data.unlockBlock == rewardData.unlockBlock)
-      });
-      if (result.length == 0) {
-        rewardsDataMerged.push({
-          version: rewardData.version,
-          rewardIds: rewardData.rewardIds.slice(),
-          token: rewardData.token,
-          claimable: rewardData.claimable,
-          tokenIsStx: rewardData.tokenIsStx,
-          unlockBlock: rewardData.unlockBlock,
-          currentBlock: rewardData.currentBlock
-        });
-      } else {
-        let existingData = result[0];
-        existingData.rewardIds.push(rewardData.rewardIds[0]);
-        existingData.claimable = parseInt(existingData.claimable) + parseInt(rewardData.claimable);
-      }
-    }
-    return rewardsDataMerged;
-  };
-
-  const sortGroups = (rewardsData: LiquidationReward[]) => {
-    return rewardsData.sort(function(a, b) {
-      if (a.props.unlockBlock > burnBlockHeight && b.props.unlockBlock > burnBlockHeight) {
-        return a.props.unlockBlock > b.props.unlockBlock ? 1 : -1;
-      } else if (a.props.unlockBlock > burnBlockHeight && b.props.unlockBlock < burnBlockHeight) {
-        return 1;
-      } else if (a.props.unlockBlock < burnBlockHeight && b.props.unlockBlock > burnBlockHeight) {
-        return -1;
-      }
-      if (a.props.claimable < b.props.claimable) {
-        return 1;
-      } else if (a.props.claimable > b.props.claimable) {
-        return -1;
-      }
-      return 0;
-    });
-  };
-
-  const setGroups = (rewards: LiquidationRewardProps[]) => {
-    const rewardGroups = createGroups(rewards);
-    var rewardItems = rewardGroups.map((reward: object) => (
-      <LiquidationReward
-        key={reward.rewardIds}
-        version={reward.version}
-        rewardIds={reward.rewardIds}
-        token={reward.token}
-        claimable={reward.claimable}
-        tokenIsStx={reward.tokenIsStx}
-        unlockBlock={reward.unlockBlock}
-        currentBlock={reward.currentBlock}
-      />
-    ));
-    rewardItems = sortGroups(rewardItems);
-    setRewardData(rewardItems);
-  };
-
-  const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
+    return resultDetails;
   };
 
   const loadRewards = async () => {
-    setStartLoadingRewards(true);
+    setIsLoadingRewards(true);
 
-    // Fetch all reward info
-    const rewardCount = await getRewardCount();
-    const rewardCountV1 = await getRewardCountV1();
-    const userFirstRewardId = await getUserFirstRewardId();
-    const userFirstRewardIdV1 = await getUserFirstRewardIdV1();
-    const totalRewardCount = (rewardCount - userFirstRewardId) + (rewardCountV1 - userFirstRewardIdV1);
-    var loadedRewardCount = 0;
-
-    var rewards: LiquidationRewardProps[] = [];
-    const batchAmount = 15;
-
-    for (let index = rewardCount-1; index >= userFirstRewardId; index--) {
-      const rewardData = await getRewardsData(index);
-      if (rewardData != null) {
-        rewards.push(rewardData);
-        setGroups(rewards);
-      }
-      if (index % batchAmount == 0) {
-        await sleep(10000); // 10 sec
-      }
-      loadedRewardCount += 1;
-      setRewardLoadingPercentage(Math.floor((loadedRewardCount / totalRewardCount) * 100.0))
+    const dikoRewards = await getPendingRewards(contractAddress, 'arkadiko-token');
+    if (dikoRewards > 0) {
+      rewardData.push(
+        <LiquidationReward
+          key={0}
+          token={`${contractAddress}.arkadiko-token`}
+          claimable={dikoRewards}
+          tokenIsStx={false}
+        />
+      );
+    }
+    const xbtcRewards = await getPendingRewards(xbtcContractAddress, 'Wrapped-Bitcoin');
+    if (xbtcRewards > 0) {
+      rewardData.push(
+        <LiquidationReward
+          key={1}
+          token={`${xbtcContractAddress}.Wrapped-Bitcoin`}
+          claimable={xbtcRewards}
+          tokenIsStx={false}
+        />
+      );
+    }
+    const stxRewards = await getPendingRewards(contractAddress, 'wstx-token');
+    if (stxRewards > 0) {
+      rewardData.push(
+        <LiquidationReward
+          key={2}
+          token={`${contractAddress}.wstx-token`}
+          claimable={stxRewards}
+          tokenIsStx={true}
+        />
+      );
+    }
+    const stStxRewards = await getPendingRewards(stStxContractAddress, 'ststx-token');
+    if (stStxRewards > 0) {
+      rewardData.push(
+        <LiquidationReward
+          key={3}
+          token={`${stStxContractAddress}.ststx-token`}
+          claimable={stStxRewards}
+          tokenIsStx={false}
+        />
+      );
     }
 
-    for (let index = rewardCountV1-1; index >= userFirstRewardIdV1; index--) {
-      const rewardData = await getRewardsDataV1(index);
-      if (rewardData != null) {
-        rewards.push(rewardData);
-        setGroups(rewards);
-      }
-      if (index % batchAmount == 0) {
-        await sleep(10000); // 10 sec
-      }
-      loadedRewardCount += 1;
-      setRewardLoadingPercentage(Math.floor((loadedRewardCount / totalRewardCount) * 100.0))
-    }
-
-    setGroups(rewards);
     setIsLoadingRewards(false);
+    setLoadedRewards(true);
   };
 
   useEffect(() => {
-
-    // TODO: Replace by API price
     const getDikoPrice = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
@@ -423,7 +263,7 @@ export const Liquidations: React.FC = () => {
         contractName: 'usda-token',
         functionName: 'get-balance',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-1'),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -435,8 +275,8 @@ export const Liquidations: React.FC = () => {
     const getUserPooled = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-liquidation-pool-v1-1',
-        functionName: 'get-tokens-of',
+        contractName: 'arkadiko-vaults-pool-liq-v1-1',
+        functionName: 'get-stake-of',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
         ],
@@ -445,74 +285,6 @@ export const Liquidations: React.FC = () => {
       });
       const result = cvToJSON(call).value.value;
       return result;
-    };
-
-    const getCurrentBlockHeight = async () => {
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      return data['stacks_tip_height'];
-    };
-
-    const getEpochInfo = async () => {
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
-        functionName: 'get-epoch-info',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(call).value.value;
-      return result;
-    };
-
-    const getDikoEpochRewardsToAdd = async () => {
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
-        functionName: 'get-rewards-to-add',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(call).value;
-      return result;
-    };
-
-    const getLockup = async () => {
-      const stxRedeemable = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-liquidation-pool-v1-1',
-        functionName: 'get-lockup-blocks',
-        functionArgs: [],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(stxRedeemable).value.value;
-      return result;
-    };
-
-    const getStakerLockup = async () => {
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-liquidation-pool-v1-1',
-        functionName: 'get-staker-lockup',
-        functionArgs: [
-          standardPrincipalCV(stxAddress || ''),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(call).value;
-      return result["start-block"].value;
-    };
-
-    const getBurnBlockHeight = async () => {
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      return data['burn_block_height'];
     };
 
     const fetchInfo = async () => {
@@ -520,44 +292,21 @@ export const Liquidations: React.FC = () => {
       const [
         totalPooled,
         userPooled,
-        epochInfo,
-        dikoEpochRewardsToAdd,
-        currentBlockHeight,
-        stakerLockup,
-        lockupBlocks,
         dikoPrice,
-        burnBlock,
       ] = await Promise.all([
         getTotalPooled(),
         getUserPooled(),
-        getEpochInfo(),
-        getDikoEpochRewardsToAdd(),
-        getCurrentBlockHeight(),
-        getStakerLockup(),
-        getLockup(),
         getDikoPrice(),
-        getBurnBlockHeight(),
       ]);
 
       setTotalPooled(totalPooled);
       setUserPooled(userPooled);
-      setDikoEndBlock(epochInfo["end-block"].value);
-      setDikoRewardsToAdd(dikoEpochRewardsToAdd);
-      setCurrentBlockHeight(currentBlockHeight);
-      setBurnBlockHeight(burnBlock);
-      
+
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
 
-      if (userPooled == 0) {
-        setStakerLockupBlocks(0);
-      } else {
-        setStakerLockupBlocks(parseInt(stakerLockup) + parseInt(lockupBlocks));
-      }
-      setLockupBlocks(lockupBlocks);
-
-      const dikoPerYear = (52560 / epochInfo["blocks"].value) * dikoEpochRewardsToAdd;
-      setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100.0);
+      const dikoPerYear = 612500000; // 10% of all emissions
+      setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100000.0);
       setIsLoading(false);
     };
 
@@ -579,42 +328,44 @@ export const Liquidations: React.FC = () => {
         <Container>
           <main className="relative flex-1 py-12">
 
-            <section>
-              <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
-                <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
-                </div>
-              </header>
-              <div className="mt-4">
-                <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
-                  <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      {isLoading ? (
-                        <>
-                          <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                          <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                        </>
-                      ) : (
-                        <>
-                          <p>
-                            You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX. {' '}
-                          </p>
+            {false && (
+              <section>
+                <header className="pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+                  <div>
+                    <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Trade xSTX for STX</h3>
+                  </div>
+                </header>
+                <div className="mt-4">
+                  <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+                    <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
+                      <div className="flex items-center justify-between">
+                        {isLoading ? (
+                          <>
+                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
+                          </>
+                        ) : (
+                          <>
+                            <p>
+                              You have <span className="text-lg font-semibold">{state.balance['xstx'] / 1000000}</span> xSTX. {' '}
+                            </p>
 
-                          <button
-                            type="button"
-                            onClick={() => redeemStx()}
-                            disabled={state.balance['xstx'] == 0}
-                            className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                          >
-                            Redeem
-                          </button>
-                        </>
-                      )}
+                            <button
+                              type="button"
+                              onClick={() => redeemStx()}
+                              disabled={state.balance['xstx'] == 0}
+                              className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                            >
+                              Redeem
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
 
             <section>
               <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
@@ -623,7 +374,7 @@ export const Liquidations: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                {!startLoadingRewards ? (
+                {!isLoadingRewards && rewardData.length == 0 && !loadedRewards ? (
                   <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
                     <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
                       <div className="flex items-center justify-between">
@@ -640,15 +391,15 @@ export const Liquidations: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                ) : isLoadingRewards ? (
+                ) : isLoadingRewards && rewardData.length == 0 ? (
                   <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
                     <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
                       <div className="flex justify-between mb-3">
                         <span className="text-base font-medium dark:text-white">Checking liquidated vaults…</span>
-                        <span className="text-sm font-medium text-indigo-700 dark:text-white">{rewardLoadingPercentage}%</span>
+                        <span className="text-sm font-medium text-indigo-700 dark:text-white">15%</span>
                       </div>
                         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                          <div className="bg-indigo-600 h-2.5 rounded-full font-semibold" style={{ width: rewardLoadingPercentage + "%" }}></div>
+                          <div className="bg-indigo-600 h-2.5 rounded-full font-semibold" style={{ width: "15%" }}></div>
                         </div>
                     </div>
                   </div>
@@ -656,13 +407,13 @@ export const Liquidations: React.FC = () => {
               </div>
 
               <div className="mt-4">
-                {rewardData.length == 0 && startLoadingRewards && !isLoadingRewards ? (
+                {rewardData.length == 0 && loadedRewards ? (
                   <EmptyState
                     Icon={CashIcon}
                     title="You have no rewards to claim."
-                    description="DIKO and liquidation rewards will appear here."
+                    description="DIKO and liquidation rewards appear here."
                   />
-                ) : rewardData.length != 0 && startLoadingRewards ? (
+                ) : rewardData.length != 0 ? (
                   <>
                     <table className="min-w-full divide-y divide-gray-200 shadow dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
                       <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
@@ -681,7 +432,7 @@ export const Liquidations: React.FC = () => {
                       <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{rewardData}</tbody>
                     </table>
                   </>
-                ): null}
+                ) : null}
               </div>
             </section>
 
@@ -692,29 +443,9 @@ export const Liquidations: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-4">
-                  <div className="p-4 overflow-hidden border border-gray-300 rounded-lg shadow-sm bg-zinc-200/30 dark:bg-gray-500 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-gray-500 uppercase dark:text-gray-300">Current Block Height</p>
-                    {isLoading ? (
-                      <Placeholder className="py-2" width={Placeholder.width.FULL} color={Placeholder.color.GRAY} />
-                    ) : (
-                      <p className="mt-1 text-xl font-semibold text-gray-600 dark:text-gray-50">
-                        #{currentBlockHeight}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="p-4 overflow-hidden border border-gray-300 rounded-lg shadow-sm bg-zinc-200/30 dark:bg-gray-500 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-gray-500 uppercase dark:text-gray-300">Next DIKO rewards at block</p>
-                    {isLoading ? (
-                      <Placeholder className="py-2" width={Placeholder.width.FULL} color={Placeholder.color.GRAY} />
-                    ) : (
-                      <p className="mt-1 text-xl font-semibold text-gray-600 dark:text-gray-50">#{dikoEndBlock}</p>
-                    )}
-                  </div>
-
+                <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-2">
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
-                    <p className="text-xs font-semibold text-indigo-600 uppercase">Rewards to distribute</p>
+                    <p className="text-xs font-semibold text-indigo-600 uppercase">Rewards to distribute per year</p>
                     {isLoading ? (
                       <>
                         <Placeholder className="py-2" width={Placeholder.width.THIRD} />
@@ -797,33 +528,6 @@ export const Liquidations: React.FC = () => {
 
                       <div className="sm:grid sm:grid-cols-2 sm:gap-4">
                         <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Lockup duration
-                          <div className="ml-2">
-                            <Tooltip
-                              className="z-10"
-                              shouldWrapChildren={true}
-                              label={`Deposited USDA will be locked.`}
-                            >
-                              <InformationCircleIcon
-                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                                aria-hidden="true"
-                              />
-                            </Tooltip>
-                          </div>
-                        </dt>
-                        <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                          {isLoading ? (
-                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                          ) : (
-                            <>
-                              {lockupBlocks} blocks
-                            </>
-                          )}
-                        </dt>
-                      </div>
-
-                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
                           Your tokens in pool
                           <div className="ml-2">
                             <Tooltip
@@ -847,33 +551,6 @@ export const Liquidations: React.FC = () => {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 6,
                               })} USDA
-                            </>
-                          )}
-                        </dt>
-                      </div>
-
-                      <div className="sm:grid sm:grid-cols-2 sm:gap-4">
-                        <dt className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-700">
-                          Unlocking at
-                          <div className="ml-2">
-                            <Tooltip
-                              className="z-10"
-                              shouldWrapChildren={true}
-                              label={`Your deposited USDA will unlock at this block.`}
-                            >
-                              <InformationCircleIcon
-                                className="block w-4 h-4 text-indigo-400 dark:text-indigo-500"
-                                aria-hidden="true"
-                              />
-                            </Tooltip>
-                          </div>
-                        </dt>
-                        <dt className="mt-1 text-sm font-semibold text-indigo-900 sm:mt-0 sm:text-right">
-                          {isLoading ? (
-                            <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                          ) : (
-                            <>
-                              Block {stakerLockupBlocks}
                             </>
                           )}
                         </dt>
@@ -944,14 +621,6 @@ export const Liquidations: React.FC = () => {
                             <Tab.Panel>
                               {isLoading ? (
                                 <Placeholder className="py-2" width={Placeholder.width.FULL} />
-                              ) : currentBlockHeight < stakerLockupBlocks ? (
-                                <div className="">
-                                  <Alert type={Alert.type.WARNING} title="Locked">
-                                    <p>
-                                      Your USDA is locked until block #{stakerLockupBlocks}
-                                    </p>
-                                  </Alert>
-                                </div>
                               ) : (
                                 <>
                                   <InputAmount

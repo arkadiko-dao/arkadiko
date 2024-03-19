@@ -141,11 +141,13 @@ Clarinet.test({
 
     let governance = new Governance(chain, deployer);
 
-    // Create proposal to start at block 6
+    chain.mineEmptyBlockUntil(100);
+
+    // Create proposal to start at block 1
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -218,12 +220,14 @@ Clarinet.test({
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
-    // Create proposal to start at block 6
+    chain.mineEmptyBlockUntil(100);
+
+    // Create proposal to start at block 1
     let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let contractChange2 = Governance.contractChange("freddie", Utils.qualifiedName('new-freddie'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1, contractChange2]
@@ -272,13 +276,15 @@ Clarinet.test({
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
-    // Create proposal to start at block 6
+    chain.mineEmptyBlockUntil(100);
+
+    // Create proposal to start at block 1
     // Vote length of 10 blocks
     // But min vote length is 250 blocks
     let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       deployer, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1],
@@ -289,8 +295,8 @@ Clarinet.test({
     // Check if proposal updated
     let call:any = governance.getProposalByID(1);
     call.result.expectTuple()["is-open"].expectBool(true);
-    call.result.expectTuple()["start-block-height"].expectUint(6);
-    call.result.expectTuple()["end-block-height"].expectUint(256);
+    call.result.expectTuple()["start-block-height"].expectUint(106);
+    call.result.expectTuple()["end-block-height"].expectUint(356);
 
     // Vote for wallet_1
     result = governance.voteForProposal(wallet_1, 1, 100000);
@@ -336,11 +342,13 @@ Clarinet.test({
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
-    // Create proposal to start at block 6
+    chain.mineEmptyBlockUntil(100);
+
+    // Create proposal to start at block 1
     let contractChange1 = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Replace governance",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1]
@@ -377,7 +385,7 @@ Clarinet.test({
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-tv1-1", "propose", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
-        types.uint(1510),
+        types.uint(chain.blockHeight),
         types.utf8("Replace Oracle"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
         types.list([contractChange1])
@@ -457,11 +465,13 @@ Clarinet.test({
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
-    // Create proposal to start at block 6
+    chain.mineEmptyBlockUntil(100);
+
+    // Create proposal to start at block 1
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -508,6 +518,8 @@ Clarinet.test({
     let dikoToken = new DikoToken(chain, deployer);
     let stDikoToken = new StDikoToken(chain, deployer);
 
+    chain.mineEmptyBlockUntil(100);
+
     // Stake DIKO to get stDIKO 
     let result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-4', 'arkadiko-token', 100);
     result.expectOk().expectUintWithDecimals(100);
@@ -517,11 +529,11 @@ Clarinet.test({
 
     // Stake DIKO to get stDIKO again, at different rate
     result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-4', 'arkadiko-token', 100);
-    result.expectOk().expectUintWithDecimals(15.065706);
+    result.expectOk().expectUintWithDecimals(1.443470);
 
-    // Total stDIKO balance for user is now ~115
+    // Total stDIKO balance for user is now ~101
     let call:any = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(115.065706);   
+    call.result.expectOk().expectUintWithDecimals(101.443470);   
 
     // Total DIKO balance is 
     call = dikoToken.balanceOf(wallet_1.address);
@@ -531,7 +543,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     result = governance.createProposal(
       wallet_1, 
-      10, 
+      chain.blockHeight, 
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -544,9 +556,9 @@ Clarinet.test({
     result = governance.voteAgainstProposal(wallet_1, 1, 1, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
-    // DIKO/stDIKO ratio = ~6
+    // DIKO/stDIKO ratio = ~70
     call = stakePoolDiko.getDikoStdikoRatio();
-    call.result.expectOk().expectUintWithDecimals(6.637591);
+    call.result.expectOk().expectUintWithDecimals(69.277497);
 
     // Vote with stDIKO - 10 stDIKO = ~40 DIKO
     result = governance.voteForProposal(wallet_1, 1, 10, "stdiko-token");
@@ -555,14 +567,14 @@ Clarinet.test({
     result.expectOk().expectUint(3200);
 
     // Total votes from wallet: 11 DIKO + 11 stDIKO
-    // Where the 1 stDIKO = ~6 DIKO
-    // So total is ~56 votes
+    // Where the 1 stDIKO = ~70 DIKO
+    // So total is ~773 votes
     call = governance.getMemberVotes(1, wallet_1);
-    call.result.expectTuple()["vote-count"].expectUintWithDecimals(84.013501);
+    call.result.expectTuple()["vote-count"].expectUintWithDecimals(773.052467);
 
     // stDIKO balance has decreased by 11
     call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(104.065706);   
+    call.result.expectOk().expectUintWithDecimals(90.443470);   
 
     // DIKO balance has decreased by 11
     call = dikoToken.balanceOf(wallet_1.address);
@@ -597,7 +609,7 @@ Clarinet.test({
 
     // Should have initial amount back
     call = stDikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(115.065706);   
+    call.result.expectOk().expectUintWithDecimals(101.443470);   
 
     call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(149800);  
@@ -618,13 +630,14 @@ Clarinet.test({
     let wallet_2 = accounts.get("wallet_2")!;
 
     let governance = new Governance(chain, deployer);
-    let stakeRegistry = new StakeRegistry(chain, deployer);
+
+    chain.mineEmptyBlockUntil(100);
 
     // Create proposal to start at block 6
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -680,11 +693,13 @@ Clarinet.test({
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
+    chain.mineEmptyBlockUntil(100);
+
     // New proposal
     let contractChange = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), false, false);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -718,7 +733,7 @@ Clarinet.test({
     contractChange = Governance.contractChange("oracle", Utils.qualifiedName('malicious-oracle'), false, false);
     result = governance.createProposal(
       wallet_1, 
-      1511,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -754,7 +769,8 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let governance = new Governance(chain, deployer);
-    let dao = new Dao(chain, deployer);
+
+    chain.mineEmptyBlockUntil(100);
 
     // Advance
     chain.mineEmptyBlock(2000);
@@ -763,7 +779,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('malicious-oracle'), false, false);
     let result = governance.createProposal(
       wallet_1, 
-      1,
+      chain.blockHeight - 2,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -783,11 +799,13 @@ Clarinet.test({
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
+    chain.mineEmptyBlockUntil(100);
+
     // New proposal
     let contractChange = Governance.contractChange("governance", Utils.qualifiedName('arkadiko-governance-tv1-1'), false, false);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -833,6 +851,8 @@ Clarinet.test({
     let dikoToken = new DikoToken(chain, deployer);
     let stDikoToken = new StDikoToken(chain, deployer);
 
+    chain.mineEmptyBlockUntil(100);
+
     // Total liquid supply = 3.047.975
     // User has 150.000
     let call = dikoToken.balanceOf(wallet_2.address);
@@ -858,7 +878,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_2, 
-      7, 
+      chain.blockHeight, 
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -883,7 +903,7 @@ Clarinet.test({
     let contractChange2 = Governance.contractChange("freddie", Utils.qualifiedName('freddie'), true, true);
     result = governance.createProposal(
       wallet_2, 
-      20, 
+      chain.blockHeight, 
       "Test Title 2",
       "https://discuss.arkadiko.finance/my/very/long/url/path2",
       [contractChange2]
@@ -927,10 +947,12 @@ Clarinet.test({
 
     let governance = new Governance(chain, deployer);
 
+    chain.mineEmptyBlockUntil(100);
+
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -961,10 +983,12 @@ Clarinet.test({
 
     let governance = new Governance(chain, deployer);
 
+    chain.mineEmptyBlockUntil(100);
+
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -1003,10 +1027,12 @@ Clarinet.test({
 
     let governance = new Governance(chain, deployer);
 
+    chain.mineEmptyBlockUntil(100);
+
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]
@@ -1108,15 +1134,16 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
 
+    chain.mineEmptyBlockUntil(100);
+
     let governance = new Governance(chain, deployer);
-    let dao = new Dao(chain, deployer);
 
     // Create proposal to start at block 1
     // Vote length of 10 blocks
     let contractChange1 = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposalDao(
       wallet_1, 
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange1]
@@ -1125,7 +1152,8 @@ Clarinet.test({
 
     // End block has still taken 720 blocks (~5 days) into account
     let call:any = governance.getProposalByID(1);
-    call.result.expectTuple()["end-block-height"].expectUint(726);
+    call.result.expectTuple()["end-block-height"].expectUint(826);
+
   }
 });
 
@@ -1134,6 +1162,9 @@ Clarinet.test({
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
     let wallet_1 = accounts.get("wallet_1")!;
+
+    chain.mineEmptyBlockUntil(100);
+
     let governance = new Governance(chain, deployer);
     let dao = new Dao(chain, deployer);
 
@@ -1145,7 +1176,7 @@ Clarinet.test({
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
       wallet_1,
-      6,
+      chain.blockHeight,
       "Test Title",
       "https://discuss.arkadiko.finance/my/very/long/url/path",
       [contractChange]

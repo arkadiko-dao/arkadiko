@@ -217,7 +217,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(5000);
 
     // Advance
-    chain.mineEmptyBlockUntil(4320 + 14);
+    chain.mineEmptyBlockUntil(4340);
     
     // Unstake
     result = liquidationPool.unstake(deployer, 4500);
@@ -228,45 +228,45 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(5500);
     
     // Shares at block 10
-    let call = await liquidationPool.getSharesAt(deployer.address, 10);
+    let call = await liquidationPool.getSharesAt(deployer.address, 11);
     call.result.expectOk().expectUint(0);
-    call = await liquidationPool.getSharesAt(wallet_1.address, 10);
-    call.result.expectOk().expectUint(0);
-
-    // Shares at block 11
-    call = await liquidationPool.getSharesAt(deployer.address, 11);
-    call.result.expectOk().expectUint(1 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 11);
     call.result.expectOk().expectUint(0);
 
-    // Shares at block 12
+    // Shares at block 11
     call = await liquidationPool.getSharesAt(deployer.address, 12);
-    call.result.expectOk().expectUint(0.90 * 10000000);
+    call.result.expectOk().expectUint(1 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 12);
-    call.result.expectOk().expectUint(0.10 * 10000000);
+    call.result.expectOk().expectUint(0);
 
-    // Shares at block 13
+    // Shares at block 12
     call = await liquidationPool.getSharesAt(deployer.address, 13);
     call.result.expectOk().expectUint(0.90 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 13);
     call.result.expectOk().expectUint(0.10 * 10000000);
 
-    // Shares at block 14
+    // Shares at block 13
     call = await liquidationPool.getSharesAt(deployer.address, 14);
-    call.result.expectOk().expectUint(0.45 * 10000000);
+    call.result.expectOk().expectUint(0.90 * 10000000);
     call = await liquidationPool.getSharesAt(wallet_1.address, 14);
+    call.result.expectOk().expectUint(0.10 * 10000000);
+
+    // Shares at block 14
+    call = await liquidationPool.getSharesAt(deployer.address, 15);
+    call.result.expectOk().expectUint(0.45 * 10000000);
+    call = await liquidationPool.getSharesAt(wallet_1.address, 15);
     call.result.expectOk().expectUint(0.55 * 10000000);
 
-    // Shares at block 4334
-    call = await liquidationPool.getSharesAt(deployer.address, 4334);
+    // Shares at block 4340
+    call = await liquidationPool.getSharesAt(deployer.address, 4340);
     call.result.expectOk().expectUint(0);
-    call = await liquidationPool.getSharesAt(wallet_1.address, 4334);
+    call = await liquidationPool.getSharesAt(wallet_1.address, 4340);
     call.result.expectOk().expectUint(1 * 10000000);
 
-    // Shares at block 4335
-    call = await liquidationPool.getSharesAt(deployer.address, 4335);
+    // Shares at block 4341
+    call = await liquidationPool.getSharesAt(deployer.address, 4341);
     call.result.expectOk().expectUint(0);
-    call = await liquidationPool.getSharesAt(wallet_1.address, 4335);
+    call = await liquidationPool.getSharesAt(wallet_1.address, 4341);
     call.result.expectOk().expectUint(0);
   }
 });
