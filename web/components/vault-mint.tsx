@@ -128,6 +128,16 @@ export const VaultMint: React.FC<Props> = ({
     return 0;
   };
 
+  const availableCoins = (availableCoinsToMint(
+    price * 100,
+    collateralLocked(),
+    outstandingDebt(),
+    collateralType?.collateralToDebtRatio
+  )).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 6,
+  });
+
   const mintMaxAmount = () => {
     const tokens = availableCoinsToMint(
       price * 100,
@@ -165,15 +175,7 @@ export const VaultMint: React.FC<Props> = ({
       <p className="mt-2 text-sm text-gray-500 dark:text-zinc-400">
         Choose how much extra USDA you want to mint. You can mint a maximum of{' '}
         <span className="font-semibold">
-          {(availableCoinsToMint(
-            price * 100,
-            collateralLocked(),
-            outstandingDebt(),
-            collateralType?.collateralToDebtRatio
-          )).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}{' '}
+          {availableCoins}{' '}
           USDA
         </span>
         . Minting will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
@@ -181,15 +183,7 @@ export const VaultMint: React.FC<Props> = ({
 
       <div className="mt-6">
         <InputAmount
-          balance={(availableCoinsToMint(
-            price * 100,
-            collateralLocked(),
-            outstandingDebt(),
-            collateralType?.collateralToDebtRatio
-          )).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}
+          balance={availableCoins}
           token="USDA"
           inputName="mintDebt"
           inputId="mintUSDAAmount"
@@ -199,6 +193,9 @@ export const VaultMint: React.FC<Props> = ({
           onClickMax={mintMaxAmount}
           ref={inputRef}
         />
+        {Number(usdToMint) > Number(availableCoins) && (
+          <span className="mt-2 text-orange-500 mb-2">You cannot mint more than {availableCoins} USDA</span>
+        )}
       </div>
 
       <div>
@@ -206,7 +203,7 @@ export const VaultMint: React.FC<Props> = ({
           type="button"
           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={() => callMint()}
-          disabled={!mintAllowed}
+          disabled={!mintAllowed && Number(usdToMint) <= Number(availableCoins)}
         >
           Mint
         </button>
