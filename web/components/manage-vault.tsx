@@ -59,6 +59,7 @@ export const ManageVault = ({ match }) => {
   const [totalDebt, setTotalDebt] = useState(0);
   const [decimals, setDecimals] = useState(1000000);
   const [liquidityAvailable, setLiquidityAvailable] = useState(0);
+  const [liquidationPrice, setLiquidationPrice] = useState(0);
 
   const [loadingVaultData, setLoadingVaultData] = useState(true);
   const [loadingFeesData, setLoadingFeesData] = useState(true);
@@ -94,6 +95,19 @@ export const ManageVault = ({ match }) => {
 
     setLiquidityAvailable(Number(collateralType['maximumDebt']) - totalDebt);
   };
+
+  useEffect(() => {
+    if (vault && collateralTypes[collateralSymbol]) {
+      // (liquidationRatio * coinsMinted) / collateral = rekt
+      const prc = Number(getLiquidationPrice(
+        collateralTypes[collateralSymbol]?.liquidationRatio / 100.0,
+        vault['debt'],
+        vault['collateral'],
+        vault['collateralToken']
+      )).toFixed(2);
+      setLiquidationPrice(prc);
+    }
+  }, [vault, collateralTypes])
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -262,20 +276,6 @@ export const ManageVault = ({ match }) => {
     }, resolveProvider() || window.StacksProvider);
   };
 
-  const liquidationPrice = () => {
-    if (vault) {
-      // (liquidationRatio * coinsMinted) / collateral = rekt
-      return Number(getLiquidationPrice(
-        collateralType?.liquidationRatio / 100.0,
-        vault['debt'],
-        vault['collateral'],
-        vault['collateralToken']
-      )).toFixed(2);
-    }
-
-    return 0;
-  };
-
   const collateralLocked = () => {
     if (vault) {
       const decimals = vault['collateralType'].toLowerCase().includes('stx') ? 1000000 : 100000000;
@@ -374,13 +374,13 @@ export const ManageVault = ({ match }) => {
                           />
                         ) : (
                           <>
-                            {debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) == 'text-green-500' ? (
+                            {debtClass(collateralTypes[collateralSymbol]?.liquidationRatio / 100.0, debtRatio) == 'text-green-500' ? (
                               <Status
                                 type={Status.type.SUCCESS }
                                 label='Healthy'
                                 labelHover='Low liquidation risk'
                               />
-                            ) : debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) == 'text-orange-500' ? (
+                            ) : debtClass(collateralTypes[collateralSymbol]?.liquidationRatio / 100.0, debtRatio) == 'text-orange-500' ? (
                               <Status
                                 type={Status.type.WARNING}
                                 label='Warning'
@@ -469,11 +469,11 @@ export const ManageVault = ({ match }) => {
                                 {detail.label === 'Collateral to Debt ratio' ? (
                                   <>
                                     <span className="flex items-center justify-end">
-                                      {debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) == 'text-green-500' ? (
+                                      {debtClass(collateralTypes[collateralSymbol]?.liquidationRatio / 100.0, debtRatio) == 'text-green-500' ? (
                                         <Status
                                           type={Status.type.SUCCESS}
                                         />
-                                      ) : debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) == 'text-orange-500' ? (
+                                      ) : debtClass(collateralTypes[collateralSymbol]?.liquidationRatio / 100.0, debtRatio) == 'text-orange-500' ? (
                                         <Status
                                           type={Status.type.WARNING}
                                         />
@@ -589,13 +589,13 @@ export const ManageVault = ({ match }) => {
                       </div>
                     ) : (
                       <>
-                        {debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) ==
+                        {debtClass(collateralTypes[collateralSymbol]?.liquidationRatio / 100.0, debtRatio) ==
                         'text-green-500' ? (
                           <Alert type={Alert.type.SUCCESS} title="Low liquidation risk">
                             <p>
                               Good job! Your vault looks quite healthy. Your liquidation price
                               ({vault?.collateralToken} below{' '}
-                              <span className="font-semibold">${liquidationPrice()}</span>) is
+                              <span className="font-semibold">${liquidationPrice}</span>) is
                               still very far.
                             </p>
                             <p>Feel free to pay back your debt or deposit extra collateral anytime.</p>
@@ -606,7 +606,7 @@ export const ManageVault = ({ match }) => {
                             <p>
                               Be careful. You will be liquidated if the{' '}
                               {vault?.collateralToken} price drops below{' '}
-                              <span className="font-semibold">${liquidationPrice()} USD</span>.
+                              <span className="font-semibold">${liquidationPrice} USD</span>.
                             </p>
                             <p>
                               Pay back your debt or deposit extra collateral to
@@ -618,7 +618,7 @@ export const ManageVault = ({ match }) => {
                             <p>
                               You are very close to being liquidated. It will happen if the{' '}
                               {vault?.collateralToken} price drops below{' '}
-                              <span className="font-semibold">${liquidationPrice()} USD</span>.
+                              <span className="font-semibold">${liquidationPrice} USD</span>.
                             </p>
                             <p>
                               Pay back the outstanding debt or deposit extra collateral to
