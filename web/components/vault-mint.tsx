@@ -22,10 +22,13 @@ export const VaultMint: React.FC<Props> = ({
   reserveName,
   price,
   collateralType,
-  stabilityFee
+  stabilityFee,
+  liquidityAvailable,
+  setShowLiquidityWarning
 }) => {
   const [_, setState] = useContext(AppContext);
   const [usdToMint, setUsdToMint] = useState('');
+  const [mintAllowed, setMintAllowed] = useState(true);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
@@ -135,11 +138,25 @@ export const VaultMint: React.FC<Props> = ({
     setUsdToMint(
       tokens.toFixed(6)
     );
+    if (tokens.toFixed(6) > liquidityAvailable / 1000000) {
+      setShowLiquidityWarning(true);
+      setMintAllowed(false);
+    } else {
+      setShowLiquidityWarning(false);
+      setMintAllowed(true);
+    }
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
     const value = event.target.value;
     setUsdToMint(value);
+    if (value > liquidityAvailable / 1000000) {
+      setShowLiquidityWarning(true);
+      setMintAllowed(false);
+    } else {
+      setShowLiquidityWarning(false);
+      setMintAllowed(true);
+    }
   };
 
   return (
@@ -189,6 +206,7 @@ export const VaultMint: React.FC<Props> = ({
           type="button"
           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={() => callMint()}
+          disabled={!mintAllowed}
         >
           Mint
         </button>

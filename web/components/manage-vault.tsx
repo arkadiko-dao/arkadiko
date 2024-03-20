@@ -58,10 +58,12 @@ export const ManageVault = ({ match }) => {
   const [stabilityFee, setStabilityFee] = useState(0);
   const [totalDebt, setTotalDebt] = useState(0);
   const [decimals, setDecimals] = useState(1000000);
+  const [liquidityAvailable, setLiquidityAvailable] = useState(0);
 
   const [loadingVaultData, setLoadingVaultData] = useState(true);
   const [loadingFeesData, setLoadingFeesData] = useState(true);
   const [showBurnWarning, setShowBurnWarning] = useState(false);
+  const [showLiquidityWarning, setShowLiquidityWarning] = useState(false);
 
   const minimimumStabilityFee = useMemo(
     () => {
@@ -76,6 +78,22 @@ export const ManageVault = ({ match }) => {
     },
     [stabilityFee]
   );
+
+  const getTotalDebt = async () => {
+    const collateralType = collateralTypes[collateralSymbol];
+    const tokenParts = state.vaults[collateralSymbol]['key'].split('.');
+    const debtCall = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-vaults-data-v1-1',
+      functionName: 'get-total-debt',
+      functionArgs: [contractPrincipalCV(tokenParts[0], tokenParts[1])],
+      senderAddress: senderAddress || contractAddress,
+      network: network,
+    });
+    const totalDebt = Number(debtCall.value.value);
+
+    setLiquidityAvailable(Number(collateralType['maximumDebt']) - totalDebt);
+  };
 
   useEffect(() => {
     const fetchVault = async () => {
@@ -115,8 +133,11 @@ export const ManageVault = ({ match }) => {
   }, [match.params.owner, match.params.collateral]);
 
   useEffect(() => {
+    if (state.vaults.length < 3) return;
+
     setCollateralType(collateralTypes[collateralSymbol]);
-  }, [collateralTypes, collateralSymbol]);
+    getTotalDebt();
+  }, [collateralTypes, collateralSymbol, state.vaults]);
 
   useEffect(() => {
     if (vault?.status && collateralType?.collateralToDebtRatio && price > 0) {
@@ -639,7 +660,12 @@ export const ManageVault = ({ match }) => {
                         price={price}
                         collateralType={collateralType}
                         stabilityFee={minimimumStabilityFee}
+                        liquidityAvailable={liquidityAvailable}
+                        setShowLiquidityWarning={setShowLiquidityWarning}
                       />
+                      {showLiquidityWarning && (
+                        <span className="mt-2 text-orange-500">The amount of USDA you want to mint exceeds the amount of liquidity available in the system ({(liquidityAvailable / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA). Please mint a lower amount of USDA.</span>
+                      )}
                     </div>
                     <div className="flex flex-col px-4 py-5 sm:p-6">
                       <VaultBurn
