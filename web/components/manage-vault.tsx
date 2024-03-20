@@ -154,18 +154,18 @@ export const ManageVault = ({ match }) => {
   }, [collateralTypes, collateralSymbol, state.vaults]);
 
   useEffect(() => {
-    if (vault?.status && collateralType?.collateralToDebtRatio && price > 0) {
+    if (vault?.status && collateralTypes[collateralSymbol]?.collateralToDebtRatio && price > 0) {
       setMaximumCollateralToWithdraw(
         availableCollateralToWithdraw(
           price * 100,
           collateralLocked(),
           outstandingDebt(),
-          collateralType?.collateralToDebtRatio,
+          collateralTypes[collateralSymbol]?.collateralToDebtRatio,
           vault?.collateralToken
         )
       );
     }
-  }, [collateralType?.collateralToDebtRatio, price, vault?.status]);
+  }, [collateralTypes, price, vault?.status]);
 
   useEffect(() => {
     const fetchFees = async () => {
@@ -312,7 +312,7 @@ export const ManageVault = ({ match }) => {
       },
       {
         label: 'Outstanding debt',
-        help: `Your total debt including a ${collateralType?.stabilityFeeApy / 100}% yearly stability fee.`,
+        help: `Your total debt including a ${collateralTypes[collateralSymbol]?.stabilityFeeApy / 100}% yearly stability fee.`,
         data: totalDebt.toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 6,
@@ -330,13 +330,13 @@ export const ManageVault = ({ match }) => {
       {
         label: 'Minimum Ratio (before liquidation)',
         help: 'The collateral-to-debt ratio when your vault gets liquidated',
-        data: collateralType?.liquidationRatio / 100.0,
+        data: collateralTypes[collateralSymbol]?.liquidationRatio / 100.0,
         unit: '%'
       },
       {
         label: 'Liquidation penalty',
         help: 'The penalty you pay when your vault gets liquidated',
-        data: collateralType?.liquidationPenalty,
+        data: collateralTypes[collateralSymbol]?.liquidationPenalty,
         unit: '%'
       },
       {
@@ -535,7 +535,7 @@ export const ManageVault = ({ match }) => {
                               {detail.label === 'Collateral to Debt ratio' ? (
                                 <p
                                   className={`text-base font-semibold leading-none ${debtClass(
-                                    collateralType?.liquidationRatio / 100.0,
+                                    collateralTypes[collateralSymbol]?.liquidationRatio / 100.0,
                                     debtRatio
                                   )}`}
                                 >
@@ -600,7 +600,7 @@ export const ManageVault = ({ match }) => {
                             </p>
                             <p>Feel free to pay back your debt or deposit extra collateral anytime.</p>
                           </Alert>
-                        ) : debtClass(collateralType?.liquidationRatio / 100.0, debtRatio) ==
+                        ) : debtClass(collateralTypes[collateralSymbol]?.liquidationRatio / 100.0, debtRatio) ==
                           'text-orange-500' ? (
                           <Alert type={Alert.type.WARNING} title="Medium liquidation risk">
                             <p>
