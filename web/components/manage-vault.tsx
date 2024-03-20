@@ -677,7 +677,7 @@ export const ManageVault = ({ match }) => {
                         setShowBurnWarning={setShowBurnWarning}
                       />
                       {showBurnWarning && (
-                        <span className="mt-2 text-orange-500">A vault needs at least 500 USDA. If you want to close your vault, use the "Close Vault" button at the top</span>
+                        <span className="mt-2 text-orange-500">A vault needs at least 500 USDA. If you want to close your vault, use the "Close Vault" button at the top of this page.</span>
                       )}
                     </div>
                   </div>
