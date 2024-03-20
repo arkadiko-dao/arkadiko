@@ -67,6 +67,33 @@ export const Prices = () => {
     }
   };
 
+  const getDikoUsdaAmmPrice = async () => {
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+    const fetchPair = async () => {
+      const details = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'get-pair-details',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+          contractPrincipalCV(contractAddress, 'usda-token'),
+        ],
+        senderAddress: contractAddress,
+        network: network,
+      });
+
+      return cvToJSON(details);
+    };
+
+    const pair = await fetchPair();
+    if (pair.success) {
+      const pairDetails = pair.value.value.value;
+      return (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+    } else {
+      return 0;
+    }
+  };
+
   useEffect(() => {
     const fetchPrices = async () => {
       let response: any = await axios.get(`${apiUrl}/api/v1/pages/oracle`);
@@ -85,7 +112,8 @@ export const Prices = () => {
       setXbtcBlockUpdate(response['xbtc']['price_last_updated']);
       setXbtcBlockAgoUpdate(currentBlock - response['xbtc']['price_last_updated']);
 
-      setDikoPrice(response['diko']['last_price'] / 1000000);
+      const dikoUsdaPrice = await getDikoUsdaAmmPrice();
+      setDikoPrice(dikoUsdaPrice);
       setDikoBlockUpdate(response['wstx']['price_last_updated']);
       setDikoBlockAgoUpdate(currentBlock - response['wstx']['price_last_updated']);
 
