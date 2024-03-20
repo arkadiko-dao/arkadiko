@@ -355,7 +355,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                                 maximumFractionDigits: 0,
                               })}`
                             :
-                            `2000`
+                            `2.000`
                           :
                           collateral.name === "stSTX" ?
                             state.userData && (parseFloat(state.balance["ststx"] !== '0')) ?
@@ -364,7 +364,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                                 maximumFractionDigits: 6,
                               })}`
                             :
-                            `2000`
+                            `2.000`
                           :
                           collateral.name === "xBTC" ?
                             state.userData && (parseFloat(state.balance["xbtc"] !== '0')) ?
@@ -382,7 +382,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                                 maximumFractionDigits: 0,
                               })}`
                             :
-                            `50,000`
+                            `50.000`
                             : null
                         }
                         <span className="text-xs">
