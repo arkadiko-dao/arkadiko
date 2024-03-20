@@ -5,7 +5,6 @@ import { VaultDeposit } from '@components/vault-deposit';
 import { VaultWithdraw } from '@components/vault-withdraw';
 import { VaultMint } from '@components/vault-mint';
 import { VaultBurn } from '@components/vault-burn';
-import { VaultCloseModal } from '@components/vault-close-modal';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import {
@@ -62,6 +61,7 @@ export const ManageVault = ({ match }) => {
 
   const [loadingVaultData, setLoadingVaultData] = useState(true);
   const [loadingFeesData, setLoadingFeesData] = useState(true);
+  const [showBurnWarning, setShowBurnWarning] = useState(false);
 
   const minimimumStabilityFee = useMemo(
     () => {
@@ -329,14 +329,6 @@ export const ManageVault = ({ match }) => {
 
   return (
     <Container>
-
-      <VaultCloseModal
-        showCloseModal={showCloseModal}
-        setShowCloseModal={setShowCloseModal}
-        match={match}
-        vault={vault}
-        reserveName={reserveName}
-      />
 
       <main className="flex-1 py-12">
         <section>
@@ -654,7 +646,11 @@ export const ManageVault = ({ match }) => {
                         match={match}
                         vault={vault}
                         reserveName={reserveName}
+                        setShowBurnWarning={setShowBurnWarning}
                       />
+                      {showBurnWarning && (
+                        <span className="mt-2 text-orange-500">A vault needs at least 500 USDA. If you want to close your vault, use the "Close Vault" button at the top</span>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -30,9 +30,11 @@ export const VaultBurn: React.FC<Props> = ({
   stabilityFee,
   vault,
   reserveName,
+  setShowBurnWarning
 }) => {
   const [state, setState] = useContext(AppContext);
   const [usdToBurn, setUsdToBurn] = useState('');
+  const [repayAllowed, setRepayAllowed] = useState(true);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
@@ -125,11 +127,29 @@ export const VaultBurn: React.FC<Props> = ({
       debtToPay = balance.toFixed(6);
     }
     setUsdToBurn((debtToPay / 1000000).toFixed(6));
+
+    const debtAmount = Number(vault.debt) - Number(debtToPay);
+    if (debtAmount < 500 * 1000000) {
+      setShowBurnWarning(true);
+      setRepayAllowed(true);
+    } else {
+      setShowBurnWarning(false);
+      setRepayAllowed(false);
+    }
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
     const value = event.target.value;
     setUsdToBurn(value);
+
+    const debtAmount = Number(vault.debt) - Number(value * 1000000);
+    if (debtAmount < 500 * 1000000) {
+      setShowBurnWarning(true);
+      setRepayAllowed(true);
+    } else {
+      setShowBurnWarning(false);
+      setRepayAllowed(false);
+    }
   };
 
   return (
@@ -162,6 +182,7 @@ export const VaultBurn: React.FC<Props> = ({
           type="button"
           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={() => callBurn()}
+          disabled={repayAllowed}
         >
           Repay
         </button>
