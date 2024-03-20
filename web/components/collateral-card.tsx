@@ -103,6 +103,8 @@ const vaultStatusToLabel = (status: number) => {
   } else if (Number(status) === 202) {
     return 'Redeemed'
   }
+
+  return 'Closed'
 }
 
 const vaultStatusToTooltip = (status: number) => {
@@ -113,6 +115,8 @@ const vaultStatusToTooltip = (status: number) => {
   } else if (Number(status) === 202) {
     return 'Vault got remeeded. You can open a new one'
   }
+
+  return 'Vault is closed. You can open a new one'
 }
 
 export const CollateralCard: React.FC<CollateralTypeProps> = () => {
