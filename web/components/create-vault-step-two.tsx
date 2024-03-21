@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext, UserBalanceKeys } from '@common/context';
 import { getPrice } from '@common/get-price';
-import { getLiquidationPrice, getCollateralToDebtRatio, tokenNameToTicker } from '@common/vault-utils';
+import { getLiquidationPrice, getCollateralToDebtRatio, tokenNameToTicker, tokenTraits } from '@common/vault-utils';
+import { callReadOnlyFunction, contractPrincipalCV } from '@stacks/transactions';
 import { InputAmount } from './input-amount';
 import { useLocation } from 'react-router-dom';
 import {
@@ -13,6 +14,8 @@ import { Placeholder } from './ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { Alert } from './ui/alert';
 import { NewVaultWizardNav } from './new-vault-wizard-nav';
+import { useSTXAddress } from '@common/use-stx-address';
+import { stacksNetwork as network } from '@common/utils';
 
 interface VaultProps {
   setStep: (arg: number) => void;
@@ -23,6 +26,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [state, _] = useContext(AppContext);
   const [tokenKey, setTokenKey] = useState('');
   const [decimals, setDecimals] = useState(1000000);
+  const senderAddress = useSTXAddress();
 
   const search = useLocation().search;
   const tokenName = new URLSearchParams(search).get('token');
@@ -52,6 +56,7 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
   const [liquidationPenalty, setLiquidationPenalty] = useState(0);
   const [liquidationRatio, setLiquidationRatio] = useState(0);
   const [price, setPrice] = useState(0);
+  const [liquidityAvailable, setLiquidityAvailable] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -65,8 +70,29 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
     return price / decimals;
   };
 
+  const getTotalDebt = async (tokenKey: string) => {
+    const collateralType = state.collateralTypes[tokenNameToTicker(tokenName)];
+    const tokenInfo = tokenTraits[tokenKey.toLowerCase()];
+    const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+    console.log('YAYA', collateralType);
+
+    const debtCall = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-vaults-data-v1-1',
+      functionName: 'get-total-debt',
+      functionArgs: [contractPrincipalCV(tokenInfo['address'], tokenInfo['name'])],
+      senderAddress: senderAddress || contractAddress,
+      network: network,
+    });
+    const totalDebt = Number(debtCall.value.value);
+
+    console.log(collateralType, tokenName);
+    setLiquidityAvailable(Number(collateralType['maximumDebt']) - totalDebt);
+  };
+
   const maximumCoinsToMint = async (value: string) => {
     const collateralType = state.collateralTypes[tokenNameToTicker(tokenName)];
+    console.log('coll type:', collateralType);
     if (collateralType) {
       const minColl = liquidationRatio;
       const maxRatio = Math.max(minColl, parseInt(liquidationRatio, 10) + 30);
@@ -81,6 +107,15 @@ export const CreateVaultStepTwo: React.FC<VaultProps> = ({ setStep, setCoinAmoun
       setMaximumToMint(Math.min(maxDebt, maxMint));
     }
   };
+
+  useEffect(() => {
+    console.log('sshhh:', tokenName, state.collateralTypes);
+    if (tokenName && Object.keys(state.collateralTypes).length === 3) {
+      const tokenKey = tokenName.toLowerCase() as UserBalanceKeys;
+      console.log('LFG');
+      getTotalDebt(tokenKey);
+    }
+  }, [tokenName, state.collateralTypes])
 
   useEffect(() => {
     if (tokenName) {
