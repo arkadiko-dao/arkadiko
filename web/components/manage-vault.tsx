@@ -65,6 +65,7 @@ export const ManageVault = ({ match }) => {
   const [loadingFeesData, setLoadingFeesData] = useState(true);
   const [showBurnWarning, setShowBurnWarning] = useState(false);
   const [showLiquidityWarning, setShowLiquidityWarning] = useState(false);
+  const [showMinimumFeeWarning, setShowMinimumFeeWarning] = useState(false);
 
   const minimimumStabilityFee = useMemo(
     () => {
@@ -658,13 +659,16 @@ export const ManageVault = ({ match }) => {
                         vault={vault}
                         reserveName={reserveName}
                         price={price}
-                        collateralType={collateralType}
+                        collateralType={collateralTypes[collateralSymbol]}
                         stabilityFee={minimimumStabilityFee}
                         liquidityAvailable={liquidityAvailable}
                         setShowLiquidityWarning={setShowLiquidityWarning}
                       />
                       {showLiquidityWarning && (
                         <span className="mt-2 text-orange-500">The amount of USDA you want to mint exceeds the amount of liquidity available in the system ({(liquidityAvailable / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA). Please mint a lower amount of USDA.</span>
+                      )}
+                      {showMinimumFeeWarning && (
+                        <span className="mt-2 text-orange-500">You need at least ({(minimimumStabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA in your wallet.</span>
                       )}
                     </div>
                     <div className="flex flex-col px-4 py-5 sm:p-6">
@@ -678,6 +682,9 @@ export const ManageVault = ({ match }) => {
                       />
                       {showBurnWarning && (
                         <span className="mt-2 text-orange-500">A vault needs at least 500 USDA. If you want to close your vault, use the "Close Vault" button at the top of this page.</span>
+                      )}
+                      {showMinimumFeeWarning && (
+                        <span className="mt-2 text-orange-500">You need at least ({(minimimumStabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA in your wallet.</span>
                       )}
                     </div>
                   </div>
@@ -707,6 +714,9 @@ export const ManageVault = ({ match }) => {
                         decimals={decimals}
                         stabilityFee={minimimumStabilityFee}
                       />
+                      {showMinimumFeeWarning && (
+                        <span className="mt-2 text-orange-500">You need at least ({(minimimumStabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA in your wallet.</span>
+                      )}
                     </div>
                     <div className="flex flex-col px-4 py-5 sm:p-6">
                       <VaultWithdraw
@@ -716,6 +726,9 @@ export const ManageVault = ({ match }) => {
                         reserveName={reserveName}
                         stabilityFee={minimimumStabilityFee}
                       />
+                      {showMinimumFeeWarning && (
+                        <span className="mt-2 text-orange-500">You need at least ({(minimimumStabilityFee / 1000000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} USDA in your wallet.</span>
+                      )}
                     </div>
                   </div>
                 </div>
