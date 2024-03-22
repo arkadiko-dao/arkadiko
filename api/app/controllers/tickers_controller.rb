@@ -18,7 +18,7 @@ class TickersController < ApplicationController
       usd_tvl_y = (balances[1] / 1_000_000.0) * (token_y.last_price / 1_000_000.0)
       {
         ticker_id: "#{token_x.symbol.gsub("wSTX", "STX")}_#{token_y.symbol.gsub("wSTX", "STX")}",
-        base_currency: "#{pooltoken_x_address}.#{pool.token_x_name}",
+        base_currency: "#{pool.token_x_address}.#{pool.token_x_name}",
         target_currency: "#{pool.token_y_address}.#{pool.token_y_name}",
         last_price: pool.last_price,
         base_volume: volumes[0] / 1_000_000.0,
