@@ -86,12 +86,7 @@ class Pool < ApplicationRecord
   end
 
   def tvl_in_usd
-    if token_x_name == 'usda-token'
-      return 2 * tvl_token_x
-    elsif token_y_name == 'usda-token'
-      return 2 * tvl_token_y
-    end
-    0 # TODO: calculate TVL for non-USDA pools
+    [balance_x, balance_y]
   end
 
   def tvl
