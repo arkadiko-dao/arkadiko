@@ -1035,6 +1035,8 @@ export const Stake = () => {
   };
 
   const getUserPooled = async () => {
+    if (!stxAddress) return 0;
+
     const call = await callReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-vaults-pool-liq-v1-1',
