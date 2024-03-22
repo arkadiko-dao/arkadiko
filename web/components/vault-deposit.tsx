@@ -32,10 +32,13 @@ export const VaultDeposit: React.FC<Props> = ({
   vault,
   reserveName,
   decimals,
-  stabilityFee
+  stabilityFee,
+  setShowMinimumFeeWarning,
+  setShowBurnWarning
 }) => {
   const [state, setState] = useContext(AppContext);
   const [extraCollateralDeposit, setExtraCollateralDeposit] = useState('');
+  const [depositAllowed, setDepositAllowed] = useState(true);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
@@ -182,11 +185,29 @@ export const VaultDeposit: React.FC<Props> = ({
     } else {
       setExtraCollateralDeposit((state.balance[token] / decimals).toString());
     }
+
+    const debtAmount = Number(vault.debt);
+    if (debtAmount < 500 * 1000000) {
+      setShowBurnWarning(true);
+      setDepositAllowed(false);
+    } else {
+      setShowBurnWarning(false);
+      setDepositAllowed(true);
+    }
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
     const value = event.target.value;
     setExtraCollateralDeposit(value);
+
+    const debtAmount = Number(vault.debt);
+    if (debtAmount < 500 * 1000000) {
+      setShowBurnWarning(true);
+      setDepositAllowed(false);
+    } else {
+      setShowBurnWarning(false);
+      setDepositAllowed(true);
+    }
   };
 
   return (
@@ -226,6 +247,7 @@ export const VaultDeposit: React.FC<Props> = ({
           type="button"
           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={() => addDeposit()}
+          disabled={!depositAllowed}
         >
           Deposit
         </button>

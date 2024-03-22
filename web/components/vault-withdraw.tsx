@@ -20,10 +20,13 @@ export const VaultWithdraw: React.FC<Props> = ({
   maximumCollateralToWithdraw,
   vault,
   reserveName,
-  stabilityFee
+  stabilityFee,
+  setShowMinimumFeeWarning,
+  setShowBurnWarning
 }) => {
   const [_, setState] = useContext(AppContext);
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
+  const [withdrawAllowed, setWithdrawAllowed] = useState(true);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
@@ -101,12 +104,30 @@ export const VaultWithdraw: React.FC<Props> = ({
   };
 
   const withdrawMaxAmount = () => {
+    const debtAmount = Number(vault.debt);
+    if (debtAmount < 500 * 1000000) {
+      setShowBurnWarning(true);
+      setWithdrawAllowed(false);
+    } else {
+      setShowBurnWarning(false);
+      setWithdrawAllowed(true);
+    }
+
     return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
     const value = event.target.value;
     setCollateralToWithdraw(value);
+
+    const debtAmount = Number(vault.debt);
+    if (debtAmount < 500 * 1000000) {
+      setShowBurnWarning(true);
+      setWithdrawAllowed(false);
+    } else {
+      setShowBurnWarning(false);
+      setWithdrawAllowed(true);
+    }
   };
 
   return (
@@ -139,6 +160,7 @@ export const VaultWithdraw: React.FC<Props> = ({
           type="button"
           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={() => callWithdraw()}
+          disabled={!withdrawAllowed}
         >
           Withdraw
         </button>
