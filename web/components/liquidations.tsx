@@ -32,6 +32,7 @@ import { InformationCircleIcon, MinusCircleIcon, PlusCircleIcon } from '@heroico
 import { classNames } from '@common/class-names';
 import { Alert } from './ui/alert';
 import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Liquidations: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -366,6 +367,27 @@ export const Liquidations: React.FC = () => {
                 </div>
               </section>
             )}
+
+            <section>
+              <div className="mt-4">
+                <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+                  <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
+                    <div className="flex items-center justify-between">
+                      <p>
+                        Looking for legacy V1 rewards?
+                      </p>
+                      <RouterLink
+                        type="button"
+                        to={'/legacy/liquidations'}
+                        className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                      >
+                        Go to legacy liquidations
+                      </RouterLink>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             <section>
               <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
