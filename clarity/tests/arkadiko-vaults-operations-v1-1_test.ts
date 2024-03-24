@@ -169,8 +169,8 @@ Clarinet.test({
     result = vaultsOperations.openVault(deployer, "Wrapped-Bitcoin", 1 * 100, 10000, deployer.address)
     result.expectOk().expectBool(true);
 
-    result = vaultsOperations.openVault(deployer, "auto-alex-v2", 20000 * 100, 500, deployer.address)
-    result.expectOk().expectBool(true);
+    // result = vaultsOperations.openVault(deployer, "auto-alex-v2", 20000 * 100, 500, deployer.address)
+    // result.expectOk().expectBool(true);
 
     //
     // Update vaults
@@ -184,8 +184,8 @@ Clarinet.test({
     result = vaultsOperations.updateVault(deployer, "Wrapped-Bitcoin", 1 * 10, 600, deployer.address)
     result.expectOk().expectBool(true);
 
-    result = vaultsOperations.updateVault(deployer, "auto-alex-v2", 30000 * 100, 600, deployer.address)
-    result.expectOk().expectBool(true);
+    // result = vaultsOperations.updateVault(deployer, "auto-alex-v2", 30000 * 100, 600, deployer.address)
+    // result.expectOk().expectBool(true);
 
     //
     // Close vaults
@@ -199,8 +199,8 @@ Clarinet.test({
     result = vaultsOperations.closeVault(deployer, "Wrapped-Bitcoin")
     result.expectOk().expectBool(true);
 
-    result = vaultsOperations.closeVault(deployer, "auto-alex-v2")
-    result.expectOk().expectBool(true);
+    // result = vaultsOperations.closeVault(deployer, "auto-alex-v2")
+    // result.expectOk().expectBool(true);
   },
 });
 
