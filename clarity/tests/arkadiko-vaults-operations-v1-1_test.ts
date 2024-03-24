@@ -76,14 +76,14 @@ Clarinet.test({
 
     // 10 minting fee
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 0.000380 - 10);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 10);
 
     call = vaultsData.getTotalDebt("wstx-token");
-    call.result.expectOk().expectUintWithDecimals(1000); 
+    call.result.expectOk().expectUintWithDecimals(1000 + 0.000380); 
 
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(3000);
-    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(1000);
+    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(1000 + 0.000380);
     call.result.expectOk().expectTuple()["last-block"].expectUint(8);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
@@ -102,15 +102,18 @@ Clarinet.test({
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0.001141);
 
+    // Vault debt was: 1000 + 0.000380
+    // User sets vault debt to 500
+    // So user will burn 500 + 0.000380 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 500 - 0.000380 - 0.000761 - 10);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 10 - (500 + 0.000380));
 
     call = vaultsData.getTotalDebt("wstx-token");
-    call.result.expectOk().expectUintWithDecimals(500); 
+    call.result.expectOk().expectUintWithDecimals(500 + 0.000761); 
 
     call = vaultsData.getVault(wallet_1.address, "wstx-token");
     call.result.expectOk().expectTuple()["collateral"].expectUintWithDecimals(1500);
-    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500);
+    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(500 + 0.000761);
     call.result.expectOk().expectTuple()["last-block"].expectUint(9);
     call.result.expectOk().expectTuple()["status"].expectUint(101);
 
@@ -129,8 +132,10 @@ Clarinet.test({
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0.001521);
 
+    // Vault debt was: 500 + 0.000761
+    // Also need to pay stability fee of 0.000380 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 - 0.000380 - 0.000761 - 0.000380 - 10);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 10 - (500 + 0.000380) - (500 + 0.000761) - 0.000380);
 
     call = vaultsData.getTotalDebt("wstx-token");
     call.result.expectOk().expectUintWithDecimals(0); 
@@ -217,6 +222,7 @@ Clarinet.test({
     let oracleManager = new OracleManager(chain, deployer);
     let vaultsOperations = new VaultsOperations(chain, deployer);
     let usdaToken = new UsdaToken(chain, deployer);
+    let vaultsData = new VaultsData(chain, deployer);
 
     oracleManager.updatePrice("STX", 0.5);    
 
@@ -234,18 +240,23 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 5 - 25 - 0.000761);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 5 - 25);
 
     // Set fee to 0%
     result = vaultsOperations.setMintFee(deployer, 0);
     result.expectOk().expectBool(true);
+
+    // 1000 debt + stability fees
+    call = vaultsData.getVault(wallet_1.address, "wstx-token");
+    call.result.expectOk().expectTuple()["debt"].expectUintWithDecimals(1000 + 0.000761);
 
     result = vaultsOperations.updateVault(wallet_1, "wstx-token", 5000, 1200, wallet_1.address)
     result.expectOk().expectBool(true);
 
     // No minting fee added, only stability fees
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 1200 - 5 - 25 - 0.000761 - 0.001522);
+    call.result.expectOk().expectUintWithDecimals(1000000 + 1000 - 5 - 25 + (200 - 0.000761));
+
   },
 });
 
@@ -363,7 +374,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     result = vaultsOperations.updateVault(deployer, "arkadiko-token", 2000, 500, deployer.address)
-    result.expectErr().expectUint(930002);
+    result.expectErr().expectUint(980001);
   },
 });
 

@@ -109,16 +109,16 @@ Clarinet.test({
     call = wstxToken.getStxBalance(deployer.address);
     call.result.expectUintWithDecimals(100000000 - 2500);
     call = usdaToken.balanceOf(deployer.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 + 600 - 20.001141 - 6); // fees paid
+    call.result.expectOk().expectUintWithDecimals(1000000 + 600  - 6); 
 
     result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
-    result.expectOk().expectUintWithDecimals(0.000456);
+    result.expectOk().expectUintWithDecimals(0.000471);
 
     chain.mineEmptyBlock(144 * 364);
 
     // 600 * 4% = 24
     result = vaultsHelpers.getStabilityFee(deployer, "wstx-token");
-    result.expectOk().expectUintWithDecimals(23.935159);
+    result.expectOk().expectUintWithDecimals(24.733043);
   },
 });
 

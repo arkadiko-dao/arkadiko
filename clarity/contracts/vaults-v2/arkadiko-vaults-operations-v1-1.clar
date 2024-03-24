@@ -119,12 +119,14 @@
 )
   (let (
     (owner tx-sender)
-    (nicr (/ (* collateral u100000000) debt))
-    (collateral-info (unwrap! (contract-call? vaults-tokens get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (stability-fee (try! (contract-call? vaults-helpers get-stability-fee vaults-tokens vaults-data owner (contract-of token))))
+    (new-debt (+ debt stability-fee))
+
+    (nicr (/ (* collateral u100000000) new-debt))
+    (collateral-info (unwrap! (contract-call? vaults-tokens get-token (contract-of token)) (err ERR_UNKNOWN_TOKEN)))
     (vault (unwrap-panic (contract-call? vaults-data get-vault owner (contract-of token))))
     (total-debt (unwrap-panic (contract-call? vaults-data get-total-debt (contract-of token))))
-    (coll-to-debt (try! (contract-call? vaults-helpers get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral debt)))
+    (coll-to-debt (try! (contract-call? vaults-helpers get-collateral-to-debt vaults-tokens vaults-data oracle owner (contract-of token) collateral new-debt)))
   )
     (asserts! (is-eq (contract-of vaults-tokens) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-tokens"))) (err ERR_WRONG_TRAIT))
     (asserts! (is-eq (contract-of vaults-data) (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "vaults-data"))) (err ERR_WRONG_TRAIT))
@@ -135,12 +137,12 @@
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
-    (asserts! (< (+ (- total-debt (get debt vault)) debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
-    (asserts! (>= debt (get vault-min-debt collateral-info)) (err ERR_MIN_DEBT))
+    (asserts! (< (+ (- total-debt (get debt vault)) new-debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
+    (asserts! (>= new-debt (get vault-min-debt collateral-info)) (err ERR_MIN_DEBT))
     (asserts! (>= max-mint-fee (get-mint-fee)) (err ERR_MAX_MINT_FEE))
 
     ;; Update vault data
-    (try! (as-contract (contract-call? vaults-data set-vault owner (contract-of token) STATUS_ACTIVE collateral debt)))
+    (try! (as-contract (contract-call? vaults-data set-vault owner (contract-of token) STATUS_ACTIVE collateral new-debt)))
     (try! (as-contract (contract-call? vaults-sorted reinsert owner (contract-of token) nicr prev-owner-hint)))
 
     ;; Mint or burn USDA
@@ -166,7 +168,10 @@
     )
 
     ;; Get stability fees
-    (try! (contract-call? .usda-token transfer stability-fee tx-sender .arkadiko-vaults-pool-fees-v1-1 none))
+    (if (> stability-fee u0)
+      (try! (as-contract (contract-call? .arkadiko-dao mint-token .usda-token stability-fee .arkadiko-vaults-pool-fees-v1-1)))
+      false
+    )
 
     (ok true)
   )
