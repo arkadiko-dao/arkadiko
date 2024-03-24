@@ -19,8 +19,7 @@ async function stake(amount, publicKey, privateKey) {
       tx.listCV([
         tx.contractPrincipalCV(CONTRACT_ADDRESS, "wstx-token"),
         tx.contractPrincipalCV(CONTRACT_ADDRESS, "ststx-token"),
-        tx.contractPrincipalCV(CONTRACT_ADDRESS, "Wrapped-Bitcoin"),
-        tx.contractPrincipalCV(CONTRACT_ADDRESS, "auto-alex-v2"),
+        tx.contractPrincipalCV(CONTRACT_ADDRESS, "Wrapped-Bitcoin")
       ])
     ],
     senderKey: privateKey,

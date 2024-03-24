@@ -23,7 +23,6 @@ Clarinet.test({
     call.result.expectOk().expectList()[0].expectPrincipal(Utils.qualifiedName("wstx-token"));
     call.result.expectOk().expectList()[1].expectPrincipal(Utils.qualifiedName("ststx-token"));
     call.result.expectOk().expectList()[2].expectPrincipal(Utils.qualifiedName("Wrapped-Bitcoin"));
-    call.result.expectOk().expectList()[3].expectPrincipal(Utils.qualifiedName("auto-alex-v2"));
 
     call = vaultsTokens.getToken("wstx-token");
     call.result.expectOk().expectTuple()["token-name"].expectAscii("STX");
@@ -61,8 +60,6 @@ Clarinet.test({
     call.result.expectOk().expectList()[0].expectPrincipal(Utils.qualifiedName("wstx-token"));
     call.result.expectOk().expectList()[1].expectPrincipal(Utils.qualifiedName("ststx-token"));
     call.result.expectOk().expectList()[2].expectPrincipal(Utils.qualifiedName("Wrapped-Bitcoin"));
-    call.result.expectOk().expectList()[3].expectPrincipal(Utils.qualifiedName("auto-alex-v2"));
-
 
     //
     // Set new token
@@ -87,8 +84,7 @@ Clarinet.test({
     call.result.expectOk().expectList()[0].expectPrincipal(Utils.qualifiedName("wstx-token"));
     call.result.expectOk().expectList()[1].expectPrincipal(Utils.qualifiedName("ststx-token"));
     call.result.expectOk().expectList()[2].expectPrincipal(Utils.qualifiedName("Wrapped-Bitcoin"));
-    call.result.expectOk().expectList()[3].expectPrincipal(Utils.qualifiedName("auto-alex-v2"));
-    call.result.expectOk().expectList()[4].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
+    call.result.expectOk().expectList()[3].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
 
 
     //
@@ -104,8 +100,7 @@ Clarinet.test({
     call = vaultsTokens.getTokenList();
     call.result.expectOk().expectList()[0].expectPrincipal(Utils.qualifiedName("wstx-token"));
     call.result.expectOk().expectList()[1].expectPrincipal(Utils.qualifiedName("Wrapped-Bitcoin"));
-    call.result.expectOk().expectList()[2].expectPrincipal(Utils.qualifiedName("auto-alex-v2"));
-    call.result.expectOk().expectList()[3].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
+    call.result.expectOk().expectList()[2].expectPrincipal(Utils.qualifiedName("arkadiko-token"));
   },
 });
 
@@ -152,8 +147,8 @@ Clarinet.test({
 
     let vaultsTokens = new VaultsTokens(chain, deployer);
 
-    // 4 tokens added on deploy, we can add 21 more
-    for (let i = 0; i < 21; i++) {
+    // 3 tokens added on deploy, we can add 21 more
+    for (let i = 0; i < 22; i++) {
       let result = vaultsTokens.setToken(deployer, "token-" + i, "TOK-" + i, 100, 1, 0.05, 1.5, 0.2, 0.01, 0.1, 300, 1000);
       result.expectOk().expectBool(true);
     }

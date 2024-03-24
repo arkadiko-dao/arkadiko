@@ -335,8 +335,8 @@ Clarinet.test({
     result = vaultsOperations.openVault(deployer, "Wrapped-Bitcoin", 1, 1000, deployer.address) // 0.01 BTC
     result.expectOk().expectBool(true);
 
-    result = vaultsOperations.openVault(deployer, "auto-alex-v2", 20000 * 100, 500, deployer.address)
-    result.expectOk().expectBool(true);
+    // result = vaultsOperations.openVault(deployer, "auto-alex-v2", 20000 * 100, 500, deployer.address)
+    // result.expectOk().expectBool(true);
 
     //
     // NICR
@@ -350,8 +350,8 @@ Clarinet.test({
     call = vaultsSorted.getVault(deployer.address, "Wrapped-Bitcoin");
     call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(0.1);
 
-    call = vaultsSorted.getVault(deployer.address, "auto-alex-v2");
-    call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(400000);
+    // call = vaultsSorted.getVault(deployer.address, "auto-alex-v2");
+    // call.result.expectSome().expectTuple()["nicr"].expectUintWithDecimals(400000);
   },
 });
 
