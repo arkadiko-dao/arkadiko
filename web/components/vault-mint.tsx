@@ -157,6 +157,12 @@ export const VaultMint: React.FC<Props> = ({
       setShowLiquidityWarning(false);
       setMintAllowed(true);
     }
+
+    if (usdaBalance < stabilityFee) {
+      setShowMinimumFeeWarning(true);
+    } else {
+      setShowMinimumFeeWarning(false);
+    }
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {

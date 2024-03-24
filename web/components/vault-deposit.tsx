@@ -50,6 +50,7 @@ export const VaultDeposit: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
+  const usdaBalance = Number(state.balance['usda']);
 
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
@@ -194,6 +195,11 @@ export const VaultDeposit: React.FC<Props> = ({
       setShowBurnWarning(false);
       setDepositAllowed(true);
     }
+    if (usdaBalance < stabilityFee) {
+      setShowMinimumFeeWarning(true);
+    } else {
+      setShowMinimumFeeWarning(false);
+    }
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
@@ -207,6 +213,11 @@ export const VaultDeposit: React.FC<Props> = ({
     } else {
       setShowBurnWarning(false);
       setDepositAllowed(true);
+    }
+    if (usdaBalance < stabilityFee) {
+      setShowMinimumFeeWarning(true);
+    } else {
+      setShowMinimumFeeWarning(false);
     }
   };
 
