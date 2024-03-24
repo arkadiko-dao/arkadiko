@@ -21,25 +21,9 @@ class VaultsMigration {
     this.deployer = deployer;
   }
 
-  migrateVaults(caller: Account, vaults: any[]) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-migration-v1-1", "migrate-vaults", [
-        types.list(vaults.map(vault => types.tuple({
-          "owner": types.principal(vault.owner),
-          "token": types.principal(Utils.qualifiedName(vault.token)),
-          "status": types.uint(vault.status),
-          "collateral": types.uint(vault.collateral * 1000000),
-          "debt": types.uint(vault.debt * 1000000),
-          "prev-owner-hint": types.some(types.principal(vault.prev_owner_hint))
-        })))
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
   migratePoolLiqFunds(caller: Account) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-migration-v1-1", "migrate-pool-liq-funds", [
+      Tx.contractCall("arkadiko-vaults-migration-v1-3", "migrate-pool-liq-funds", [
       ], caller.address)
     ]);
     return block.receipts[0].result;
@@ -47,20 +31,11 @@ class VaultsMigration {
 
   migratePoolLiq(caller: Account, stakers: any[]) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-migration-v1-1", "migrate-pool-liq", [
+      Tx.contractCall("arkadiko-vaults-migration-v1-3", "migrate-pool-liq", [
         types.list(stakers.map(staker => types.tuple({
           "staker": types.principal(staker.staker),
           "amount": types.uint(staker.amount * 1000000),
         })))
-      ], caller.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
-  migrateReserves(caller: Account, stxAmountToStack: number) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-migration-v1-1", "migrate-reserves", [
-        types.uint(stxAmountToStack * 1000000)
       ], caller.address)
     ]);
     return block.receipts[0].result;

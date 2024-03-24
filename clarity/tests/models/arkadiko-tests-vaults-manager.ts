@@ -42,7 +42,7 @@ class VaultsManager {
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-liq-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-liq-v1-2')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
         types.principal(owner),
