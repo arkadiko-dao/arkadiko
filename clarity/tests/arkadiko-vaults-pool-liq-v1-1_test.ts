@@ -306,6 +306,39 @@ Clarinet.test({
   },
 });
 
+Clarinet.test({
+  name: "vaults-pool-liq: can stake multiple times in one block",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let block = chain.mineBlock([
+
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.uint(10 * 1000000), 
+        types.list([
+          types.principal(Utils.qualifiedName('wstx-token')),
+          types.principal(Utils.qualifiedName('ststx-token')),
+          types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+        ])
+      ], deployer.address),
+
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.uint(10 * 1000000), 
+        types.list([
+          types.principal(Utils.qualifiedName('wstx-token')),
+          types.principal(Utils.qualifiedName('ststx-token')),
+          types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+        ])
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);;
+    block.receipts[1].result.expectOk().expectBool(true);;
+  },
+});
+
 // ---------------------------------------------------------
 // Rewards
 // ---------------------------------------------------------

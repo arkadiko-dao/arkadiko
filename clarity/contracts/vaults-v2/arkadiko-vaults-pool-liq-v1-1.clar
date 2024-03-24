@@ -318,7 +318,7 @@
     ;; Update last block
     (var-set diko-rewards-last-block burn-block-height)
 
-    (if (> (var-get fragments-total) u0)
+    (if (and (> (var-get fragments-total) u0) (> amount u0))
       ;; Some USDA staked
       (begin
         (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token amount tx-sender)))
