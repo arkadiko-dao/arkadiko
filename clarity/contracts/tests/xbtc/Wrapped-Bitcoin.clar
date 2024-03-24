@@ -216,5 +216,5 @@
 
 (try! (initialize "Wrapped Bitcoin" "xBTC" u8 tx-sender))
 
-(try! (ft-mint? wrapped-bitcoin u10000000000 'STTB1X9XAM3CHTXVDWWY5YYN23PZ7TK16XPEX9Y4))
+(try! (ft-mint? wrapped-bitcoin u10000000000 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM))
 (try! (ft-mint? wrapped-bitcoin u10000000000 'ST1QV6WVNED49CR34E58CRGA0V58X281FAS1TFBWF)) ;; 100 xBTC (100 with 8 decimals)
