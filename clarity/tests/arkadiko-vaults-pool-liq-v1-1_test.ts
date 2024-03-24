@@ -625,20 +625,6 @@ Clarinet.test({
         types.list([
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-          types.principal(Utils.qualifiedName('auto-alex-v2')),
-        ])
-      ], deployer.address)
-    ]);
-    block.receipts[0].result.expectErr().expectUint(950001);
-
-    block = chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
-        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
-        types.uint(100 * 1000000), 
-        types.list([
-          types.principal(Utils.qualifiedName('wstx-token')),
-          types.principal(Utils.qualifiedName('ststx-token')),
-          types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
         ])
       ], deployer.address)
     ]);
@@ -653,7 +639,6 @@ Clarinet.test({
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('arkadiko-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-          types.principal(Utils.qualifiedName('auto-alex-v2')),
         ])
       ], deployer.address)
     ]);
@@ -668,7 +653,6 @@ Clarinet.test({
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-          types.principal(Utils.qualifiedName('auto-alex-v2')),
           types.principal(Utils.qualifiedName('arkadiko-token')),
         ])
       ], deployer.address)
@@ -685,7 +669,6 @@ Clarinet.test({
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-          types.principal(Utils.qualifiedName('auto-alex-v2')),
         ])
       ], deployer.address)
     ]);

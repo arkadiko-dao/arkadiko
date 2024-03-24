@@ -73,7 +73,6 @@ class VaultsPoolLiq {
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-          types.principal(Utils.qualifiedName('auto-alex-v2')),
         ])
       ], caller.address)
     ]);
@@ -92,7 +91,6 @@ class VaultsPoolLiq {
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-          types.principal(Utils.qualifiedName('auto-alex-v2')),
         ])
       ], caller.address)
     ]);
@@ -114,7 +112,6 @@ class VaultsPoolLiq {
           types.principal(Utils.qualifiedName('wstx-token')),
           types.principal(Utils.qualifiedName('ststx-token')),
           types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
-          types.principal(Utils.qualifiedName('auto-alex-v2')),
         ])
       ], caller.address)
     ]);

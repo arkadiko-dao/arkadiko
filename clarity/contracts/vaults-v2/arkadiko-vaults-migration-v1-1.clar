@@ -138,9 +138,18 @@
       (wbtc-balance (unwrap-panic (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin get-balance (as-contract tx-sender))))
     )
       ;; Transfer tokens to pool-active
-      (try! (as-contract (contract-call? .wstx-token transfer stx-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
-      (try! (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token transfer ststx-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
-      (try! (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin transfer wbtc-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
+      (if (> u0 stx-balance)
+        (try! (as-contract (contract-call? .wstx-token transfer stx-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
+        false
+      )
+      (if (> u0 ststx-balance)
+        (try! (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.ststx-token transfer ststx-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
+        false
+      )
+      (if (> u0 wbtc-balance)
+        (try! (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.Wrapped-Bitcoin transfer wbtc-balance tx-sender .arkadiko-vaults-pool-active-v1-1 none)))
+        false
+      )
 
       (ok { stx-balance: stx-balance, ststx-balance: ststx-balance, wbtc-balance: wbtc-balance})
     )

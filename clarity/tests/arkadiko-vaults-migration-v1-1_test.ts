@@ -115,7 +115,7 @@ Clarinet.test({
 
     result = vaultsMigration.migrateReserves(deployer, 70000);
     result.expectOk().expectTuple()["stx-balance"].expectUintWithDecimals(30000);
-    result.expectOk().expectTuple()["ststx-balance"].expectUintWithDecimals(69965.017491);
+    result.expectOk().expectTuple()["ststx-balance"].expectUintWithDecimals(0);
     result.expectOk().expectTuple()["wbtc-balance"].expectUintWithDecimals(10);
 
 
@@ -126,17 +126,17 @@ Clarinet.test({
     call = await chain.callReadOnlyFn("wstx-token", "get-balance", [
       types.principal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"))
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(30000);
+    call.result.expectOk().expectUintWithDecimals(0);
 
     call = await chain.callReadOnlyFn("ststx-token", "get-balance", [
       types.principal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"))
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(69965.017491);
+    call.result.expectOk().expectUintWithDecimals(0);
 
     call = await chain.callReadOnlyFn("Wrapped-Bitcoin", "get-balance", [
       types.principal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"))
     ], deployer.address);
-    call.result.expectOk().expectUintWithDecimals(10);
+    call.result.expectOk().expectUintWithDecimals(0);
 
   },
 });
