@@ -137,7 +137,7 @@
     (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
     (asserts! (is-eq (get status vault) STATUS_ACTIVE) (err ERR_WRONG_STATUS))
     (asserts! (get valid coll-to-debt) (err ERR_INVALID_RATIO))
-    (asserts! (< (+ (- total-debt (get debt vault)) new-debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
+    (asserts! (< (+ (- total-debt (get debt vault)) debt) (get max-debt collateral-info)) (err ERR_MAX_DEBT_REACHED))
     (asserts! (>= new-debt (get vault-min-debt collateral-info)) (err ERR_MIN_DEBT))
     (asserts! (>= max-mint-fee (get-mint-fee)) (err ERR_MAX_MINT_FEE))
 
