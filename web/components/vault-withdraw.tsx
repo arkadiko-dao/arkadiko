@@ -24,7 +24,7 @@ export const VaultWithdraw: React.FC<Props> = ({
   setShowMinimumFeeWarning,
   setShowBurnWarning
 }) => {
-  const [_, setState] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
   const [withdrawAllowed, setWithdrawAllowed] = useState(true);
 
@@ -34,6 +34,7 @@ export const VaultWithdraw: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
+  const usdaBalance = Number(state.balance['usda']);
 
   const callWithdraw = async () => {
     if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
@@ -112,6 +113,11 @@ export const VaultWithdraw: React.FC<Props> = ({
       setShowBurnWarning(false);
       setWithdrawAllowed(true);
     }
+    if (usdaBalance < stabilityFee) {
+      setShowMinimumFeeWarning(true);
+    } else {
+      setShowMinimumFeeWarning(false);
+    }
 
     return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
   };
@@ -127,6 +133,11 @@ export const VaultWithdraw: React.FC<Props> = ({
     } else {
       setShowBurnWarning(false);
       setWithdrawAllowed(true);
+    }
+    if (usdaBalance < stabilityFee) {
+      setShowMinimumFeeWarning(true);
+    } else {
+      setShowMinimumFeeWarning(false);
     }
   };
 
