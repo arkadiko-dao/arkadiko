@@ -410,16 +410,21 @@ Clarinet.test({
 
     oracleManager.updatePrice("STX", 0.5);    
 
-    let result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 5000000, deployer.address)
+    let result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 5000001, deployer.address)
     result.expectErr().expectUint(930004);
 
-    result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 5000000 - 500, deployer.address)
+    result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 5000000, deployer.address)
     result.expectOk().expectBool(true);
 
-    result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, deployer.address)
+    result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 1, deployer.address)
     result.expectErr().expectUint(930004);
 
+    // Can update vault if max-debt is reached but no new debt is created
     result = vaultsOperations.updateVault(deployer, "wstx-token", 100000000, 5000000, deployer.address)
+    result.expectOk().expectBool(true)
+
+    // Cannot create extra USDA debt
+    result = vaultsOperations.updateVault(deployer, "wstx-token", 100000000, 5000001, deployer.address)
     result.expectErr().expectUint(930004);
   },
 });
