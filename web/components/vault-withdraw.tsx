@@ -21,7 +21,6 @@ export const VaultWithdraw: React.FC<Props> = ({
   vault,
   reserveName,
   stabilityFee,
-  setShowMinimumFeeWarning,
   setShowBurnWarning
 }) => {
   const [state, setState] = useContext(AppContext);
@@ -34,7 +33,6 @@ export const VaultWithdraw: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-  const usdaBalance = Number(state.balance['usda']);
 
   const callWithdraw = async () => {
     if (parseFloat(collateralToWithdraw) > maximumCollateralToWithdraw) {
@@ -48,7 +46,8 @@ export const VaultWithdraw: React.FC<Props> = ({
     const debtAmount = Number(vault.debt);
 
     const BASE_URL = process.env.HINT_API_URL;
-    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const totalDebt = debtAmount + Number(stabilityFee);
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${totalDebt}`;
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);
@@ -113,11 +112,6 @@ export const VaultWithdraw: React.FC<Props> = ({
       setShowBurnWarning(false);
       setWithdrawAllowed(true);
     }
-    if (usdaBalance < stabilityFee) {
-      setShowMinimumFeeWarning(true);
-    } else {
-      setShowMinimumFeeWarning(false);
-    }
 
     return setCollateralToWithdraw(String(maximumCollateralToWithdraw));
   };
@@ -134,11 +128,6 @@ export const VaultWithdraw: React.FC<Props> = ({
       setShowBurnWarning(false);
       setWithdrawAllowed(true);
     }
-    if (usdaBalance < stabilityFee) {
-      setShowMinimumFeeWarning(true);
-    } else {
-      setShowMinimumFeeWarning(false);
-    }
   };
 
   return (
@@ -148,8 +137,7 @@ export const VaultWithdraw: React.FC<Props> = ({
         The amount of collateral you are able to withdraw while keeping a healthy collateralization level is{' '}
         <span className="font-semibold">
           {maximumCollateralToWithdraw} {tokenNameToTicker(vault?.collateralToken || '')}
-        </span>
-        . Withdrawing will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
+        </span>.
       </p>
 
       <div className="mt-6">

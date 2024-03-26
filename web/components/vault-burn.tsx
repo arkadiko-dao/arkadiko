@@ -63,7 +63,8 @@ export const VaultBurn: React.FC<Props> = ({
     const debtAmount = Number(vault.debt) - Number(usdToBurn * 1000000);
 
     const BASE_URL = process.env.HINT_API_URL;
-    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const totalDebt = debtAmount + Number(stabilityFee);
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${totalDebt}`;
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);
