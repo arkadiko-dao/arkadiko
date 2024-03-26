@@ -88,7 +88,7 @@ export const VaultWithdraw: React.FC<Props> = ({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-1',
+      contractName: 'arkadiko-vaults-operations-v1-2',
       functionName: 'update-vault',
       functionArgs: args,
       postConditionMode: 0x01,
