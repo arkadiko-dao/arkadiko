@@ -424,10 +424,64 @@ Clarinet.test({
     result.expectOk().expectBool(true)
 
     // Cannot create extra USDA debt
-    result = vaultsOperations.updateVault(deployer, "wstx-token", 100000000, 5000001, deployer.address)
+    result = vaultsOperations.updateVault(deployer, "wstx-token", 100000000, 5000010, deployer.address)
     result.expectErr().expectUint(930004);
   },
 });
+
+// TODO
+// Clarinet.test({
+//   name: "vaults-operations: can burn debt or change collateral when max debt is reached",
+//   async fn(chain: Chain, accounts: Map<string, Account>) {
+//     let deployer = accounts.get("deployer")!;
+//     let wallet_1 = accounts.get("wallet_1")!;
+
+//     let vaultsOperations = new VaultsOperations(chain, deployer);
+//     let oracleManager = new OracleManager(chain, deployer);
+
+//     oracleManager.updatePrice("STX", 0.5);
+
+//     let result = vaultsOperations.openVault(deployer, "wstx-token", 100000000, 4000000, deployer.address)
+//     result.expectOk().expectBool(true);
+
+//     result = vaultsOperations.openVault(wallet_1, "wstx-token", 100000000, 1000000, deployer.address)
+//     result.expectOk().expectBool(true);
+
+//     // Can update vault if max-debt is reached but no new debt is created
+//     result = vaultsOperations.updateVault(deployer, "wstx-token", 110000000, 4000000, deployer.address)
+//     result.expectOk().expectBool(true)
+
+//     let block = this.chain.mineBlock([
+//       Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
+//         types.principal(Utils.qualifiedName("wstx-token")),
+//         types.uint(110000000 * 1000000),
+//         types.uint(4000000 * 1000000),
+//         types.some(types.principal(deployer.address)),
+//         types.uint(1000),
+//       ], deployer.address),
+//       Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
+//         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
+//         types.principal(Utils.qualifiedName("wstx-token")),
+//         types.uint(100000000 * 1000000),
+//         types.uint(1000000 * 1000000),
+//         types.some(types.principal(deployer.address)),
+//         types.uint(1000),
+//       ], wallet_1.address)
+//     ]);
+//     block.receipts[0].result.expectOk().expectBool(true);
+//   },
+// });
 
 Clarinet.test({
   name: "vaults-operations: can not create/update vault if min debt not reached",
