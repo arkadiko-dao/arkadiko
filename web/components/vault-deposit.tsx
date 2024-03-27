@@ -164,7 +164,7 @@ export const VaultDeposit: React.FC<Props> = ({
       contractName: 'arkadiko-vaults-operations-v1-2',
       functionName: 'update-vault',
       functionArgs: args,
-      postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished deposit!', data);
         setState(prevState => ({
