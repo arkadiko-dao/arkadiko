@@ -21,10 +21,9 @@ export const VaultWithdraw: React.FC<Props> = ({
   vault,
   reserveName,
   stabilityFee,
-  setShowMinimumFeeWarning,
   setShowBurnWarning
 }) => {
-  const [_, setState] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const [collateralToWithdraw, setCollateralToWithdraw] = useState('');
   const [withdrawAllowed, setWithdrawAllowed] = useState(true);
 
@@ -47,7 +46,8 @@ export const VaultWithdraw: React.FC<Props> = ({
     const debtAmount = Number(vault.debt);
 
     const BASE_URL = process.env.HINT_API_URL;
-    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const totalDebt = debtAmount + Number(stabilityFee);
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${totalDebt}`;
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);
@@ -87,7 +87,7 @@ export const VaultWithdraw: React.FC<Props> = ({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-1',
+      contractName: 'arkadiko-vaults-operations-v1-2',
       functionName: 'update-vault',
       functionArgs: args,
       postConditionMode: 0x01,
@@ -137,8 +137,7 @@ export const VaultWithdraw: React.FC<Props> = ({
         The amount of collateral you are able to withdraw while keeping a healthy collateralization level is{' '}
         <span className="font-semibold">
           {maximumCollateralToWithdraw} {tokenNameToTicker(vault?.collateralToken || '')}
-        </span>
-        . Withdrawing will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
+        </span>.
       </p>
 
       <div className="mt-6">

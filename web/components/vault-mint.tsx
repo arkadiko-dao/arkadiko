@@ -24,8 +24,7 @@ export const VaultMint: React.FC<Props> = ({
   collateralType,
   stabilityFee,
   liquidityAvailable,
-  setShowLiquidityWarning,
-  setShowMinimumFeeWarning
+  setShowLiquidityWarning
 }) => {
   const [state, setState] = useContext(AppContext);
   const [usdToMint, setUsdToMint] = useState('');
@@ -37,7 +36,6 @@ export const VaultMint: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-  const usdaBalance = Number(state.balance['usda']);
 
   const callMint = async () => {
     const tokenAddress = tokenInfo['address'];
@@ -46,7 +44,8 @@ export const VaultMint: React.FC<Props> = ({
     const debtAmount = Number(vault.debt) + Number(usdToMint * 1000000);
 
     const BASE_URL = process.env.HINT_API_URL;
-    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const totalDebt = debtAmount + Number(stabilityFee);
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${totalDebt}`;
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);
@@ -97,10 +96,10 @@ export const VaultMint: React.FC<Props> = ({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-1',
+      contractName: 'arkadiko-vaults-operations-v1-2',
       functionName: 'update-vault',
       functionArgs: args,
-      postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished mint!', data, data.txId);
         setState(prevState => ({
@@ -169,12 +168,6 @@ export const VaultMint: React.FC<Props> = ({
       setShowLiquidityWarning(false);
       setMintAllowed(true);
     }
-
-    if (usdaBalance < stabilityFee) {
-      setShowMinimumFeeWarning(true);
-    } else {
-      setShowMinimumFeeWarning(false);
-    }
   };
 
   return (
@@ -185,8 +178,7 @@ export const VaultMint: React.FC<Props> = ({
         <span className="font-semibold">
           {availableCoins}{' '}
           USDA
-        </span>
-        . Minting will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
+        </span>.
       </p>
 
       <div className="mt-6">
@@ -211,7 +203,7 @@ export const VaultMint: React.FC<Props> = ({
           type="button"
           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           onClick={() => callMint()}
-          disabled={!mintAllowed || Number(usdaBalance) < Number(stabilityFee) || Number(usdToMint) > Number(availableCoins)}
+          disabled={!mintAllowed || Number(usdToMint) > Number(availableCoins)}
         >
           Mint
         </button>

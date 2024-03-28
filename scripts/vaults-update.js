@@ -1,6 +1,6 @@
 require('dotenv').config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
-const CONTRACT_NAME = 'arkadiko-vaults-operations-v1-1';
+const CONTRACT_NAME = 'arkadiko-vaults-operations-v1-2';
 const tx = require('@stacks/transactions');
 const BN = require('bn.js');
 const utils = require('./utils');
