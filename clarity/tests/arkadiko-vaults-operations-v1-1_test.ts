@@ -568,3 +568,35 @@ Clarinet.test({
 
   },
 });
+
+Clarinet.test({
+  name: "vaults-operations: burn xSTX to redeem STX",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let oracleManager = new OracleManager(chain, deployer);
+    let vaultsOperations = new VaultsOperations(chain, deployer);
+
+    // Set price
+    oracleManager.updatePrice("STX", 0.5);
+
+    //
+    // Open vault
+    //
+    let result = vaultsOperations.openVault(wallet_1, "wstx-token", 2000, 500, wallet_1.address)
+    result.expectOk().expectBool(true);
+
+    let block = chain.mineBlock([
+      Tx.contractCall("arkadiko-vaults-operations-v1-1", "redeem-stx", [
+        types.uint(100 * 1000000),
+      ], deployer.address)
+    ]);
+    block.receipts[0].result.expectOk();
+
+    let [_, burn_event, _1, _2, transfer_event] = block.receipts[0].events;
+    burn_event.ft_burn_event.amount.expectInt(100000000);
+    transfer_event.stx_transfer_event.amount.expectInt(100000000);
+    block.receipts[0].result.expectOk().expectUintWithDecimals(100);
+  }
+});

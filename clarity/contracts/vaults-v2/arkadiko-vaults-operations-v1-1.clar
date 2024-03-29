@@ -222,6 +222,20 @@
   )
 )
 
+(define-public (redeem-stx (amount uint))
+  (let (
+    (sender tx-sender)
+  )
+    (asserts! (not (var-get shutdown-activated)) (err ERR_SHUTDOWN))
+    (asserts! (> amount u0) (ok u0))
+
+    (try! (contract-call? .arkadiko-dao burn-token .xstx-token amount sender))
+    (try! (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw .wstx-token sender amount))
+
+    (ok amount)
+  )
+)
+
 ;; ---------------------------------------------------------
 ;; Admin
 ;; ---------------------------------------------------------

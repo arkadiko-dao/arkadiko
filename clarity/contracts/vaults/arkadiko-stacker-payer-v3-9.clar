@@ -29,20 +29,6 @@
 ;; User actions
 ;; ---------------------------------------------------------
 
-(define-public (redeem-stx (amount uint))
-  (let (
-    (sender tx-sender)
-  )
-    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-    (asserts! (> amount u0) (ok u0))
-
-    (try! (contract-call? .arkadiko-dao burn-token .xstx-token amount sender))
-    (try! (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw .wstx-token sender amount))
-
-    (ok amount)
-  )
-)
-
 (define-public (claim-leftover-vault-xstx (vault-id uint))
   (let (
     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
