@@ -1,40 +1,77 @@
 ;; Implementation of Stacker Payer
 ;; which allows users to redeem xSTX for STX
+;; and to claim xSTX from old liquidated vaults
 (use-trait ft-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+
+;; ---------------------------------------------------------
+;; Constants
+;; ---------------------------------------------------------
 
 (define-constant ERR-NOT-AUTHORIZED u22401)
 (define-constant ERR-EMERGENCY-SHUTDOWN-ACTIVATED u221)
 (define-constant ERR-ALREADY-CLAIMED u222)
 
-;; (define-public (redeem-stx (token <ft-trait>) (amount uint))
-;;   (let (
-;;     (sender tx-sender)
-;;   )
-;;     (asserts! (is-enabled) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
-;;     (asserts! (> amount u0) (ok u0))
+;; ---------------------------------------------------------
+;; Variables
+;; ---------------------------------------------------------
 
-;;     (try! (contract-call? .arkadiko-dao burn-token .xstx-token amount sender))
-;;     (try! (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw token sender amount))
+(define-data-var shutdown-activated bool false)
 
-;;     (ok amount)
-;;   )
-;; )
+;; ---------------------------------------------------------
+;; Getters
+;; ---------------------------------------------------------
 
-;; (define-public (claim-leftover-vault-xstx (vault-id uint) (sender principal))
-;;   (let (
-;;     (sender tx-sender)
-;;     (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
-;;   )
-;;     (asserts! (> (get collateral vault) u0) (err ERR-ALREADY-CLAIMED))
-;;     (asserts! (> (get leftover-collateral vault) u0) (err ERR-ALREADY-CLAIMED))
+(define-read-only (get-shutdown-activated) 
+  (var-get shutdown-activated)
+)
 
-;;     (try! (contract-call? .arkadiko-dao mint-token .xstx-token (get leftover-collateral vault) sender))
-;;     (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
-;;       collateral: u0,
-;;       updated-at-block-height: block-height,
-;;       leftover-collateral: u0
-;;     })))
+;; ---------------------------------------------------------
+;; User actions
+;; ---------------------------------------------------------
 
-;;     (ok true)
-;;   )
-;; )
+(define-public (redeem-stx (amount uint))
+  (let (
+    (sender tx-sender)
+  )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (> amount u0) (ok u0))
+
+    (try! (contract-call? .arkadiko-dao burn-token .xstx-token amount sender))
+    (try! (contract-call? .arkadiko-vaults-pool-active-v1-1 withdraw .wstx-token sender amount))
+
+    (ok amount)
+  )
+)
+
+(define-public (claim-leftover-vault-xstx (vault-id uint))
+  (let (
+    (vault (contract-call? .arkadiko-vault-data-v1-1 get-vault-by-id vault-id))
+  )
+    (asserts! (not (get-shutdown-activated)) (err ERR-EMERGENCY-SHUTDOWN-ACTIVATED))
+    (asserts! (> (get collateral vault) u0) (err ERR-ALREADY-CLAIMED))
+    (asserts! (> (get leftover-collateral vault) u0) (err ERR-ALREADY-CLAIMED))
+
+    (try! (contract-call? .arkadiko-dao mint-token .xstx-token (get leftover-collateral vault) (get owner vault)))
+    (try! (contract-call? .arkadiko-vault-data-v1-1 update-vault vault-id (merge vault {
+      collateral: u0,
+      updated-at-block-height: block-height,
+      leftover-collateral: u0
+    })))
+
+    (ok true)
+  )
+)
+
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-shutdown-activated (activated bool))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+
+    (var-set shutdown-activated activated)
+
+    (ok true)
+  )
+)
