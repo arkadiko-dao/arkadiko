@@ -25,6 +25,7 @@ export interface LiquidationRewardProps {
 }
 
 export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
+  contract = 'arkadiko-vaults-pool-liq-v1-2',
   rewardIds,
   token,
   claimable,
@@ -36,8 +37,6 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const [state, setState] = useContext(AppContext);
 
   const claim = async () => {
-    var contract = 'arkadiko-vaults-pool-liq-v1-2';
-
     const postConditions = [];
     if (tokenIsStx) {
       // PC

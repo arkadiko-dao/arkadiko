@@ -25,6 +25,7 @@ import { CashIcon } from '@heroicons/react/outline';
 import { EmptyState } from './ui/empty-state';
 import { Placeholder } from "./ui/placeholder";
 import { LiquidationRewardProps, LegacyLiquidationReward } from './legacy-liquidations-reward';
+import { LiquidationReward } from './liquidations-reward';
 import { Tooltip } from '@blockstack/ui';
 import { Tab } from '@headlessui/react';
 import { InformationCircleIcon, MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/solid';
@@ -34,19 +35,60 @@ import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV
 
 export const LegacyLiquidations: React.FC = () => {
   const { doContractCall } = useConnect();
-  const stxAddress = useSTXAddress();
+  const stxAddress = 'SP2Q7A2E08G2XD5YPVGTWHAB4TXPNE1CWB2M2JTS'; //useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
   const [startLoadingRewards, setStartLoadingRewards] = useState(false);
   const [isLoadingRewards, setIsLoadingRewards] = useState(true);
+  const [isLoadingRewardsLiqPool, setIsLoadingRewardsLiqPool] = useState(false);
+
+  const [loadedRewards, setLoadedRewards] = useState(false);
   const [rewardData, setRewardData] = useState([]);
+  const [rewardDataLiqPool, setRewardDataLiqPool] = useState([]);
   const [currentBlockHeight, setCurrentBlockHeight] = useState(0);
   const [dikoEndBlock, setDikoEndBlock] = useState(0);
   const [dikoApr, setDikoApr] = useState(0);
   const [rewardLoadingPercentage, setRewardLoadingPercentage] = useState(0);
   const [burnBlockHeight, setBurnBlockHeight] = useState(0);
+
+  const getPendingRewards = async (tokenAddress: string, tokenName: string) => {
+    const call = await callReadOnlyFunction({
+      contractAddress,
+      contractName: 'arkadiko-vaults-pool-liq-v1-1',
+      functionName: 'get-pending-rewards',
+      functionArgs: [
+        standardPrincipalCV(stxAddress),
+        contractPrincipalCV(tokenAddress, tokenName),
+      ],
+      senderAddress: stxAddress || '',
+      network: network,
+    });
+    const resultDetails = cvToJSON(call).value.value;
+
+    return resultDetails;
+  };
+
+  const loadRewardsLiqPool = async () => {
+    setIsLoadingRewardsLiqPool(true);
+
+    const dikoRewards = await getPendingRewards(contractAddress, 'arkadiko-token');
+    if (dikoRewards > 0) {
+      rewardDataLiqPool.push(
+        <LiquidationReward
+          contract={'arkadiko-vaults-pool-liq-v1-1'}
+          key={0}
+          token={`${contractAddress}.arkadiko-token`}
+          claimable={dikoRewards}
+          tokenIsStx={false}
+        />
+      );
+    }
+
+    setIsLoadingRewardsLiqPool(false);
+    setLoadedRewards(true);
+  };
 
   const getRewardCountV1 = async () => {
     const call = await callReadOnlyFunction({
@@ -447,6 +489,75 @@ export const LegacyLiquidations: React.FC = () => {
                     </table>
                   </>
                 ): null}
+              </div>
+            </section>
+
+            <section>
+              <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+                <div>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Your rewards (pool-liq-v1-1)</h3>
+                </div>
+              </header>
+              <div className="mt-4">
+                {!isLoadingRewardsLiqPool && rewardDataLiqPool.length == 0 && !loadedRewards ? (
+                  <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+                    <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
+                      <div className="flex items-center justify-between">
+                        <p>
+                          It can take a couple of minutes to check all liquidated vaults. Thanks for your patience!
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => loadRewardsLiqPool()}
+                          className="inline-flex justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                        >
+                          Load rewards (pool-liq-v1-1)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : isLoadingRewardsLiqPool && rewardDataLiqPool.length == 0 ? (
+                  <div className="mt-4 shadow sm:rounded-md sm:overflow-hidden">
+                    <div className="px-4 py-5 bg-white dark:bg-zinc-800 sm:p-6">
+                      <div className="flex justify-between mb-3">
+                        <span className="text-base font-medium dark:text-white">Checking liquidated vaults…</span>
+                        <span className="text-sm font-medium text-indigo-700 dark:text-white">15%</span>
+                      </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                          <div className="bg-indigo-600 h-2.5 rounded-full font-semibold" style={{ width: "15%" }}></div>
+                        </div>
+                    </div>
+                  </div>
+                ): null}
+              </div>
+
+              <div className="mt-4">
+                {rewardDataLiqPool.length == 0 && loadedRewards ? (
+                  <EmptyState
+                    Icon={CashIcon}
+                    title="You have no rewards to claim."
+                    description="DIKO and liquidation rewards appear here."
+                  />
+                ) : rewardDataLiqPool.length != 0 ? (
+                  <>
+                    <table className="min-w-full divide-y divide-gray-200 shadow dark:divide-zinc-600 sm:rounded-md sm:overflow-hidden">
+                      <thead className="bg-gray-50 dark:bg-zinc-900 dark:bg-opacity-80">
+                        <tr>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-zinc-400">
+                            Token
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 dark:text-zinc-400">
+                            Amount
+                          </th>
+                          <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-zinc-400">
+                            Claim
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200 dark:bg-zinc-900 dark:divide-zinc-600">{rewardDataLiqPool}</tbody>
+                    </table>
+                  </>
+                ) : null}
               </div>
             </section>
           </main>
