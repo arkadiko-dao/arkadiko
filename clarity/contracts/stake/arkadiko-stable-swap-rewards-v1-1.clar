@@ -8,7 +8,7 @@
 (define-constant TOTAL-DIKO u1225500000000) ;; Max ~1.2M DIKO over the next 18 months (April 2024 -> End of 2025)
 
 (define-data-var diko-minted uint u0)
-(define-data-var rewards-per-cycle uint u8510000000) ;; ~8K DIKO per 144 blocks (1 cycle on Bitflow)
+(define-data-var rewards-per-cycle uint u2160000000) ;; ~2,160 DIKO per 144 blocks (1 cycle on Bitflow)
 (define-data-var shutdown-activated bool false)
 (define-data-var pool-percentage uint u100)
 
