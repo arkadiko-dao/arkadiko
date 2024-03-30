@@ -35,7 +35,7 @@ import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV
 
 export const LegacyLiquidations: React.FC = () => {
   const { doContractCall } = useConnect();
-  const stxAddress = 'SP2Q7A2E08G2XD5YPVGTWHAB4TXPNE1CWB2M2JTS'; //useSTXAddress();
+  const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
   const [state, setState] = useContext(AppContext);
