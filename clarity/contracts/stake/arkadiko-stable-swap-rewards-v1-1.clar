@@ -5,9 +5,10 @@
 (define-constant ERR-NOT-AUTHORIZED u32401)
 (define-constant ERR-NOT-ACTIVATED u320001)
 (define-constant ERR-TOO-MUCH-DIKO u320002)
+(define-constant TOTAL-DIKO u1225500000000) ;; Max ~1.2M DIKO over the next 18 months (April 2024 -> End of 2025)
 
 (define-data-var diko-minted uint u0)
-(define-data-var rewards-per-cycle uint u12500000000) ;; 12.5K DIKO
+(define-data-var rewards-per-cycle uint u8510000000) ;; ~8K DIKO per 144 blocks (1 cycle on Bitflow)
 (define-data-var shutdown-activated bool false)
 (define-data-var pool-percentage uint u100)
 
@@ -26,32 +27,19 @@
   (var-get diko-minted)
 )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; public methods (callable by Arkadiko DAO)          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; public methods (callable by ALEX contract or Arkadiko DAO) ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define-public (mint (amount uint) (recipient principal))
+(define-public (send (amount uint) (recipient principal))
   (begin
-    (asserts!
-      (or
-        (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address))
-        (is-eq contract-caller 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.dual-farm-diko-helper)
-      )
-      (err ERR-NOT-AUTHORIZED)
-    )
+    (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-activated) (err ERR-NOT-ACTIVATED))
-    (asserts! (<= amount (var-get rewards-per-cycle)) (err ERR-TOO-MUCH-DIKO))
 
     (try! (as-contract (contract-call? .arkadiko-token transfer amount tx-sender recipient none)))
     (ok amount)
   )
 )
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; public admin methods       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-public (mint-diko (number-of-cycles uint))
   (let (
@@ -59,7 +47,7 @@
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-guardian-address)) (err ERR-NOT-AUTHORIZED))
     (asserts! (is-activated) (err ERR-NOT-ACTIVATED))
-    (asserts! (<= (+ (var-get diko-minted) diko-to-mint) MAX-TO-MINT) (err ERR-TOO-MUCH-DIKO))
+    (asserts! (<= (+ (var-get diko-minted) diko-to-mint) TOTAL-DIKO) (err ERR-TOO-MUCH-DIKO))
 
     (try! (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-to-mint (as-contract tx-sender)))
     (var-set diko-minted (+ (var-get diko-minted) diko-to-mint))
