@@ -19,7 +19,7 @@ const decimals = (token: string) => {
   }
 }
 
-export const PoolRow: React.FC = ({ id, pool }) => {
+export const PoolRow: React.FC = ({ id, pool, data }) => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [volume24, setVolume24] = useState('0');
   const [volume7, setVolume7] = useState('0');
@@ -44,10 +44,11 @@ export const PoolRow: React.FC = ({ id, pool }) => {
       setVolume7((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
 
+    if (!data) return;
     fetchVolume24();
     fetchVolume7();
     setIsLoading(false);
-  }, [pool]);
+  }, [pool, data]);
 
   return (
     <tr className="bg-white" key={id}>
