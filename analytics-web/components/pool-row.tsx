@@ -19,10 +19,11 @@ const decimals = (token: string) => {
   }
 }
 
-export const PoolRow: React.FC = ({ id, pool }) => {
+export const PoolRow: React.FC = ({ id, pool, data }) => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [volume24, setVolume24] = useState('0');
   const [volume7, setVolume7] = useState('0');
+  const [poolTvl, setPoolTvl] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
 
   const nameX = pool['nameX'];
@@ -44,10 +45,17 @@ export const PoolRow: React.FC = ({ id, pool }) => {
       setVolume7((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
 
-    fetchVolume24();
+    if (!data) {
+      fetchVolume24();
+      setPoolTvl(pool['tvl'].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    } else {
+      const vol24 = (data['base_volume'] * data['base_price']) + (data['target_volume'] * data['target_price']);
+      setVolume24(vol24.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      setPoolTvl(data['liquidity_in_usd'].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
     fetchVolume7();
     setIsLoading(false);
-  }, [pool]);
+  }, [pool, data]);
 
   return (
     <tr className="bg-white" key={id}>
@@ -72,7 +80,7 @@ export const PoolRow: React.FC = ({ id, pool }) => {
         {isLoading ? (
           <Placeholder className="py-2" width={Placeholder.width.HALF} />
           ) : (
-          <span>${pool['tvl'].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <span>${poolTvl}</span>
         )}
       </td>
       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">

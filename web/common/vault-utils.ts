@@ -73,7 +73,7 @@ export const calculateMintFee = async (debtAmount: number) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const fetchedPrice = await callReadOnlyFunction({
     contractAddress,
-    contractName: "arkadiko-vaults-operations-v1-1",
+    contractName: "arkadiko-vaults-operations-v1-2",
     functionName: "get-mint-fee",
     functionArgs: [],
     senderAddress: contractAddress,

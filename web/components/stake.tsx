@@ -1025,7 +1025,7 @@ export const Stake = () => {
       contractName: 'usda-token',
       functionName: 'get-balance',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-2'),
       ],
       senderAddress: stxAddress || contractAddress,
       network: network,
@@ -1039,7 +1039,7 @@ export const Stake = () => {
 
     const call = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'get-stake-of',
       functionArgs: [
         standardPrincipalCV(stxAddress || ''),

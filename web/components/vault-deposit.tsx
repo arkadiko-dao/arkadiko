@@ -33,7 +33,6 @@ export const VaultDeposit: React.FC<Props> = ({
   reserveName,
   decimals,
   stabilityFee,
-  setShowMinimumFeeWarning,
   setShowBurnWarning
 }) => {
   const [state, setState] = useContext(AppContext);
@@ -50,7 +49,6 @@ export const VaultDeposit: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-  const usdaBalance = Number(state.balance['usda']);
 
   const addDeposit = async () => {
     if (!extraCollateralDeposit) {
@@ -121,7 +119,8 @@ export const VaultDeposit: React.FC<Props> = ({
     );
 
     const BASE_URL = process.env.HINT_API_URL;
-    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${debtAmount}`;
+    const totalDebt = debtAmount + Number(stabilityFee);
+    const url = BASE_URL + `?owner=${senderAddress}&token=${tokenAddress}.${token}&collateral=${collateralAmount}&debt=${totalDebt}`;
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);
@@ -162,10 +161,10 @@ export const VaultDeposit: React.FC<Props> = ({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-1',
+      contractName: 'arkadiko-vaults-operations-v1-2',
       functionName: 'update-vault',
       functionArgs: args,
-      postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         console.log('finished deposit!', data);
         setState(prevState => ({
@@ -195,11 +194,6 @@ export const VaultDeposit: React.FC<Props> = ({
       setShowBurnWarning(false);
       setDepositAllowed(true);
     }
-    if (usdaBalance < stabilityFee) {
-      setShowMinimumFeeWarning(true);
-    } else {
-      setShowMinimumFeeWarning(false);
-    }
   };
 
   const onInputChange = (event: { target: { value: any; name: any } }) => {
@@ -214,11 +208,6 @@ export const VaultDeposit: React.FC<Props> = ({
       setShowBurnWarning(false);
       setDepositAllowed(true);
     }
-    if (usdaBalance < stabilityFee) {
-      setShowMinimumFeeWarning(true);
-    } else {
-      setShowMinimumFeeWarning(false);
-    }
   };
 
   return (
@@ -230,7 +219,7 @@ export const VaultDeposit: React.FC<Props> = ({
           {state.balance[vault?.collateralToken.toLowerCase()] / decimals}{' '}
           {tokenNameToTicker(vault?.collateralToken || '')}
         </span>
-        . Depositing extra collateral allows you to mint more USDA. Depositing will include a stability fee of maximum <span className="font-semibold">{(stabilityFee / 1000000).toFixed(6)} USDA</span>.
+        . Depositing extra collateral allows you to mint more USDA.
       </p>
 
       <div className="mt-6">

@@ -38,13 +38,13 @@ Clarinet.test({
     call = dikoToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(150000);
 
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(0);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
@@ -52,7 +52,7 @@ Clarinet.test({
 
     // DIKO rewards per block = ~51
     call = vaultsPoolLiquidation.getDikoRewardsToAdd();
-    call.result.expectUintWithDecimals(102.729446);
+    call.result.expectUintWithDecimals(51.364723);
 
     //
     // Stake
@@ -63,7 +63,7 @@ Clarinet.test({
     call = usdaToken.balanceOf(wallet_1.address);
     call.result.expectOk().expectUintWithDecimals(1000000 - 1000);
 
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(1000);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
@@ -89,10 +89,10 @@ Clarinet.test({
     result = vaultsPoolLiquidation.addDikoRewards();
     result.expectOk().expectUintWithDecimals(51.364723 * 2);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(30);
 
-    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(51.364723 * 2);
 
 
@@ -122,7 +122,7 @@ Clarinet.test({
     // Burn USDA
     //
 
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(1000);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
@@ -131,7 +131,7 @@ Clarinet.test({
     result = vaultsPoolLiquidation.burnUsda(deployer, 200);
     result.expectOk().expectUintWithDecimals(200);
 
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(800);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
@@ -151,10 +151,10 @@ Clarinet.test({
     result = vaultsPoolLiquidation.addDikoRewards();
     result.expectOk().expectUintWithDecimals(51.364723 * 3);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(30);
 
-    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = dikoToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(51.364723 * 3);
 
 
@@ -303,6 +303,39 @@ Clarinet.test({
 
     call = vaultsPoolLiquidation.getStakeOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(2700 - 270);
+  },
+});
+
+Clarinet.test({
+  name: "vaults-pool-liq: can stake multiple times in one block",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
+
+    let block = chain.mineBlock([
+
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-2", "stake", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.uint(10 * 1000000), 
+        types.list([
+          types.principal(Utils.qualifiedName('wstx-token')),
+          types.principal(Utils.qualifiedName('ststx-token')),
+          types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+        ])
+      ], deployer.address),
+
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-2", "stake", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.uint(10 * 1000000), 
+        types.list([
+          types.principal(Utils.qualifiedName('wstx-token')),
+          types.principal(Utils.qualifiedName('ststx-token')),
+          types.principal(Utils.qualifiedName('Wrapped-Bitcoin')),
+        ])
+      ], wallet_1.address)
+    ]);
+    block.receipts[0].result.expectOk().expectBool(true);;
+    block.receipts[1].result.expectOk().expectBool(true);;
   },
 });
 
@@ -619,7 +652,7 @@ Clarinet.test({
 
     // Missing token from list
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-2", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.uint(100 * 1000000), 
         types.list([
@@ -632,7 +665,7 @@ Clarinet.test({
 
     // Wrong token in list
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-2", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.uint(100 * 1000000), 
         types.list([
@@ -646,7 +679,7 @@ Clarinet.test({
 
     // Extra token in list - at back
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-2", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.uint(100 * 1000000), 
         types.list([
@@ -661,7 +694,7 @@ Clarinet.test({
 
     // Extra token in list - at front
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-pool-liq-v1-1", "stake", [
+      Tx.contractCall("arkadiko-vaults-pool-liq-v1-2", "stake", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.uint(100 * 1000000), 
         types.list([

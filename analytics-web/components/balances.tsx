@@ -10,7 +10,7 @@ export const Balances = () => {
       description: 'Reserve of collateralized STX and other SIP10 tokens in Vaults.',
     },
     {
-      address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-1`,
+      address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
       name: 'USDA Liquidation Pool',
       description: 'Reserve of USDA tokens to liquidate vaults.',
     },

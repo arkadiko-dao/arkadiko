@@ -144,6 +144,6 @@
     .arkadiko-vaults-operations-v1-1
     .arkadiko-vaults-pool-active-v1-1
     .arkadiko-vaults-pool-fees-v1-1
-    .arkadiko-vaults-pool-liq-v1-1
+    .arkadiko-vaults-pool-liq-v1-2
   ))
 )

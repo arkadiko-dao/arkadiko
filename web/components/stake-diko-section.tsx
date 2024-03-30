@@ -45,7 +45,7 @@ export const StakeDikoSection = ({
             </div>
             <a
               className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
-              href="https://docs.arkadiko.finance/protocol/diko/security-module"
+              href="https://docs.arkadiko.finance/protocol/stake"
               target="_blank"
               rel="noopener noreferrer"
             >

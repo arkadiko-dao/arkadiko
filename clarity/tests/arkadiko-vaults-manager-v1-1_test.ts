@@ -106,12 +106,12 @@ Clarinet.test({
     let call:any = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(1885.718587);
 
     // Used 600 USDA from pool + stability fees
     // So ~400 USDA left in pool
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(399.998631);
 
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
@@ -193,12 +193,12 @@ Clarinet.test({
     let call:any = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
     call.result.expectOk().expectUintWithDecimals(0);
 
-    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = wstxToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(2000);
 
     // Used 600 USDA from pool + stability fees
     // So ~400 USDA left in pool
-    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-1"));
+    call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
     call.result.expectOk().expectUintWithDecimals(399.998631);
 
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));

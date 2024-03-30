@@ -109,7 +109,7 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'stake',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
@@ -136,7 +136,7 @@ export const Liquidations: React.FC = () => {
     const postConditions = [
       makeContractFungiblePostCondition(
         contractAddress,
-        'arkadiko-vaults-pool-liq-v1-1',
+        'arkadiko-vaults-pool-liq-v1-2',
         FungibleConditionCode.Equal,
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
@@ -147,7 +147,7 @@ export const Liquidations: React.FC = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'unstake',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
@@ -173,7 +173,7 @@ export const Liquidations: React.FC = () => {
   const getPendingRewards = async (tokenAddress: string, tokenName: string) => {
     const call = await callReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-1',
+      contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'get-pending-rewards',
       functionArgs: [
         standardPrincipalCV(stxAddress),
@@ -264,7 +264,7 @@ export const Liquidations: React.FC = () => {
         contractName: 'usda-token',
         functionName: 'get-balance',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-2'),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -276,7 +276,7 @@ export const Liquidations: React.FC = () => {
     const getUserPooled = async () => {
       const call = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-vaults-pool-liq-v1-1',
+        contractName: 'arkadiko-vaults-pool-liq-v1-2',
         functionName: 'get-stake-of',
         functionArgs: [
           standardPrincipalCV(stxAddress || ''),
