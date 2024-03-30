@@ -79,6 +79,7 @@ const decimals = (token: string) => {
 export const Home: React.FC = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const [pools, setPools] = useState([]);
+  const [poolData, setPoolData] = useState([]);
   const [highchartsOptions, setHighchartsOptions] = useState<Highcharts.Options>();
   const [lastDikoPrice, setLastDikoPrice] = useState(0);
   const [vaultData, setVaultData] = useState({});
@@ -138,8 +139,13 @@ export const Home: React.FC = () => {
       const prices = dikoResponse.data.prices;
       setLastDikoPrice(prices[prices.length - 1][1].toFixed(2));
     };
+    const fetchPoolData = async () => {
+      const response = await axios.get(`${apiUrl}/api/v1/tickers`);
+      setPoolData(response.data);
+    }
 
     fetchPools();
+    fetchPoolData();
     fetchVaults();
     fetchDikoPrice();
   }, []);
@@ -294,7 +300,7 @@ export const Home: React.FC = () => {
 
         <MarketCap lastDikoPrice={lastDikoPrice} lastUsdaPrice={1.0} />
 
-        <Pools pools={pools} />
+        <Pools pools={pools} poolData={poolData} />
 
         {vaultData && vaultData.count > 0 ? <Vaults vaultData={vaultData} /> : null}
 
