@@ -14,14 +14,15 @@ async function initiateStacking() {
   const hashbytes = tx.bufferCV(data);
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-stacker-4-v3-1",
+    contractName: "arkadiko-stacker-3-v3-1",
     functionName: "initiate-stacking",
     functionArgs: [
       tx.tupleCV({ 'version': tx.bufferCV(new BN(hashMode, 10).toArrayLike(Buffer)), 'hashbytes': hashbytes }),
-      tx.uintCV(791950), // prepare_phase_start_block_height
+      tx.uintCV(815050), // prepare_phase_start_block_height
       tx.uintCV(1) // number of cycles
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
+    fee: new BN(100000, 10),
     postConditionMode: 1,
     network
   };

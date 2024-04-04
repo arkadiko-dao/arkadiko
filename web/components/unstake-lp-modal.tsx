@@ -6,7 +6,7 @@ import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
@@ -69,7 +69,7 @@ export const UnstakeLpModal = ({
         contractName: contractName,
         functionName: 'unstake',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
           contractPrincipalCV(assetContractAddress, tokenContract),
           amount,
         ],
@@ -84,17 +84,16 @@ export const UnstakeLpModal = ({
           setShowUnstakeModal(false);
         },
         anchorMode: AnchorMode.Any,
-      });
-
+      }, resolveProvider() || window.StacksProvider);
     } else {
       await doContractCall({
         network,
         contractAddress,
         stxAddress,
-        contractName: 'arkadiko-stake-registry-v1-1',
+        contractName: 'arkadiko-stake-registry-v2-1',
         functionName: 'unstake',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
           contractPrincipalCV(contractAddress, contractName),
           contractPrincipalCV(contractAddress, tokenContract),
           amount,
@@ -110,7 +109,7 @@ export const UnstakeLpModal = ({
           setShowUnstakeModal(false);
         },
         anchorMode: AnchorMode.Any,
-      });
+      }, resolveProvider() || window.StacksProvider);
     }
   };
 

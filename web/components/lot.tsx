@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { LotProps } from './lot-group';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { resolveReserveName, tokenTraits } from '@common/vault-utils';
 import { AppContext } from '@common/context';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -46,7 +46,7 @@ export const Lot: React.FC<LotProps> = ({ id, lotId, collateralAmount, collatera
         }));
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   useEffect(() => {

@@ -2,7 +2,9 @@ import React from 'react';
 import { Proposal } from './proposal';
 
 export interface ProposalProps {
-  id: string;
+  id: number;
+  proposalId: string,
+  governanceVersion: string,
   title: string;
   url: string;
   proposer: string;
@@ -21,6 +23,8 @@ export const ProposalGroup: React.FC<ProposalProps[]> = ({ proposals }) => {
   const proposalItems = proposals.map((proposal: ProposalProps) => (
     <Proposal
       key={proposal.id}
+      proposalId={proposal.proposalId}
+      governanceVersion={proposal.governanceVersion}
       id={proposal.id}
       title={proposal.title}
       url={proposal.url}

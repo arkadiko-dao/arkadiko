@@ -30,7 +30,7 @@ export const StakeUsdaSection = ({
             </div>
             <a
               className="inline-flex items-center px-2 text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
-              href="https://docs.arkadiko.finance/protocol/auctions/liquidation-pool"
+              href="https://docs.arkadiko.finance/protocol/liquidation-pool"
               target="_blank"
               rel="noopener noreferrer"
             >

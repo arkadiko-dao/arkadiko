@@ -1,5 +1,6 @@
 [network]
 name = "devnet"
+deployment_fee_rate = 10
 
 [accounts.deployer]
 mnemonic = "twice kind fence tip hidden tilt action fragile skin nothing glory cousin green tomorrow spring wrist shed math olympic multiply hip blue scout claw"
@@ -72,17 +73,13 @@ balance = 100_000_000_000_000
 # btc_address: mjSrB3wS4xab3kYqFktwBzfTdPg367ZJ2d
 
 [devnet]
-# disable_stacks_explorer = true
-# disable_stacks_api = true
-enable_next_features = true
-stacks_node_wait_time_for_microblocks = 1_000
-stacks_node_first_attempt_time_ms = 15_000
-stacks_node_subsequent_attempt_time_ms = 5_000
-# bind_containers_volumes = true
+disable_stacks_explorer = false
+disable_stacks_api = false
+# disable_subnet_api = false
 # disable_bitcoin_explorer = true
 # working_dir = "tmp/devnet"
 # stacks_node_events_observers = ["host.docker.internal:8002"]
-# miner_mnemonic = "twice kind fence tip hidden tilt action fragile skin nothing glory cousin green tomorrow spring wrist shed math olympic multiply hip blue scout claw"
+# miner_mnemonic = "fragile loan twenty basic net assault jazz absorb diet talk art shock innocent float punch travel gadget embrace caught blossom hockey surround initial reduce"
 # miner_derivation_path = "m/44'/5757'/0'/0/0"
 # faucet_mnemonic = "shadow private easily thought say logic fault paddle word top book during ignore notable orange flight clock image wealth health outside kitten belt reform"
 # faucet_derivation_path = "m/44'/5757'/0'/0/0"
@@ -91,7 +88,7 @@ stacks_node_subsequent_attempt_time_ms = 5_000
 # bitcoin_node_rpc_port = 18443
 # bitcoin_node_username = "devnet"
 # bitcoin_node_password = "devnet"
-bitcoin_controller_automining_disabled = true
+# bitcoin_controller_block_time = 30_000
 # stacks_node_rpc_port = 20443
 # stacks_node_p2p_port = 20444
 # stacks_api_port = 3999
@@ -102,24 +99,52 @@ bitcoin_controller_automining_disabled = true
 # postgres_username = "postgres"
 # postgres_password = "postgres"
 # postgres_database = "postgres"
-# bitcoin_node_image_url = "quay.io/hirosystems/bitcoind:devnet-v2"
-# stacks_node_image_url = "quay.io/hirosystems/stacks-node:v3-beta2"
-# stacks_node_image_url = "quay.io/hirosystems/stacks-node:devnet-v3-beta5"
-# stacks_node_env_vars = ["STACKS_LOG_DEBUG=1"]
+# bitcoin_node_image_url = "quay.io/hirosystems/bitcoind:devnet-v3"
+# stacks_node_image_url = "quay.io/hirosystems/stacks-node:devnet-2.4.0.0.0"
 # stacks_api_image_url = "hirosystems/stacks-blockchain-api:latest"
 # stacks_explorer_image_url = "hirosystems/explorer:latest"
 # bitcoin_explorer_image_url = "quay.io/hirosystems/bitcoin-explorer:devnet"
 # postgres_image_url = "postgres:14"
 # enable_subnet_node = true
-# subnet_node_image_url = "hirosystems/hyperchains:0.0.4-stretch"
-# subnet_leader_mnemonic = "female adjust gallery certain visit token during great side clown fitness like hurt clip knife warm bench start reunion globe detail dream depend fortune"
+# subnet_node_image_url = "hirosystems/stacks-subnets:0.8.1"
+# subnet_leader_mnemonic = "twice kind fence tip hidden tilt action fragile skin nothing glory cousin green tomorrow spring wrist shed math olympic multiply hip blue scout claw"
 # subnet_leader_derivation_path = "m/44'/5757'/0'/0/0"
-# subnet_contract_id = "STXMJXCJDCT4WPF2X1HE42T6ZCCK3TPMBRZ51JEG.hc-alpha"
+# subnet_contract_id = "ST173JK7NZBA4BS05ZRATQH1K89YJMTGEH1Z5J52E.subnet-v3-0-1"
 # subnet_node_rpc_port = 30443
 # subnet_node_p2p_port = 30444
 # subnet_events_ingestion_port = 30445
 # subnet_node_events_observers = ["host.docker.internal:8002"]
-epoch_2_00 = 100
-epoch_2_05 = 102
-epoch_2_1 = 113
-pox_2_activation = 120
+# subnet_api_image_url = "hirosystems/stacks-blockchain-api:latest"
+# subnet_api_postgres_database = "subnet_api"
+
+# For testing in epoch 2.1 / using Clarity2
+# epoch_2_0 = 100
+# epoch_2_05 = 100
+# epoch_2_1 = 101
+# pox_2_activation = 102
+# epoch_2_2 = 103
+# epoch_2_3 = 104
+# epoch_2_4 = 105
+
+
+# Send some stacking orders
+[[devnet.pox_stacking_orders]]
+start_at_cycle = 3
+duration = 12
+wallet = "wallet_1"
+slots = 2
+btc_address = "mr1iPkD9N3RJZZxXRk7xF9d36gffa6exNC"
+
+[[devnet.pox_stacking_orders]]
+start_at_cycle = 3
+duration = 12
+wallet = "wallet_2"
+slots = 1
+btc_address = "muYdXKmX9bByAueDe6KFfHd5Ff1gdN9ErG"
+
+[[devnet.pox_stacking_orders]]
+start_at_cycle = 3
+duration = 12
+wallet = "wallet_3"
+slots = 1
+btc_address = "mvZtbibDAAA3WLpY7zXXFqRa3T4XSknBX7"

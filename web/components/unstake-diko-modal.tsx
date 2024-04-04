@@ -13,7 +13,7 @@ import {
   makeStandardFungiblePostCondition,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network } from '@common/utils';
+import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useConnect } from '@stacks/connect-react';
 import { Alert } from './ui/alert';
 
@@ -42,11 +42,11 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v1-1',
+      contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'unstake',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-2'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
         amount,
       ],
@@ -61,7 +61,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
         setShowUnstakeModal(false);
       },
       anchorMode: AnchorMode.Any,
-    });
+    }, resolveProvider() || window.StacksProvider);
   };
 
   const unstakeMaxAmount = () => {

@@ -45,4 +45,10 @@ class PagesController < ApplicationController
     end
     render json: hsh
   end
+
+  # Returns the DIKO supply
+  def supply
+    # Hardcoded for now until we can figure out how to call Clarity read-only functions from Ruby
+    render json: 76_028_332.629172
+  end
 end

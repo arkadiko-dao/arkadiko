@@ -327,7 +327,7 @@ export const CollateralType: React.FC<CollateralTypeProps> = ({ types, setStep }
                   {collateralItems.map(collateral => (
                     <td key={collateral.tokenType} className="px-6 pt-5">
                       <RouterLink
-                        to={`/vaults/new?type=${collateral.tokenType}&token=${collateral.token}`}
+                        to={`/vaults/new?token=${collateral.token}`}
                         onClick={() => setStep(1)}
                         exact
                         className="px-4 py-2 text-sm font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

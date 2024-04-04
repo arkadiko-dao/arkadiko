@@ -9,7 +9,7 @@ import { SubHeader } from '@components/sub-header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, stringAsciiCV, uintCV } from '@stacks/transactions';
+import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
@@ -30,33 +30,38 @@ export const getBalance = async (address: string) => {
   const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
   const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+  const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+  let lpXusdUsdaBalance = 0;
+  let lpXusdUsdaBalance2 = 0;
 
-  // xUSD/USDA
-  // Need to fetch it via contract as extra token-id param needed
-  const call = await callReadOnlyFunction({
-    contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
-    contractName: 'token-amm-swap-pool',
-    functionName: 'get-balance',
-    functionArgs: [
-      uintCV(1),
-      standardPrincipalCV(address),
-    ],
-    senderAddress: address || '',
-    network: network,
-  });
-  const lpXusdUsdaBalance = cvToJSON(call).value.value;
-  const call2 = await callReadOnlyFunction({
-    contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
-    contractName: 'token-amm-swap-pool',
-    functionName: 'get-balance',
-    functionArgs: [
-      uintCV(4),
-      standardPrincipalCV(address),
-    ],
-    senderAddress: address || '',
-    network: network,
-  });
-  const lpXusdUsdaBalance2 = cvToJSON(call2).value.value;
+  try {
+    // xUSD/USDA
+    // Need to fetch it via contract as extra token-id param needed
+    const call = await callReadOnlyFunction({
+      contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
+      contractName: 'token-amm-swap-pool',
+      functionName: 'get-balance',
+      functionArgs: [
+        uintCV(1),
+        standardPrincipalCV(address),
+      ],
+      senderAddress: address || '',
+      network: network,
+    });
+    lpXusdUsdaBalance = cvToJSON(call).value.value;
+    const call2 = await callReadOnlyFunction({
+      contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
+      contractName: 'token-amm-swap-pool',
+      functionName: 'get-balance',
+      functionArgs: [
+        uintCV(4),
+        standardPrincipalCV(address),
+      ],
+      senderAddress: address || '',
+      network: network,
+    });
+    lpXusdUsdaBalance2 = cvToJSON(call2).value.value;
+  } catch (_e) {}
 
   const dikoBalance = data.fungible_tokens[`${contractAddress}.arkadiko-token::diko`];
   const usdaBalance = data.fungible_tokens[`${contractAddress}.usda-token::usda`];
@@ -84,6 +89,10 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[
       `${xbtcContractAddress}.Wrapped-Bitcoin::wrapped-bitcoin`
     ];
+  const stStxBalance =
+    data.fungible_tokens[
+      `${stStxContractAddress}.ststx-token::ststx`
+    ];
   const welshBalance =
     data.fungible_tokens[
       `${welshContractAddress}.welshcorgicoin-token::welshcorgicoin`
@@ -100,6 +109,7 @@ export const getBalance = async (address: string) => {
     wldn: wldnBalance ? wldnBalance.balance : 0,
     ldn: ldnBalance ? ldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
+    ststx: stStxBalance ? stStxBalance.balance : 0,
     'auto-alex': atAlexBalance ? atAlexBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
@@ -114,7 +124,7 @@ export const getBalance = async (address: string) => {
   };
 };
 
-const icon = 'https://arkadiko.finance/favicon.ico';
+const icon = 'https://arkadiko.finance/favicon.dd4300f9.ico';
 export const App: React.FC = () => {
   const [state, setState] = React.useState<AppState>(defaultState());
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -148,6 +158,7 @@ export const App: React.FC = () => {
         wldn: account.wldn.toString(),
         ldn: account.ldn.toString(),
         welsh: account.welsh.toString(),
+        ststx: account.ststx.toString(),
         'auto-alex': account['auto-alex'].toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
@@ -165,28 +176,26 @@ export const App: React.FC = () => {
 
   const fetchCollateralTypes = async (address: string) => {
     const collTypes = {};
-    ['STX-A', 'STX-B', 'XBTC-A', 'ATALEX-A'].forEach(async token => {
+    state.definedCollateralTypes.forEach(async tokenAddress => {
+      const tokenParts = tokenAddress.split('.');
       const types = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-collateral-types-v3-1',
-        functionName: 'get-collateral-type-by-name',
-        functionArgs: [stringAsciiCV(token)],
+        contractName: 'arkadiko-vaults-tokens-v1-1',
+        functionName: 'get-token',
+        functionArgs: [contractPrincipalCV(tokenParts[0], tokenParts[1])],
         senderAddress: address,
         network: network,
       });
       const json = cvToJSON(types.value);
-      collTypes[token] = {
-        name: json.value['name'].value,
-        token: json.value['token'].value,
-        tokenType: json.value['token-type'].value,
-        url: json.value['url'].value,
-        totalDebt: json.value['total-debt'].value,
-        collateralToDebtRatio: json.value['collateral-to-debt-ratio'].value,
+      console.log('Got collateral type with:', json);
+      collTypes[json.value['token-name'].value] = {
+        name: json.value['token-name'].value,
+        collateralToDebtRatio: json.value['liquidation-ratio'].value,
         liquidationPenalty: json.value['liquidation-penalty'].value / 100,
         liquidationRatio: json.value['liquidation-ratio'].value,
-        maximumDebt: json.value['maximum-debt'].value,
+        maximumDebt: json.value['max-debt'].value,
         stabilityFee: json.value['stability-fee'].value,
-        stabilityFeeApy: json.value['stability-fee-apy'].value,
+        stabilityFeeApy: json.value['stability-fee'].value
       };
       setState(prevState => ({
         ...prevState,

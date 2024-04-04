@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { PoolRow } from './pool-row';
 
-export const Pools: React.FC = ({pools}) => {
+export const Pools: React.FC = ({ pools, poolData }) => {
+  const findPool = (pool: any) => {
+    const idx = poolData.findIndex(data => data['ticker_id'] === `${pool['nameX']}_${pool['nameY']}`);
+
+    return poolData[idx];
+  };
+
   return (
     <section className="mt-8">
       <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
@@ -32,7 +39,14 @@ export const Pools: React.FC = ({pools}) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {pools}
+                      {pools.map((pool) => (
+                        <PoolRow
+                          key={pool.id}
+                          id={pool.id}
+                          pool={pool}
+                          data={findPool(pool)}
+                        />
+                      ))}
                     </tbody>
                   </table>
                 </div>

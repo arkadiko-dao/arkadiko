@@ -5,25 +5,14 @@ export const Balances = () => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const addresses = [
     {
-      address: `${contractAddress}.arkadiko-stx-reserve-v1-1`,
-      name: 'STX Reserve v1',
-      description: 'Reserve of collateralized STX in Vaults.',
+      address: `${contractAddress}.arkadiko-vaults-pool-active-v1-1`,
+      name: 'Vault Token Reserves v1',
+      description: 'Reserve of collateralized STX and other SIP10 tokens in Vaults.',
     },
     {
-      address: `${contractAddress}.arkadiko-sip10-reserve-v2-1`,
-      name: 'SIP10 Reserve v2',
-      description: 'Reserve of all SIP10 collateral types.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-freddie-v1-1`,
-      name: 'Freddie v1',
-      description:
-        'Vault Manager. Freddie is an abstraction layer that interacts with collateral type reserves.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-auction-engine-v4-3`,
-      name: 'Auction Engine v4.3',
-      description: 'Sells off vault collateral to raise USDA.',
+      address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+      name: 'USDA Liquidation Pool',
+      description: 'Reserve of USDA tokens to liquidate vaults.',
     },
     {
       address: `${contractAddress}.arkadiko-dao`,
@@ -31,48 +20,10 @@ export const Balances = () => {
       description: 'Keep contracts used in protocol. Emergency switch to shut down protocol.',
     },
     {
-      address: `${contractAddress}.arkadiko-governance-v1-1`,
-      name: 'Governance v1',
+      address: `${contractAddress}.arkadiko-governance-v4-2`,
+      name: 'Governance v4.2',
       description:
         'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-governance-v2-1`,
-      name: 'Governance v2',
-      description:
-        'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-governance-v3-1`,
-      name: 'Governance v3',
-      description:
-        'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-governance-v4-1`,
-      name: 'Governance v4',
-      description:
-        'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-stacker-v3-1`,
-      name: 'Stacker v3',
-      description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX-3.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-stacker-2-v3-1`,
-      name: 'Stacker 2 v3',
-      description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX-3.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-stacker-3-v3-1`,
-      name: 'Stacker 3 v3',
-      description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX-3.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-stacker-4-v3-1`,
-      name: 'Stacker 4 v3',
-      description: 'Stacker initiates stacking for the STX reserve. Stacks the STX tokens in PoX-3.',
     },
     {
       address: `${contractAddress}.arkadiko-claim-yield-v2-1`,
@@ -80,13 +31,8 @@ export const Balances = () => {
       description: 'Pays rewards after PoX cycle is over.',
     },
     {
-      address: `${contractAddress}.arkadiko-stake-pool-diko-v1-1`,
-      name: 'Stake Pool DIKO v1',
-      description: 'DIKO Stake Pool - Stake DIKO to get stDIKO.',
-    },
-    {
-      address: `${contractAddress}.arkadiko-stake-pool-diko-v1-2`,
-      name: 'Stake Pool DIKO v1.2',
+      address: `${contractAddress}.arkadiko-stake-pool-diko-v1-4`,
+      name: 'Stake Pool DIKO v1.4',
       description: 'DIKO Stake Pool - Stake DIKO to get stDIKO.',
     },
     {

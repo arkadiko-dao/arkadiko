@@ -18,7 +18,7 @@ import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
 import { Liquidations } from './liquidations';
-import { LydianAirdrop } from './lydian-airdrop';
+import { LegacyLiquidations } from './legacy-liquidations';
 
 export const routerConfig = [
   {
@@ -45,12 +45,12 @@ export function Routes() {
 
       <Route exact path="/auctions" component={Liquidations} />
       <Route exact path="/liquidations" component={Liquidations} />
+      <Route exact path="/legacy/liquidations" component={LegacyLiquidations} />
       <Route exact path="/governance" component={Governance} />
       <Route exact path="/stake" component={Stake} />
       <Route exact path="/vaults/new" component={NewVault} />
-      <Route path="/vaults/:id" component={ManageVault} />
-      <Route path="/governance/:id" component={ViewProposal} />
-      <Route exact path="/lydian-airdrop" component={LydianAirdrop} />
+      <Route path="/vaults/:owner/:collateral" component={ManageVault} />
+      <Route path="/governance/:version/:id" component={ViewProposal} />
 
       <Redirect to="/" />
     </Switch>

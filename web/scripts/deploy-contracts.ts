@@ -40,7 +40,7 @@ const contracts: Contract[] = [
   { name: 'restricted-token-trait', file: 'xbtc/restricted-token-trait' },
 
   // Contracts
-  { name: 'arkadiko-oracle-v2-2' },
+  { name: 'arkadiko-oracle-v2-3' },
   { name: 'arkadiko-token' },
   { name: 'arkadiko-collateral-types-v3-1' },
   { name: 'arkadiko-dao' },
@@ -57,7 +57,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-diko-init' },
   { name: 'stdiko-token' },
   { name: 'arkadiko-governance-v2-1' },
-  { name: 'arkadiko-governance-v4-1' },
+  { name: 'arkadiko-governance-v4-2' },
   { name: 'arkadiko-liquidator-v1-1' },
   { name: 'wrapped-stx-token' },
   { name: 'arkadiko-swap-v2-1' },
@@ -66,7 +66,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-stacker-3-v1-1' },
   { name: 'arkadiko-stacker-4-v1-1' },
   { name: 'arkadiko-stacker-v1-1' },
-  { name: 'arkadiko-stake-registry-v1-1' },
+  { name: 'arkadiko-stake-registry-v2-1' },
   { name: 'arkadiko-stake-pool-diko-v1-1' },
   { name: 'arkadiko-stake-pool-diko-v1-2' },
   { name: 'arkadiko-swap-token-diko-usda' },

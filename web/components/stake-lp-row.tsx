@@ -188,7 +188,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                     )}
                   </dd>
                 </dl>
-                <Menu as="div" className={`relative flex items-center justify-end ${foreign ? (parseInt(apy, 10) === 0 ? `pointer-events-none`:` `) : null}`}>
+                <Menu as="div" className={`relative flex items-center justify-end`}>
                   {({ open }) => (
                     <>
                       <Menu.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
@@ -420,7 +420,7 @@ export const StakeLpRow: React.FC<StakeLpRowProps> = ({
                 </>
               )}
             </td>
-            <td className={`hidden px-6 py-4 text-sm text-right lg:table-cell whitespace-nowrap ${foreign ? (parseInt(apy, 10) === 0 ? `pointer-events-none`:` `) : null}`}>
+            <td className={`hidden px-6 py-4 text-sm text-right lg:table-cell whitespace-nowrap`}>
               <Disclosure.Button className="inline-flex items-center justify-center px-2 py-1 text-sm text-indigo-500 bg-white rounded-lg focus:outline-none focus-visible:ring focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 dark:bg-zinc-800 dark:text-indigo-400">
                 <span>Actions</span>
                 <StyledIcon

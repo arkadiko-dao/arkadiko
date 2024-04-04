@@ -18,6 +18,15 @@ export const Balances = () => {
       </span>
       <span className="block text-sm sm:mt-0 sm:inline-block">
         <span className="font-semibold">
+          {microToReadable(state.balance['ststx']).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+          })}
+        </span>{' '}
+        <span className="opacity-75">stSTX</span>
+      </span>
+      <span className="block text-sm sm:mt-0 sm:inline-block">
+        <span className="font-semibold">
           {(parseFloat(state.balance['xbtc']) / 100000000).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
@@ -33,15 +42,6 @@ export const Balances = () => {
           })}
         </span>{' '}
         <span className="opacity-75">USDA</span>
-      </span>
-      <span className="block text-sm sm:mt-0 sm:inline-block">
-        <span className="font-semibold">
-          {microToReadable(state.balance['auto-alex'] / 100).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 6,
-          })}
-        </span>{' '}
-        <span className="opacity-75">atALEX</span>
       </span>
       <span className="block text-sm sm:mt-0 sm:inline-block">
         <span className="font-semibold">

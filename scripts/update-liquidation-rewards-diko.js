@@ -13,9 +13,9 @@ const updateRewards = async () => {
     contractName: CONTRACT_NAME,
     functionName: FUNCTION_NAME,
     functionArgs: [
-      tx.uintCV(82000),
+      tx.uintCV(150000),
       tx.uintCV(720),
-      tx.uintCV(58243)
+      tx.uintCV(126238)
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,

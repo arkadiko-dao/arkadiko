@@ -279,7 +279,7 @@ export const updatePrice = async(
 ): Promise<TxBroadcastResult> => {
   const txOptions = {
     contractAddress: Accounts.DEPLOYER.stxAddress,
-    contractName: 'arkadiko-oracle-v1-1',
+    contractName: 'arkadiko-oracle-v2-1',
     functionName: "update-price",
     functionArgs: [
       stringAsciiCV('STX'),
@@ -323,7 +323,7 @@ export const createVault = async(
       contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-stx-reserve-v1-1'),
       contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-token'),
       contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-collateral-types-v3-1'),
-      contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-oracle-v1-1')
+      contractPrincipalCV(Accounts.DEPLOYER.stxAddress, 'arkadiko-oracle-v2-1')
     ],
     fee,
     nonce,

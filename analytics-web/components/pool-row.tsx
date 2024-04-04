@@ -5,27 +5,6 @@ import axios from 'axios';
 import { tokenList } from '../../web/components/token-swap-list';
 import { Placeholder } from '../../web/components/ui/placeholder';
 
-// create utils + oracle price fetch
-const tokenToName = (token: string) => {
-  if (token === 'wrapped-stx-token') {
-    return 'STX';
-  } else if (token === 'arkadiko-token') {
-    return 'DIKO';
-  } else if (token === 'usda-token') {
-    return 'USDA';
-  } else if (token === 'Wrapped-Bitcoin') {
-    return 'xBTC';
-  } else if (token === 'welshcorgicoin-token') {
-    return 'WELSH';
-  } else if (token === 'wrapped-lydian-token') {
-    return 'wLDN';
-  } else if (token === 'lydian-token') {
-    return 'LDN';
-  } else {
-    return '';
-  }
-};
-
 const decimals = (token: string) => {
   if (token === 'STX') {
     return 6;
@@ -40,76 +19,46 @@ const decimals = (token: string) => {
   }
 }
 
-const getPrice = async (symbol: string) => {
-  if (symbol === 'USDA') {
-    return 1000000;
-  } else if (symbol === 'wLDN' || symbol === 'LDN') {
-    return 62280202;
-  }
-
-  const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
-  const fetchedPrice = await callReadOnlyFunction({
-    contractAddress,
-    contractName: "arkadiko-oracle-v2-2",
-    functionName: "get-price",
-    functionArgs: [stringAsciiCV(symbol || 'stx')],
-    senderAddress: contractAddress,
-    network: network,
-  });
-  const json = cvToJSON(fetchedPrice);
-
-  return json.value['last-price'].value;
-};
-
-export const PoolRow: React.FC = ({ id, pool }) => {
+export const PoolRow: React.FC = ({ id, pool, data }) => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
-  const [priceX, setPriceX] = useState(0);
-  const [priceY, setPriceY] = useState(0);
   const [volume24, setVolume24] = useState('0');
   const [volume7, setVolume7] = useState('0');
-  const [tvl, setTvl] = useState('0');
+  const [poolTvl, setPoolTvl] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
-  const nameX = tokenToName(pool['token_x_name']);
-  const nameY = tokenToName(pool['token_y_name']);
 
-  const tokenLogoX = tokenList.find(token => token['name'] === nameX);
-  const tokenLogoY = tokenList.find(token => token['name'] === nameY);
-
-  useEffect(() => {
-    const fetchTVL = async () => {
-      const priceX = await getPrice(nameX) / Math.pow(10, 6);
-      const priceY = await getPrice(nameY) / Math.pow(10, 6);
-      setPriceX(priceX);
-      setPriceY(priceY);
-      const tvlX = pool['tvl_token_x'] * priceX / Math.pow(10, decimals(nameX));
-      const tvlY = pool['tvl_token_y'] * priceY / Math.pow(10, decimals(nameY));
-      setTvl((tvlX + tvlY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-      setIsLoading(false);
-    }
-
-    fetchTVL();
-  }, [nameX, nameY]);
+  const nameX = pool['nameX'];
+  const nameY = pool['nameY'];
+  const tokenLogoX = tokenList.find(token => token['name'] === pool['nameX']);
+  const tokenLogoY = tokenList.find(token => token['name'] === pool['nameY']);
 
   useEffect(() => {
     const fetchVolume24 = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${pool.id}/volume?period=24`);
-      const volumeX = priceX * response.data.volume[0] / Math.pow(10, decimals(nameX));
-      const volumeY = priceY * response.data.volume[1] / Math.pow(10, decimals(nameY));
+      const volumeX = pool['priceX'] * response.data.volume[0] / Math.pow(10, decimals(nameX));
+      const volumeY = pool['priceY'] * response.data.volume[1] / Math.pow(10, decimals(nameY));
       setVolume24((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
     const fetchVolume7 = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/pools/${pool.id}/volume?period=7`);
-      const volumeX = priceX * response.data.volume[0] / Math.pow(10, decimals(nameX));
-      const volumeY = priceY * response.data.volume[1] / Math.pow(10, decimals(nameY));
+      const volumeX = pool['priceX'] * response.data.volume[0] / Math.pow(10, decimals(nameX));
+      const volumeY = pool['priceY'] * response.data.volume[1] / Math.pow(10, decimals(nameY));
       setVolume7((volumeX + volumeY).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     };
 
-    fetchVolume24();
+    if (!data) {
+      fetchVolume24();
+      setPoolTvl(pool['tvl'].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    } else {
+      const vol24 = (data['base_volume'] * data['base_price']) + (data['target_volume'] * data['target_price']);
+      setVolume24(vol24.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      setPoolTvl(data['liquidity_in_usd'].toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
     fetchVolume7();
-  }, [priceX, priceY]);
+    setIsLoading(false);
+  }, [pool, data]);
 
   return (
-    <tr className="bg-white">
+    <tr className="bg-white" key={id}>
       <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
         <div className="flex flex-wrap items-center flex-1 sm:flex-nowrap">
           <div className="flex shrink-0 mr-2 -space-x-2 overflow-hidden">
@@ -131,7 +80,7 @@ export const PoolRow: React.FC = ({ id, pool }) => {
         {isLoading ? (
           <Placeholder className="py-2" width={Placeholder.width.HALF} />
           ) : (
-          <span>${tvl}</span>
+          <span>${poolTvl}</span>
         )}
       </td>
       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">

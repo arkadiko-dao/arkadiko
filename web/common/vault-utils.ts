@@ -4,14 +4,18 @@ import {
   FungibleConditionCode,
   makeContractFungiblePostCondition,
   makeContractSTXPostCondition,
-  createAssetInfo
+  createAssetInfo,
+  callReadOnlyFunction,
+  cvToJSON
 } from '@stacks/transactions';
+import { stacksNetwork as network } from '@common/utils';
 
 export const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 export const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
 export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
 export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
 export const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
+export const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
 
 export const getLiquidationPrice = (
   liquidationRatio: number,
@@ -26,10 +30,10 @@ export const getLiquidationPrice = (
 
 export const getCollateralToDebtRatio = (
   price: number,
-  coinsMinted: number,
-  stxCollateral: number
+  usdaMinted: number,
+  collateral: number
 ) => {
-  return (stxCollateral * price) / coinsMinted;
+  return (collateral * price) / usdaMinted;
 };
 
 export const availableCollateralToWithdraw = (
@@ -42,7 +46,7 @@ export const availableCollateralToWithdraw = (
   // 200 = (stxCollateral * 111) / 5
   const token = collateralToken.toLocaleLowerCase();
   const decimals = token.includes('alex') ? 1000000 : 10000;
-  const minimumStxCollateral = (collateralToDebt * coinsMinted) / (price / decimals);
+  const minimumStxCollateral = 1.1 * (collateralToDebt * coinsMinted) / (price / decimals);
   if (currentStxCollateral - minimumStxCollateral > 0) {
     const decimals = token.includes('xbtc') || token.includes('alex') ? 8 : 6;
     return (currentStxCollateral - minimumStxCollateral).toFixed(decimals);
@@ -57,12 +61,40 @@ export const availableCoinsToMint = (
   currentCoinsMinted: number,
   collateralToDebt: number
 ) => {
-  const maximumCoinsToMint = (stxCollateral * price) / 10000 / collateralToDebt;
+  const maximumCoinsToMint = (stxCollateral * price) / 10000 / (collateralToDebt * 1.4);
   if (currentCoinsMinted < maximumCoinsToMint) {
     return maximumCoinsToMint - currentCoinsMinted;
   }
 
   return 0;
+};
+
+export const calculateMintFee = async (debtAmount: number) => {
+  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const fetchedPrice = await callReadOnlyFunction({
+    contractAddress,
+    contractName: "arkadiko-vaults-operations-v1-2",
+    functionName: "get-mint-fee",
+    functionArgs: [],
+    senderAddress: contractAddress,
+    network: network,
+  });
+  const json = cvToJSON(fetchedPrice);
+  const mintFeePercentage = Number(json.value) / 100;
+
+  return debtAmount * (mintFeePercentage / 100);
+};
+
+export const tokenNameToTicker = (name: string) => {
+  if (name.toLowerCase() === 'stx') {
+    return 'STX';
+  } else if (name.toLowerCase() === 'xbtc') {
+    return 'xBTC';
+  } else if (name.toLowerCase() === 'ststx') {
+    return 'stSTX';
+  } else {
+    return 'atALEXv2';
+  }
 };
 
 type TokenTraits = Record<string, { address: string; name: string; swap: string; ft: string; multihop: Array<string>; }>;
@@ -77,7 +109,7 @@ export const tokenTraits: TokenTraits = {
   },
   stx: {
     address: contractAddress,
-    name: 'xstx-token',
+    name: 'wstx-token',
     swap: 'wrapped-stx-token',
     multihop: [],
     ft: 'stx',
@@ -177,21 +209,24 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: ['stx', 'usda', 'diko'],
+    // multihop: ['stx', 'usda', 'diko'],
+    multihop: [],
     ft: 'wstx-diko',
   },
   dikowstx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: ['diko', 'usda', 'stx'],
+    // multihop: ['diko', 'usda', 'stx'],
+    multihop: [],
     ft: 'wstx-diko',
   },
   dikostx: {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: ['diko', 'usda', 'stx'],
+    // multihop: ['diko', 'usda', 'stx'],
+    multihop: [],
     ft: 'wstx-diko',
   },
   wstxxbtc: {
@@ -226,7 +261,8 @@ export const tokenTraits: TokenTraits = {
     address: contractAddress,
     name: 'arkadiko-swap-token-wstx-diko',
     swap: 'wstx-diko',
-    multihop: ['diko', 'usda', 'stx'],
+    // multihop: ['diko', 'usda', 'stx'],
+    multihop: [],
     ft: 'wstx-diko',
   },
   xbtcusda: {
@@ -305,6 +341,13 @@ export const tokenTraits: TokenTraits = {
     swap: 'auto-alex',
     multihop: [],
     ft: 'auto-alex'
+  },
+  ststx: {
+    address: stStxContractAddress,
+    name: 'ststx-token',
+    swap: 'ststx',
+    multihop: [],
+    ft: 'ststx'
   }
 };
 
@@ -321,7 +364,7 @@ export const resolveReserveName = (collateralToken: string) => {
 export const contractsMap = {
   'vault-manager': 'arkadiko-freddie-v1-1',
   'auction-engine': 'arkadiko-auction-engine-v3-1',
-  oracle: 'arkadiko-oracle-v2-2',
+  oracle: 'arkadiko-oracle-v2-3',
   governance: 'arkadiko-governance-v2-1',
 };
 
