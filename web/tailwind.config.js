@@ -21,7 +21,7 @@ module.exports = {
         sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        'STX': '#5546FF',
+        'STX': '#FC6432',
         'xBTC': '#F7931A',
         'atAlex': '#A714FD',
         'stSTX': '#318d8b'
