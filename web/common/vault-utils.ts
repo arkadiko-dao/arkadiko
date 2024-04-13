@@ -345,9 +345,9 @@ export const tokenTraits: TokenTraits = {
   ststx: {
     address: stStxContractAddress,
     name: 'ststx-token',
-    swap: 'ststx',
+    swap: 'ststx-token',
     multihop: [],
-    ft: 'ststx'
+    ft: 'ststx-token'
   }
 };
 
