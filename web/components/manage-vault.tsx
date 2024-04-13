@@ -72,7 +72,7 @@ export const ManageVault = ({ match }) => {
       // If stability fee is 0 (i.e. no blocks have passed), we need to make sure a minimum is calculated
       // e.g. ~3 blocks of stability fees worth
       // (/ (* (/ (* (get stability-fee collateral-info) (get debt vault)) u10000) vault-blocks) (* u144 u365))
-      const yearlyFee = 400; // 4% in bps
+      const yearlyFee = 1200; // 4% in bps
       const numBlocks = 12;
       const minFee = 1000000 * totalDebt * yearlyFee * numBlocks / (10000 * 144 * 365);
       console.log('Minimum fee', minFee);
@@ -344,7 +344,7 @@ export const ManageVault = ({ match }) => {
       {
         label: 'Stability fee',
         help: 'Yearly interest you pay on your USDA loan',
-        data: 4,
+        data: collateralTypes[collateralSymbol]?.stabilityFee / 100.0,
         unit: '%'
       }
     ]
