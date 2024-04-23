@@ -257,6 +257,8 @@
     (asserts! (get is-open proposal) (err ERR-VOTING-CLOSED))
     ;; Vote should be cast after the start-block-height
     (asserts! (>= burn-block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+    ;; Vote should be cast before the end-block-height
+    (asserts! (< burn-block-height (get end-block-height proposal)) (err ERR-VOTING-CLOSED))
     ;; Voter should be able to stake
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
     ;; Mutate
@@ -309,6 +311,8 @@
     (asserts! (is-eq (get is-open proposal) true) (err ERR-NOT-AUTHORIZED))
     ;; Vote should be casted after the start-block-height
     (asserts! (>= burn-block-height (get start-block-height proposal)) (err ERR-NOT-AUTHORIZED))
+    ;; Vote should be cast before the end-block-height
+    (asserts! (< burn-block-height (get end-block-height proposal)) (err ERR-VOTING-CLOSED))
     ;; Voter should be able to stake
     (try! (contract-call? token transfer amount tx-sender (as-contract tx-sender) none))
     ;; Mutate
