@@ -46,7 +46,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       functionName: 'unstake',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
         amount,
       ],
