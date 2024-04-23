@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, Fragment } from 'react';
 import { CollateralTypeProps } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { StyledIcon } from './ui/styled-icon';
@@ -12,6 +12,7 @@ import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Placeholder } from './ui/placeholder';
 import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
+import { Popover, Transition } from '@headlessui/react';
 
 export interface VaultProps {
   key: string;
@@ -265,36 +266,96 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           {collateralItems.length > 0 && !isLoading && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
             <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
               <div className="flex flex-col flex-1 px-6 py-8">
-                <div className="flex items-center">
-                  <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/60 dark:bg-white/10 rounded-md shadow-2xl ${collateral.classes.tokenShadow} border border-gray-400/30`}>
-                    <img className="w-8 h-8" src={collateral.logo} alt="" />
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center">
+                    <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/60 dark:bg-white/10 rounded-md shadow-2xl ${collateral.classes.tokenShadow} border border-gray-400/30`}>
+                      <img className="w-8 h-8" src={collateral.logo} alt="" />
+                    </div>
+                    <div className="ml-4">
+                      <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
+                      {Number(state.vaults[collateral.name]['status']) === 101 ? (
+                        <Status
+                          type={debtClassToType(
+                            debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
+                              prices[collateral.name] / collateral.decimals,
+                              state.vaults[collateral.name]['debt'],
+                              state.vaults[collateral.name]['collateral']
+                            ) * 100.0))
+                          }
+                          label={debtClassToLabel(
+                            debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
+                              prices[collateral.name] / collateral.decimals,
+                              state.vaults[collateral.name]['debt'],
+                              state.vaults[collateral.name]['collateral']
+                            ) * 100.0))
+                          }
+                        />
+                      ) : (
+                        <Status
+                          type={Status.type.NEUTRAL}
+                          label='No open vault'
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div className="ml-4">
-                    <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
-                    {Number(state.vaults[collateral.name]['status']) === 101 ? (
-                      <Status
-                        type={debtClassToType(
-                          debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
-                            prices[collateral.name] / collateral.decimals,
-                            state.vaults[collateral.name]['debt'],
-                            state.vaults[collateral.name]['collateral']
-                          ) * 100.0))
-                        }
-                        label={debtClassToLabel(
-                          debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
-                            prices[collateral.name] / collateral.decimals,
-                            state.vaults[collateral.name]['debt'],
-                            state.vaults[collateral.name]['collateral']
-                          ) * 100.0))
-                        }
-                      />
-                    ) : (
-                      <Status
-                        type={Status.type.NEUTRAL}
-                        label='No open vault'
-                      />
-                    )}
-                  </div>
+                  {Number(state.vaults[collateral.name]['status']) === 101 ? (
+                    <Popover className="relative">
+                      {() => (
+                        <>
+                          {/* Change ${collateral.classes?.innerBg} to bg-red-600 when rank is <= 3 */}
+                          <Popover.Button
+                            className={`border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${collateral.classes?.wrapper} ${collateral.classes?.innerBg} hover:cursor-help`}
+                            id="open-redemption-info"
+                          >
+                            <div className={`flex items-center justify-center px-2.5 py-1 text-base shrink-0 rounded-md text-white font-semibold`}>
+                              #32
+                            </div>
+                          </Popover.Button>
+                          <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-200"
+                            enterFrom="opacity-0 translate-y-1"
+                            enterTo="opacity-100 translate-y-0"
+                            leave="transition ease-in duration-150"
+                            leaveFrom="opacity-100 translate-y-0"
+                            leaveTo="opacity-0 translate-y-1"
+                          >
+                            <Popover.Panel className="absolute left-0 z-20 w-screen max-w-sm px-4 mt-3 sm:px-0">
+                              <div className="overflow-hidden border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 dark:border-zinc-700">
+                                <div className="relative p-4 bg-white dark:bg-zinc-800">
+                                  <p className="text-sm font-normal">Your ranking on the Arkadiko Vaults list determines the risk level of your vault being triggered by redemptions, with lower ranking indicating higher risk.</p>
+                                  <ul className="pl-4 mt-2 text-sm font-normal list-disc">
+                                    <li>
+                                      <a
+                                        className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+                                        href="https://docs.arkadiko.finance/protocol/vaults"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        Learn more about redemptions
+                                        <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a
+                                        className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+                                        href="https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        Check out the Vaults list
+                                        <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
+                                      </a>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Popover.Panel>
+                          </Transition>
+                        </>
+                      )}
+                    </Popover>
+                  ) : null}
                 </div>
 
                 {Number(state.vaults[collateral.name]['status']) === 101 ? (
