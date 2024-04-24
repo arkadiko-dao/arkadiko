@@ -308,7 +308,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                             id="open-redemption-info"
                           >
                             <div className={`flex items-center justify-center px-2.5 py-1 text-base shrink-0 rounded-md text-white font-semibold`}>
-                              #32
+                              #{state.vaults[collateral.name]['position']}
                             </div>
                           </Popover.Button>
                           <Transition
