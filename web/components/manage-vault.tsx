@@ -406,9 +406,8 @@ export const ManageVault = ({ match }) => {
                       <Popover className="relative">
                         {() => (
                           <>
-                            {/* Change ${collExtraInfo[collateralSymbol]['classes']['innerBg']} to bg-red-600 when rank is <= 3 */}
                             <Popover.Button
-                              className={`border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${collExtraInfo[collateralSymbol]['classes']['wrapper']} ${collExtraInfo[collateralSymbol]['classes']['innerBg']} cursor-help`}
+                              className={`border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${collExtraInfo[collateralSymbol]['classes']['wrapper']} ${vault?.position <= 3 ? 'bg-red-600' : collExtraInfo[collateralSymbol]['classes']['innerBg']} cursor-help`}
                               id="open-redemption-info"
                             >
                               <div className={`flex items-center justify-center px-2.5 py-1 text-base shrink-0 rounded-md text-white font-semibold`}>
