@@ -431,7 +431,7 @@ export const ManageVault = ({ match }) => {
                                       <li>
                                         <a
                                           className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
-                                          href="https://docs.arkadiko.finance/protocol/vaults"
+                                          href="https://docs.arkadiko.finance/protocol/redemptions"
                                           target="_blank"
                                           rel="noopener noreferrer"
                                         >
