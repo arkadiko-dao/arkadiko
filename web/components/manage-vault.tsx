@@ -126,10 +126,13 @@ export const ManageVault = ({ match }) => {
         senderAddress: senderAddress || contractAddress,
         network: network,
       });
-
       const data = cvToJSON(serializedVault).value.value;
 
       if (data['status'] !== 0) {
+        const positionUrl = `https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/position?address=${senderAddress}&token=${tokenInfo['address']}.${tokenInfo['ft']}`
+        const positionResponse = await fetch(positionUrl, { credentials: 'omit' });
+        const positionData = await positionResponse.json();
+
         setVault({
           owner: vaultOwner,
           collateral: data['collateral'].value,
@@ -137,7 +140,8 @@ export const ManageVault = ({ match }) => {
           collateralType: collateralSymbol,
           isLiquidated: false,
           debt: data['debt'].value,
-          status: data['status'].value
+          status: data['status'].value,
+          position: positionData.position
         });
         setIsVaultOwner(vaultOwner === senderAddress);
 
