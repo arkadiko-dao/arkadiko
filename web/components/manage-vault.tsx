@@ -129,7 +129,7 @@ export const ManageVault = ({ match }) => {
       const data = cvToJSON(serializedVault).value.value;
 
       if (data['status'] !== 0) {
-        const positionUrl = `https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/position?address=${senderAddress}&token=${tokenInfo['address']}.${tokenInfo['ft']}`
+        const positionUrl = `https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/position?address=${senderAddress}&token=${tokenInfo['address']}.${tokenInfo['name']}`;
         const positionResponse = await fetch(positionUrl, { credentials: 'omit' });
         const positionData = await positionResponse.json();
 
