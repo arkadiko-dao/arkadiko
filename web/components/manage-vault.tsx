@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, { useContext, useEffect, useState, useMemo, Fragment } from 'react';
 import { Tooltip } from '@blockstack/ui';
 import { Container } from './home';
 import { VaultDeposit } from '@components/vault-deposit';
@@ -35,6 +35,7 @@ import { StyledIcon } from './ui/styled-icon';
 import { Status } from './ui/health-status';
 import { collExtraInfo } from './collateral-card';
 import { useConnect } from '@stacks/connect-react';
+import { Popover, Transition } from '@headlessui/react';
 
 export const ManageVault = ({ match }) => {
   const senderAddress = useSTXAddress();
@@ -125,10 +126,13 @@ export const ManageVault = ({ match }) => {
         senderAddress: senderAddress || contractAddress,
         network: network,
       });
-
       const data = cvToJSON(serializedVault).value.value;
 
       if (data['status'] !== 0) {
+        const positionUrl = `https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/position?address=${senderAddress}&token=${tokenInfo['address']}.${tokenInfo['ft']}`
+        const positionResponse = await fetch(positionUrl, { credentials: 'omit' });
+        const positionData = await positionResponse.json();
+
         setVault({
           owner: vaultOwner,
           collateral: data['collateral'].value,
@@ -136,7 +140,8 @@ export const ManageVault = ({ match }) => {
           collateralType: collateralSymbol,
           isLiquidated: false,
           debt: data['debt'].value,
-          status: data['status'].value
+          status: data['status'].value,
+          position: positionData.position
         });
         setIsVaultOwner(vaultOwner === senderAddress);
 
@@ -357,16 +362,18 @@ export const ManageVault = ({ match }) => {
         <section>
           <header className="pb-5 border-b border-gray-200 dark:border-zinc-600">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
+              <div>
                 {loadingVaultData ? (
                   <Placeholder className="py-2 w-[150px]" color={Placeholder.color.GRAY} />
                 ) : (
-                  <div className="flex items-center gap-x-4">
-                    <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/80 rounded-md border border-gray-400/30`}>
+                  <div className="flex items-end gap-x-4">
+                    <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/60 dark:bg-white/10 rounded-md border border-gray-400/30`}>
                       <img className="w-10 h-10" src={collExtraInfo[collateralSymbol]['logo']} alt="" />
                     </div>
-                    <div>
-                      <div className="mb-2">{collateralSymbol}</div>
+                    <div className="flex flex-col">
+                      <h2 className="mb-2 text-xl font-bold leading-6 text-gray-900 font-headings dark:text-zinc-50">
+                        {collateralSymbol}
+                      </h2>
                       {debtRatio > 0 ? (
                         loadingVaultData ? (
                           <Placeholder
@@ -399,9 +406,66 @@ export const ManageVault = ({ match }) => {
                         )
                       ) : null}
                     </div>
+                    <div className="flex items-end gap-2">
+                      <Popover className="relative">
+                        {() => (
+                          <>
+                            <Popover.Button
+                              className={`border rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${collExtraInfo[collateralSymbol]['classes']['wrapper']} ${vault?.position <= 3 ? 'bg-red-600' : collExtraInfo[collateralSymbol]['classes']['innerBg']} cursor-help`}
+                              id="open-redemption-info"
+                            >
+                              <div className={`flex items-center justify-center px-2.5 py-1 text-base shrink-0 rounded-md text-white font-semibold`}>
+                                #{vault?.position}
+                              </div>
+                            </Popover.Button>
+                            <Transition
+                              as={Fragment}
+                              enter="transition ease-out duration-200"
+                              enterFrom="opacity-0 translate-y-1"
+                              enterTo="opacity-100 translate-y-0"
+                              leave="transition ease-in duration-150"
+                              leaveFrom="opacity-100 translate-y-0"
+                              leaveTo="opacity-0 translate-y-1"
+                            >
+                              <Popover.Panel className="absolute left-0 z-20 w-screen max-w-sm px-4 mt-3 sm:px-0">
+                                <div className="overflow-hidden border border-gray-200 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 dark:border-zinc-700">
+                                  <div className="relative p-4 bg-white dark:bg-zinc-800">
+                                    <p className="text-sm font-normal">Your ranking on the Arkadiko Vaults list determines the risk level of your vault being triggered by redemptions, with lower ranking indicating higher risk.</p>
+                                    <ul className="pl-4 mt-2 text-sm font-normal list-disc">
+                                      <li>
+                                        <a
+                                          className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+                                          href="https://docs.arkadiko.finance/protocol/redemptions"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          Learn more about redemptions
+                                          <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
+                                        </a>
+                                      </li>
+                                      <li>
+                                        <a
+                                          className="inline-flex items-center text-sm font-medium text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 hover:text-indigo-700"
+                                          href="https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          Check out the Vaults list
+                                          <StyledIcon as="ExternalLinkIcon" size={3} className="block ml-2" />
+                                        </a>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </Popover.Panel>
+                            </Transition>
+                          </>
+                        )}
+                      </Popover>
+                    </div>
                   </div>
                 )}
-              </h2>
+              </div>
               {vaultOwner === senderAddress && (
                 <div className="flex justify-end">
                   <button
@@ -429,7 +493,7 @@ export const ManageVault = ({ match }) => {
                   </p>
                   <button
                     type="button"
-                    className="inline-flex items-center px-3 py-2 text-sm mt-2 font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex items-center px-3 py-2 mt-2 text-sm font-medium leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => callMint()}
                   >
                     Convert vault to stSTX
@@ -453,7 +517,7 @@ export const ManageVault = ({ match }) => {
                               <StyledIcon
                                 as="InformationCircleIcon"
                                 size={4}
-                                className="block ml-2 text-STX/80 dark:brightness-100 dark:text-gray-400"
+                                className={`block ml-2 ${collExtraInfo[collateralSymbol]['classes']['innerText']} dark:brightness-100 dark:text-gray-400`}
                               />
                             </Tooltip>
                           </dt>
@@ -461,7 +525,7 @@ export const ManageVault = ({ match }) => {
                             {loadingVaultData ? (
                               <Placeholder
                                 className="justify-end py-2"
-                                color={Placeholder.color.INDIGO}
+                                color={Placeholder.color.GRAY}
                                 width={Placeholder.width.FULL}
                               />
                             ) : (
