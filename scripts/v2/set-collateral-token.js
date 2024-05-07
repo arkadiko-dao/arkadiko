@@ -14,7 +14,7 @@ const txOptions = {
     tx.stringAsciiCV('stSTX'),
     tx.uintCV(3700000000000),
     tx.uintCV(500000000),
-    tx.uintCV(400),
+    tx.uintCV(1200),
     tx.uintCV(14000),
     tx.uintCV(1000),
     tx.uintCV(300),

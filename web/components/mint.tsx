@@ -66,12 +66,19 @@ export const Mint = () => {
           });
           const json = cvToJSON(vaultCall);
           vault = json.value.value;
+
+          const positionUrl = `https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/position?address=${address}&token=${tokenParts[0]}.${tokenParts[1]}`
+          const positionResponse = await fetch(positionUrl, { credentials: 'omit' });
+          const positionData = await positionResponse.json();
+          vault.position = positionData.position
+
           console.log('vault', tokenAddress, vault, tokenParts[1]);
         } else {
           vault = {
             'collateral': { 'value': 0 },
             'status': { 'value': 100 },
-            'debt': { 'value': 0 }
+            'debt': { 'value': 0 },
+            'position': 99999
           };
         }
         const collateralToken = tokenToName(tokenParts[1]);
@@ -83,7 +90,8 @@ export const Mint = () => {
           status: vault['status'].value,
           isLiquidated: Number(vault['status'].value) == 201,
           isRedeemed: Number(vault['status'].value) == 202,
-          debt: vault['debt'].value
+          debt: vault['debt'].value,
+          position: vault.position
         };
       });
 
