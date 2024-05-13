@@ -655,13 +655,15 @@ Clarinet.test({
     call.result.expectTuple()["amount"].expectUintWithDecimals(10);
 
     // Advance
-    chain.mineEmptyBlock(1500);
+    chain.mineEmptyBlock(715);
 
     result = governance.voteForProposal(wallet_2, 1, 15000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
+
+    chain.mineEmptyBlock(1);
 
     // End proposal
     result = governance.endProposal(1);
@@ -817,13 +819,15 @@ Clarinet.test({
     result.expectOk().expectUint(3200);
 
     // Advance
-    chain.mineEmptyBlock(1500);
+    chain.mineEmptyBlock(715);
 
     result = governance.voteForProposal(wallet_2, 1, 15000, "arkadiko-token");
     result.expectOk().expectUint(3200);
 
     result = governance.voteForProposal(deployer, 1, 150000, "arkadiko-token");
     result.expectOk().expectUint(3200);
+
+    chain.mineEmptyBlock(7);
 
     // End proposal
     result = governance.endProposal(1);
