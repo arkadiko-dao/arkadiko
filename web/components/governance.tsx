@@ -77,6 +77,17 @@ export const Governance = () => {
       const jsonV42 = cvToJSON(proposalsV42);
       const dataV42 = jsonV42.value.value;
 
+      const proposalsV43 = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-governance-v4-3',
+        functionName: 'get-proposals',
+        functionArgs: [],
+        senderAddress: stxAddress || contractAddress,
+        network: network,
+      });
+      const jsonV43 = cvToJSON(proposalsV43);
+      const dataV43 = jsonV43.value.value;
+
       const serializedProposalsV1: {
         id: string;
         title: string;
@@ -186,6 +197,25 @@ export const Governance = () => {
             id: Number(element.value['id'].value) + 36,
             proposalId: element.value['id'].value,
             governanceVersion: "v4-2",
+            title: element.value['title'].value,
+            url: element.value['url'].value,
+            proposer: element.value['proposer'].value,
+            forVotes: element.value['yes-votes'].value,
+            against: element.value['no-votes'].value,
+            changes: extractChanges(element.value['contract-changes']),
+            isOpen: element.value['is-open'].value,
+            startBlockHeight: element.value['start-block-height'].value,
+            endBlockHeight: element.value['end-block-height'].value,
+          });
+        }
+      });
+
+      dataV43.forEach((element: object) => {
+        if (element.value['id'].value != 0) {
+          serializedProposals.push({
+            id: Number(element.value['id'].value) + 36,
+            proposalId: element.value['id'].value,
+            governanceVersion: "v4-3",
             title: element.value['title'].value,
             url: element.value['url'].value,
             proposer: element.value['proposer'].value,

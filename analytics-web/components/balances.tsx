@@ -20,8 +20,8 @@ export const Balances = () => {
       description: 'Keep contracts used in protocol. Emergency switch to shut down protocol.',
     },
     {
-      address: `${contractAddress}.arkadiko-governance-v4-2`,
-      name: 'Governance v4.2',
+      address: `${contractAddress}.arkadiko-governance-v4-3`,
+      name: 'Governance v4.3',
       description:
         'Can see, vote and submit a new proposal. A proposal will just update the DAO with new contracts.',
     },

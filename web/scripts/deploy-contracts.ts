@@ -57,7 +57,7 @@ const contracts: Contract[] = [
   { name: 'arkadiko-diko-init' },
   { name: 'stdiko-token' },
   { name: 'arkadiko-governance-v2-1' },
-  { name: 'arkadiko-governance-v4-2' },
+  { name: 'arkadiko-governance-v4-3' },
   { name: 'arkadiko-liquidator-v1-1' },
   { name: 'wrapped-stx-token' },
   { name: 'arkadiko-swap-v2-1' },

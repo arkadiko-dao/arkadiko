@@ -427,7 +427,7 @@ Clarinet.test({
     // Old governance still accepts proposals
     // So we need to shut down the old governance module
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v4-2", "propose", [
+      Tx.contractCall("arkadiko-governance-v4-3", "propose", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
         types.uint(2504),
         types.uint(123),
@@ -442,7 +442,7 @@ Clarinet.test({
     result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v4-2", "propose", [
+      Tx.contractCall("arkadiko-governance-v4-3", "propose", [
         types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
         types.uint(2504),
         types.uint(123),
@@ -672,7 +672,7 @@ Clarinet.test({
     result.expectOk();
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v4-2", "return-votes-to-member", [
+      Tx.contractCall("arkadiko-governance-v4-3", "return-votes-to-member", [
         types.principal(Utils.qualifiedName("arkadiko-token")),
         types.uint(1),
         types.principal(wallet_1.address)
@@ -1104,7 +1104,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v4-2", "toggle-governance-shutdown", [], wallet_1.address)
+      Tx.contractCall("arkadiko-governance-v4-3", "toggle-governance-shutdown", [], wallet_1.address)
     ]);
     block.receipts[0].result.expectErr().expectUint(3401);
   }
@@ -1116,7 +1116,7 @@ Clarinet.test({
     let wallet_1 = accounts.get("wallet_1")!;
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-governance-v4-2", "add-contract-address", [
+      Tx.contractCall("arkadiko-governance-v4-3", "add-contract-address", [
         types.ascii("malicious-contract"),
         types.principal(wallet_1.address),
         types.principal(Utils.qualifiedName("malicious-contract")),
