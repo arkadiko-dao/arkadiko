@@ -213,7 +213,7 @@ export const Governance = () => {
       dataV43.forEach((element: object) => {
         if (element.value['id'].value != 0) {
           serializedProposals.push({
-            id: Number(element.value['id'].value) + 44,
+            id: Number(element.value['id'].value) + 43,
             proposalId: element.value['id'].value,
             governanceVersion: "v4-3",
             title: element.value['title'].value,
