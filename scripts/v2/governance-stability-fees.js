@@ -8,12 +8,13 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v4-2',
-    functionName: 'propose-dao',
+    contractName: 'arkadiko-governance-v4-3',
+    functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
-      tx.uintCV(838180),
-      tx.stringUtf8CV('AIP 21 - Stability Fee Increase'),
+      tx.uintCV(843680),
+      tx.uintCV(720),
+      tx.stringUtf8CV('AIP 21b - Stability Fee Decrease'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/585'),
       tx.listCV([
         tx.tupleCV({
