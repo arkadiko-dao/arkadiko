@@ -129,12 +129,6 @@ class StakePoolDikoV1 {
     ], this.deployer.address);
   }
 
-  walletCanRedeem(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "wallet-can-redeem", [
-      types.principal(user.address)
-    ], user.address);
-  }
-
   getStakeOf(user: Account, stDikoSupply: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "get-stake-of", [
@@ -155,14 +149,8 @@ class StakePoolDikoV1 {
     return block.receipts[0].result;
   }
 
-  startCooldown(user: Account) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "start-cooldown", [], user.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
 }
+
 export { StakePoolDikoV1 };
 
 // ---------------------------------------------------------
@@ -210,12 +198,6 @@ class StakePoolDiko {
     ], this.deployer.address);
   }
 
-  walletCanRedeem(user: Account) {
-    return this.chain.callReadOnlyFn("arkadiko-stake-pool-diko-v2-1", "wallet-can-redeem", [
-      types.principal(user.address)
-    ], user.address);
-  }
-
   getStakeOf(user: Account, stDikoSupply: number) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "get-stake-of", [
@@ -235,15 +217,8 @@ class StakePoolDiko {
     ]);
     return block.receipts[0].result;
   }
-
-  startCooldown(user: Account) {
-    let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-stake-pool-diko-v2-1", "start-cooldown", [], user.address)
-    ]);
-    return block.receipts[0].result;
-  }
-
 }
+
 export { StakePoolDiko };
 
 // ---------------------------------------------------------

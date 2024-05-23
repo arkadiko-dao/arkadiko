@@ -113,21 +113,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = stakePoolDiko.getDikoStdikoRatio();
   call.result.expectOk().expectUintWithDecimals(7.890389);
 
-  // Unstake funds fails because cooldown not started
-  result = stakeRegistry.unstake(
-    wallet_1, 
-    'arkadiko-stake-pool-diko-v2-1',
-    'arkadiko-token',
-    100
-  );
-  result.expectErr().expectUint(18003);
-
-  // Start cooldown period
-  result = stakePoolDiko.startCooldown(wallet_1);
-  result.expectOk().expectUint(1452);
-
-  chain.mineEmptyBlock(1450);
-
   // Unstake funds
   result = stakeRegistry.unstake(
     wallet_1, 
@@ -212,12 +197,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = stakePoolDiko.getDikoForStDiko(100, 133.271271);
   call.result.expectOk().expectUintWithDecimals(648.121044);
 
-  // Start cooldown period
-  result = stakePoolDiko.startCooldown(wallet_1);
-  result.expectOk().expectUint(1448);
-
-  chain.mineEmptyBlock(1450);
-
   // Unstake funds
   result = stakeRegistry.unstake(
     wallet_1, 
@@ -227,49 +206,6 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   );
   result.expectOk().expectUintWithDecimals(68847.743456);
 }
-});
-
-Clarinet.test({
-  name: "diko-staking: cooldown redeem period",
-  async fn(chain: Chain, accounts: Map<string, Account>) {
-    let deployer = accounts.get("deployer")!;
-    let wallet_1 = accounts.get("wallet_1")!;
-  
-    let stakePoolDiko = new StakePoolDiko(chain, deployer);
-
-    // Cooldown not started yet
-    let call = stakePoolDiko.walletCanRedeem(wallet_1);
-    call.result.expectBool(false);  
-  
-    // Start cooldown
-    let result = stakePoolDiko.startCooldown(wallet_1);
-    result.expectOk().expectUint(1446); 
-
-    chain.mineEmptyBlock(1439);
-  
-    // Cooldown started, not ended yet
-    call = stakePoolDiko.walletCanRedeem(wallet_1);
-    call.result.expectBool(false);  
-
-    chain.mineEmptyBlock(1);
-  
-    // Cooldown ended, can redeem
-    call = stakePoolDiko.walletCanRedeem(wallet_1);
-    call.result.expectBool(true);  
-
-    chain.mineEmptyBlock(286);
-  
-    // Redeem period almost ended
-    call = stakePoolDiko.walletCanRedeem(wallet_1);
-    call.result.expectBool(true);  
-
-    chain.mineEmptyBlock(1);
-  
-    // Redeem period ended
-    call = stakePoolDiko.walletCanRedeem(wallet_1);
-    call.result.expectBool(false);  
-  
-  }
 });
 
 Clarinet.test({
@@ -448,10 +384,6 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectErr().expectUint(19004);
 
-    // Start cooldown period
-    result = stakePoolDiko.startCooldown(deployer);
-    result.expectOk().expectUint(4462);
-
     chain.mineEmptyBlock(1450);
 
     // Unstake funds with old registry should fail
@@ -554,12 +486,6 @@ Clarinet.test({
     call.result.expectBool(true)
     call = dao.getContractCanBurn("arkadiko-stake-pool-diko-tv1-1");
     call.result.expectBool(true)
-
-    // Start cooldown period
-    result = stakePoolDiko.startCooldown(deployer);
-    result.expectOk().expectUint(2960);
-
-    chain.mineEmptyBlock(1450);
 
     // Unstake funds still works for this pool
     let block = chain.mineBlock([
