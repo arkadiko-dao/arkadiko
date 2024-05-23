@@ -103,7 +103,7 @@ Clarinet.test({
     // Stake
     let result = stakeRegistry.stake(
       wallet_1, 
-      'arkadiko-stake-pool-diko-v1-4',
+      'arkadiko-stake-pool-diko-v2-1',
       'arkadiko-token',
       150000
     );
@@ -384,7 +384,7 @@ Clarinet.test({
 
     let block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-tv1-1", "propose", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(chain.blockHeight),
         types.utf8("Replace Oracle"),
         types.utf8("https://discuss.arkadiko.finance/my/very/long/url/path"),        
@@ -395,7 +395,7 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-tv1-1", "vote-for", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.principal(Utils.qualifiedName('arkadiko-token')),
         types.uint(1),
         types.uint(10 * 1000000)
@@ -428,7 +428,7 @@ Clarinet.test({
     // So we need to shut down the old governance module
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-3", "propose", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(2504),
         types.uint(123),
         types.utf8("Replace Oracle"),
@@ -443,7 +443,7 @@ Clarinet.test({
 
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-3", "propose", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(2504),
         types.uint(123),
         types.utf8("Replace Oracle"),
@@ -521,14 +521,14 @@ Clarinet.test({
     chain.mineEmptyBlockUntil(100);
 
     // Stake DIKO to get stDIKO 
-    let result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-4', 'arkadiko-token', 100);
+    let result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v2-1', 'arkadiko-token', 100);
     result.expectOk().expectUintWithDecimals(100);
 
     // Advance 3 blocks, so that DIKO/stDIKO ratio is not 1 anymore
     chain.mineEmptyBlock(2);
 
     // Stake DIKO to get stDIKO again, at different rate
-    result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v1-4', 'arkadiko-token', 100);
+    result = stakeRegistry.stake(wallet_1, 'arkadiko-stake-pool-diko-v2-1', 'arkadiko-token', 100);
     result.expectOk().expectUintWithDecimals(1.443470);
 
     // Total stDIKO balance for user is now ~101

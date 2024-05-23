@@ -12,7 +12,7 @@ async function transact() {
     contractName: 'arkadiko-governance-v4-2',
     functionName: 'propose-dao',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
       tx.uintCV(842426),
       tx.stringUtf8CV('AIP 22 - Governance Upgrade (4.3)'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/587'),

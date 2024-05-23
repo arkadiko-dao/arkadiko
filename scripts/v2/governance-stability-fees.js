@@ -11,7 +11,7 @@ async function transact() {
     contractName: 'arkadiko-governance-v4-3',
     functionName: 'propose',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
       tx.uintCV(843680),
       tx.uintCV(720),
       tx.stringUtf8CV('AIP 21b - Stability Fee Decrease'),

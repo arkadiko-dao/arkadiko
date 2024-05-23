@@ -164,7 +164,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-4'
+          'arkadiko-stake-pool-diko-v2-1'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id),
@@ -201,7 +201,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-4'
+          'arkadiko-stake-pool-diko-v2-1'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
         uintCV(match.params.id),
@@ -291,7 +291,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-4'
+          'arkadiko-stake-pool-diko-v2-1'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id),
@@ -328,7 +328,7 @@ export const ViewProposal = ({ match }) => {
       functionArgs: [
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v1-4'
+          'arkadiko-stake-pool-diko-v2-1'
         ),
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
         uintCV(match.params.id),

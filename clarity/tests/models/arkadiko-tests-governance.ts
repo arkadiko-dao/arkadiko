@@ -62,7 +62,7 @@ class Governance {
   createProposal(user: Account, startBlock: number, title: string, url: string, contractChanges: string[], voteLength: number = 250) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-3", "propose", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(startBlock),
         types.uint(voteLength),
         types.utf8(title),
@@ -76,7 +76,7 @@ class Governance {
   createProposalDao(user: Account, startBlock: number, title: string, url: string, contractChanges: string[]) {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-3", "propose-dao", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.uint(startBlock),
         types.utf8(title),
         types.utf8(url),        
@@ -89,7 +89,7 @@ class Governance {
   voteForProposal(user: Account, proposal: number, amount: number, token: string = "arkadiko-token") {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-3", "vote-for", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(proposal),
         types.uint(amount * 1000000)
@@ -101,7 +101,7 @@ class Governance {
   voteAgainstProposal(user: Account, proposal: number, amount: number, token: string = "arkadiko-token") {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-governance-v4-3", "vote-against", [
-        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v1-4')),
+        types.principal(Utils.qualifiedName('arkadiko-stake-pool-diko-v2-1')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(proposal),
         types.uint(amount * 1000000)

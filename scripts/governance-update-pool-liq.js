@@ -12,7 +12,7 @@ async function transact() {
     contractName: 'arkadiko-governance-v4-2',
     functionName: 'propose-dao',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
       tx.uintCV(),
       tx.stringUtf8CV('Fix - multiple stake/unstake actions in one block'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/580'),

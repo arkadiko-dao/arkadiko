@@ -31,8 +31,8 @@ export const Balances = () => {
       description: 'Pays rewards after PoX cycle is over.',
     },
     {
-      address: `${contractAddress}.arkadiko-stake-pool-diko-v1-4`,
-      name: 'Stake Pool DIKO v1.4',
+      address: `${contractAddress}.arkadiko-stake-pool-diko-v2-1`,
+      name: 'Stake Pool DIKO v2.1',
       description: 'DIKO Stake Pool - Stake DIKO to get stDIKO.',
     },
     {

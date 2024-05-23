@@ -10,14 +10,13 @@ const txOptions = {
   contractName: 'arkadiko-stake-registry-v2-1',
   functionName: 'set-pool-data',
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
     tx.stringAsciiCV('DIKO LP'),
     tx.uintCV(0),
     tx.uintCV(0),
-    tx.uintCV(200000) // 8.2%
+    tx.uintCV(50000) // 5%
   ],
   fee: new BN(100000, 10),
-  nonce: new BN(3736, 10),
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network
