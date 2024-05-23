@@ -3,9 +3,7 @@
 ;; Rewards will be automatically staked before staking or unstaking. 
 ;; The cumm reward per stake represents the rewards over time, taking into account total staking volume over time
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
-;; The cooldown mechanism makes sure there is a period of 10 days before the user can unstake. 
-;; Unstaking must happen within 2 days after the 10 days cooldown period.
-;; @version 1.2
+;; @version 1.4
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 (impl-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)
@@ -16,7 +14,6 @@
 (define-constant ERR-NOT-AUTHORIZED (err u18401))
 (define-constant ERR-REWARDS-CALC (err u18001))
 (define-constant ERR-WRONG-TOKEN (err u18002))
-(define-constant ERR-COOLDOWN-NOT-ENDED (err u18003))
 (define-constant ERR-WRONG-REGISTRY (err u18004))
 
 ;; Constants
@@ -41,66 +38,15 @@
 ;; Migrate DIKO from old to new contract
 (define-public (migrate-diko)
   (let (
-    (diko-supply-v2 (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-stake-pool-diko-v1-2)))
+    (diko-supply-v2 (unwrap-panic (contract-call? .arkadiko-token get-balance .arkadiko-stake-pool-diko-v1-4)))
   )
     (asserts! (is-eq tx-sender (contract-call? .arkadiko-dao get-dao-owner)) ERR-NOT-AUTHORIZED)
     
-    ;; Burn DIKO in pool V2, mint in V4
-    (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token diko-supply-v2 .arkadiko-stake-pool-diko-v1-2)))
+    ;; Burn DIKO in pool V1-4, mint in V2-1 (current)
+    (try! (as-contract (contract-call? .arkadiko-dao burn-token .arkadiko-token diko-supply-v2 .arkadiko-stake-pool-diko-v1-4)))
     (try! (as-contract (contract-call? .arkadiko-dao mint-token .arkadiko-token diko-supply-v2 (as-contract tx-sender))))
 
     (ok diko-supply-v2)
-  )
-)
-
-;; ---------------------------------------------------------
-;; Cooldown
-;; ---------------------------------------------------------
-
-;; Cooldown map
-(define-map wallet-cooldown 
-   { wallet: principal } 
-   {
-      redeem-period-start-block: uint,
-      redeem-period-end-block: uint
-   }
-)
-
-;; Get cooldown info for wallet
-(define-read-only (get-cooldown-info-of (wallet principal))
-  (default-to
-    { redeem-period-start-block: u0, redeem-period-end-block: u0 }
-    (map-get? wallet-cooldown { wallet: wallet })
-  )
-)
-
-;; @desc start cooldown period of 10 days
-;; @post uint; returns block number when redeem period of 2 days starts
-(define-public (start-cooldown)
-  (let (
-    (redeem-period-start-block (+ burn-block-height u1440)) ;; 1440 blocks = ~10 days
-    (redeem-period-end-block (+ redeem-period-start-block u288)) ;; 288 blocks = ~2 days
-  )
-    (map-set wallet-cooldown { wallet: tx-sender } { 
-      redeem-period-start-block: redeem-period-start-block,
-      redeem-period-end-block: redeem-period-end-block 
-    })
-    (ok redeem-period-start-block)
-  )
-)
-
-
-;; Check if cooldown ended
-(define-read-only (wallet-can-redeem (wallet principal))
-  (let (
-    (wallet-cooldown-info (get-cooldown-info-of wallet))
-    (redeem-period-start (get redeem-period-start-block wallet-cooldown-info))
-    (redeem-period-end (get redeem-period-end-block wallet-cooldown-info))
-  )
-    (if (and (> burn-block-height redeem-period-start) (< burn-block-height redeem-period-end) (not (is-eq redeem-period-start u0)))
-      true
-      false
-    )
   )
 )
 
@@ -221,7 +167,6 @@
   (begin
     (asserts! (is-eq contract-caller (unwrap-panic (contract-call? .arkadiko-dao get-qualified-name-by-name "stake-registry"))) ERR-NOT-AUTHORIZED)
     (asserts! (is-eq POOL-TOKEN (contract-of token)) ERR-WRONG-TOKEN)
-    (asserts! (is-eq (wallet-can-redeem staker) true) ERR-COOLDOWN-NOT-ENDED)
 
     ;; Add pending rewards to pool
     (try! (add-rewards-to-pool registry-trait))
