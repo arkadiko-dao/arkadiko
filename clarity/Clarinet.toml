@@ -52,8 +52,8 @@ path = "contracts/arkadiko-dao.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.arkadiko-governance-v4-2]
-path = "contracts/arkadiko-governance-v4-2.clar"
+[contracts.arkadiko-governance-v4-3]
+path = "contracts/arkadiko-governance-v4-3.clar"
 clarity_version = 2
 epoch = 2.4
 
