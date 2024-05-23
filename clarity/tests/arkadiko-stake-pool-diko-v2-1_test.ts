@@ -113,6 +113,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   call = stakePoolDiko.getDikoStdikoRatio();
   call.result.expectOk().expectUintWithDecimals(7.890389);
 
+  chain.mineEmptyBlock(1452);
+
   // Unstake funds
   result = stakeRegistry.unstake(
     wallet_1, 
@@ -196,6 +198,8 @@ async fn(chain: Chain, accounts: Map<string, Account>) {
   // 68% of (613+62) = ~459
   call = stakePoolDiko.getDikoForStDiko(100, 133.271271);
   call.result.expectOk().expectUintWithDecimals(648.121044);
+
+  chain.mineEmptyBlock(1451);
 
   // Unstake funds
   result = stakeRegistry.unstake(
