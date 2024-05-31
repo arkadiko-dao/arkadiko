@@ -1,33 +1,33 @@
-// node proposal-change-stacker.js
-require('dotenv').config();
+require('dotenv').config({path: '../.env'});
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
-const utils = require('./utils');
+const utils = require('../utils');
 const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v4-2',
-    functionName: 'propose-dao',
+    contractName: 'arkadiko-governance-v4-3',
+    functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
-      tx.uintCV(842426),
-      tx.stringUtf8CV('AIP 22 - Governance Upgrade (4.3)'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/587'),
+      tx.uintCV(843680),
+      tx.uintCV(720),
+      tx.stringUtf8CV('AIP 21b - Stability Fee Decrease'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/590'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("governance"),
+          'name': tx.stringAsciiCV("aip-21-b-stability-fees"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-governance-v4-3"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-21-stability-fees"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
       ])
     ],
-    senderKey: process.env.STACKS_PRIVATE_KEY,
     fee: new BN(100000, 10),
+    senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
     network
   };

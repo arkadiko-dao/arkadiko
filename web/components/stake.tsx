@@ -167,8 +167,35 @@ export const Stake = () => {
 
       setCurrentBlock(data.block_height);
 
+      const getDikoUsdaAmmPrice = async () => {
+        const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+        const fetchPair = async () => {
+          const details = await callReadOnlyFunction({
+            contractAddress,
+            contractName: 'arkadiko-swap-v2-1',
+            functionName: 'get-pair-details',
+            functionArgs: [
+              contractPrincipalCV(contractAddress, 'arkadiko-token'),
+              contractPrincipalCV(contractAddress, 'usda-token'),
+            ],
+            senderAddress: contractAddress,
+            network: network,
+          });
+
+          return cvToJSON(details);
+        };
+
+        const pair = await fetchPair();
+        if (pair.success) {
+          const pairDetails = pair.value.value.value;
+          return (pairDetails['balance-y'].value / pairDetails['balance-x'].value).toFixed(2);
+        } else {
+          return 0;
+        }
+      };
+
       // prices
-      setDikoPrice(data.diko.last_price);
+      setDikoPrice(1000000.0 * await getDikoUsdaAmmPrice());
       setStxPrice(data.wstx.last_price);
       setUsdaPrice(data.usda.last_price);
     };
