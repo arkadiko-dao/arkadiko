@@ -11,15 +11,11 @@ export const StakeDikoSection = ({
   loadingDikoToStDiko,
   stDikoToDiko,
   stakedAmount,
-  dikoCooldown,
   dikoBalance,
   stDikoBalance,
   apy,
-  cooldownRunning,
-  startDikoCooldown,
   setShowStakeModal,
   setShowUnstakeModal,
-  canUnstake
 }) => {
   return (
     <>
@@ -124,27 +120,6 @@ export const StakeDikoSection = ({
                   <p className="text-indigo-600 dark:text-indigo-400">{apy}%</p>
                 )}
               </div>
-              <div className="mt-3 md:mt-0">
-                <p className="flex items-center text-sm leading-6 text-gray-500 dark:text-zinc-400 md:mb-1">
-                  Cooldown status
-                  <Tooltip
-                    className="ml-2"
-                    shouldWrapChildren={true}
-                    label={`The 10-day cooldown period is the time required prior to unstaking your tokens. Once it expires, there is a 2-day window to unstake your tokens.`}
-                  >
-                    <StyledIcon
-                      as="InformationCircleIcon"
-                      size={5}
-                      className="block ml-2 text-gray-400"
-                    />
-                  </Tooltip>
-                </p>
-                {loadingData ? (
-                  <Placeholder className="py-2" width={Placeholder.width.HALF} />
-                ) : (
-                  <p className="text-base dark:text-white">{dikoCooldown}</p>
-                )}
-              </div>
               <div className="self-center">
                 <Menu as="div" className="relative flex items-center justify-end">
                   {({ open }) => (
@@ -225,7 +200,7 @@ export const StakeDikoSection = ({
                                       : 'text-gray-900'
                                   } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
                                   onClick={() => setShowUnstakeModal(true)}
-                                  disabled={!(stakedAmount > 0 && canUnstake)}
+                                  disabled={!(stakedAmount > 0)}
                                 >
                                   {!(stakedAmount > 0) ? (
                                     <Tooltip
@@ -242,21 +217,6 @@ export const StakeDikoSection = ({
                                         Unstake
                                       </div>
                                     </Tooltip>
-                                  ) : !canUnstake ? (
-                                    <Tooltip
-                                      placement="left"
-                                      className="mr-2"
-                                      label={`Either you haven't started the cooldown period, or the cooldown timer hasn't ended yet.`}
-                                    >
-                                      <div className="flex items-center w-full">
-                                        <StyledIcon
-                                          as="ArrowCircleUpIcon"
-                                          size={5}
-                                          className="mr-3 text-gray-400 group-hover:text-white"
-                                        />
-                                        Unstake
-                                      </div>
-                                    </Tooltip>
                                   ) : (
                                     <>
                                       <StyledIcon
@@ -265,46 +225,6 @@ export const StakeDikoSection = ({
                                         className="mr-3 text-gray-400 group-hover:text-white"
                                       />
                                       Unstake
-                                    </>
-                                  )}
-                                </button>
-                              )}
-                            </Menu.Item>
-
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  className={`${
-                                    active
-                                      ? 'bg-indigo-500 text-white'
-                                      : 'text-gray-900'
-                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm disabled:text-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed`}
-                                  onClick={() => startDikoCooldown()}
-                                  disabled={cooldownRunning || Number(stDikoBalance) === 0}
-                                >
-                                  {cooldownRunning ? (
-                                    <Tooltip
-                                      placement="left"
-                                      className="mr-2"
-                                      label={`Cooldown is already in progress.`}
-                                    >
-                                      <div className="flex items-center w-full">
-                                        <StyledIcon
-                                          as="ClockIcon"
-                                          size={5}
-                                          className="mr-3 text-gray-400"
-                                        />
-                                        Start cooldown
-                                      </div>
-                                    </Tooltip>
-                                  ) : (
-                                    <>
-                                      <StyledIcon
-                                        as="ClockIcon"
-                                        size={5}
-                                        className="mr-3 text-gray-400 group-hover:text-white"
-                                      />
-                                      Start cooldown
                                     </>
                                   )}
                                 </button>
