@@ -3,7 +3,7 @@
 ;; Rewards will be automatically staked before staking or unstaking. 
 ;; The cumm reward per stake represents the rewards over time, taking into account total staking volume over time
 ;; When total stake changes, the cumm reward per stake is increased accordingly.
-;; @version 1.4
+;; @version 2.1
 
 (impl-trait .arkadiko-stake-pool-trait-v1.stake-pool-trait)
 (impl-trait .arkadiko-stake-pool-diko-trait-v1.stake-pool-diko-trait)

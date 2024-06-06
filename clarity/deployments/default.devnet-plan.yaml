@@ -438,13 +438,6 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: arkadiko-stake-pool-diko-slash-v1-1
-            expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 5900
-            path: contracts/stake/arkadiko-stake-pool-diko-slash-v1-1.clar
-            anchor-block-only: true
-            clarity-version: 2
-        - contract-publish:
             contract-name: arkadiko-swap-token-diko-usda
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 23590
@@ -522,10 +515,10 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: arkadiko-ui-stake-v1-3
+            contract-name: arkadiko-ui-stake-v1-5
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 12240
-            path: contracts/stake/arkadiko-ui-stake-v1-3.clar
+            path: contracts/stake/arkadiko-ui-stake-v1-5.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:

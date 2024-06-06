@@ -69,9 +69,6 @@ export const Stake = () => {
   const [lpXbtcUsdaPendingRewards, setLpXbtcUsdaPendingRewards] = useState(0);
   const [lpXusdUsdaPendingRewards, setLpXusdUsdaPendingRewards] = useState(0);
   const [lpXusdUsda2PendingRewards, setLpXusdUsda2PendingRewards] = useState(0);
-  const [dikoCooldown, setDikoCooldown] = useState('');
-  const [canUnstake, setCanUnstake] = useState(false);
-  const [cooldownRunning, setCooldownRunning] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [hasUnstakedTokens, setHasUnstakedTokens] = useState(false);
   const [poolInfo, setPoolInfo] = useState({});
@@ -339,7 +336,7 @@ export const Stake = () => {
     const getStakingData = async () => {
       const userStakedCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-ui-stake-v1-4',
+        contractName: 'arkadiko-ui-stake-v1-5',
         functionName: 'get-stake-amounts',
         functionArgs: [standardPrincipalCV(stxAddress || contractAddress)],
         senderAddress: stxAddress || contractAddress,
@@ -417,7 +414,7 @@ export const Stake = () => {
 
       const userStakedDikoCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-4',
+        contractName: 'arkadiko-stake-pool-diko-v2-1',
         functionName: 'get-stake-of',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
@@ -436,7 +433,7 @@ export const Stake = () => {
     const getDikoToStDiko = async () => {
       const stDikoToDikoCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-4',
+        contractName: 'arkadiko-stake-pool-diko-v2-1',
         functionName: 'diko-for-stdiko',
         functionArgs: [
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
@@ -636,61 +633,6 @@ export const Stake = () => {
       setPooledUsdaDikoApr((dikoPerYear * dikoPrice / 1000000) / totalPooledUsda * 100000.0);
 
       setLoadingData(false);
-
-      const dikoCooldownInfo = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-stake-pool-diko-v1-4',
-        functionName: 'get-cooldown-info-of',
-        functionArgs: [standardPrincipalCV(stxAddress || contractAddress)],
-        senderAddress: stxAddress || contractAddress,
-        network: network,
-      });
-      const cooldownInfo = cvToJSON(dikoCooldownInfo).value;
-      const redeemStartBlock = cooldownInfo['redeem-period-start-block']['value'];
-      const redeemEndBlock = cooldownInfo['redeem-period-end-block']['value'];
-
-      const client = getRPCClient();
-      const response = await fetch(`${client.url}/v2/info`, { credentials: 'omit' });
-      const data = await response.json();
-      const bitcoinCurrentBlock = data['burn_block_height'];
-
-      // Helper to create countdown text
-      function blockDiffToTimeLeft(blockDiff: number) {
-        const minDiff = blockDiff * 10;
-        const days = Math.floor(minDiff / (60 * 24));
-        const hours = Math.floor((minDiff % (60 * 24)) / 60);
-        const minutes = Math.floor(minDiff % 60);
-        let text = '';
-        if (days != 0) {
-          text += days + 'd ';
-        }
-        if (hours != 0) {
-          text += hours + 'h ';
-        }
-        if (minutes != 0) {
-          text += minutes + 'm ';
-        }
-        return text;
-      }
-
-      if (redeemEndBlock == 0 || redeemEndBlock < bitcoinCurrentBlock) {
-        setDikoCooldown('Not started');
-      } else if (redeemStartBlock < bitcoinCurrentBlock) {
-        const blockDiff = redeemEndBlock - bitcoinCurrentBlock;
-        let text = blockDiffToTimeLeft(blockDiff);
-        text += ' left to unstake';
-        setDikoCooldown(text);
-        setCanUnstake(true);
-      } else {
-        const blockDiff = redeemStartBlock - bitcoinCurrentBlock;
-        let text = 'about 10 minutes';
-        if (blockDiff > 0) {
-          text = blockDiffToTimeLeft(blockDiff);
-        }
-        text += ' left';
-        setDikoCooldown(text);
-        setCooldownRunning(true);
-      }
     };
     if (mounted) {
       void checkUnstakedTokens();
@@ -701,25 +643,6 @@ export const Stake = () => {
       mounted = false;
     };
   }, [state.balance, stxPrice, dikoPrice, usdaPrice]);
-
-  const startDikoCooldown = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-pool-diko-v1-4',
-      functionName: 'start-cooldown',
-      functionArgs: [],
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
-  };
 
   const claimDikoUsdaLpPendingRewards = async () => {
     await doContractCall({
@@ -797,7 +720,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -844,7 +767,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -933,7 +856,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -957,7 +880,7 @@ export const Stake = () => {
       functionName: 'stake-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -981,7 +904,7 @@ export const Stake = () => {
       functionName: 'stake-pending-rewards',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -1006,7 +929,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -1031,7 +954,7 @@ export const Stake = () => {
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
       ],
       postConditionMode: 0x01,
@@ -1217,15 +1140,11 @@ export const Stake = () => {
           <StakeDikoSection
             loadingData={loadingData}
             loadingDikoToStDiko={loadingDikoToStDiko}
-            canUnstake={canUnstake}
             stDikoToDiko={stDikoToDiko}
             stakedAmount={stakedAmount}
-            dikoCooldown={dikoCooldown}
             dikoBalance={state.balance['diko'] || 0}
             stDikoBalance={state.balance['stdiko'] || 0}
             apy={apy}
-            cooldownRunning={cooldownRunning}
-            startDikoCooldown={startDikoCooldown}
             setShowStakeModal={setShowStakeModal}
             setShowUnstakeModal={setShowUnstakeModal}
           />

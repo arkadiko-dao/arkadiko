@@ -72,7 +72,7 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
       functionName: 'stake',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v1-4'),
+        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-token'),
         amount,
       ],
@@ -112,18 +112,6 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
       <p className="mt-3 text-sm text-center text-gray-500 dark:text-zinc-400">
         Stake DIKO tokens at {apy}% (estimated APR) and start earning rewards now.
       </p>
-      <div className="mt-4">
-        <Alert>
-          <p>
-            Once you have staked your DIKO tokens, they will be locked for at least 10 days
-            (cooldown period).
-          </p>
-          <p className="mt-1">
-            <span className="font-semibold">Reminder</span>: The cooldown has to be started
-            manually.
-          </p>
-        </Alert>
-      </div>
       <div className="mt-6">
         <InputAmount
           balance={microToReadable(state.balance['diko']).toLocaleString(undefined, {
