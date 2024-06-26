@@ -307,7 +307,7 @@ Clarinet.test({
     result.expectOk().expectUintWithDecimals(45100.732464);
     // Reward data
     call = await liquidationRewards.getRewardData(0);
-    call.result.expectTuple()["share-block"].expectUint(723);
+    call.result.expectTuple()["share-block"].expectUint(724);
     call.result
       .expectTuple()
       ["total-amount"].expectUintWithDecimals(45100.732464);
@@ -379,7 +379,7 @@ Clarinet.test({
     let call: any = await liquidationRewardsDiko.getEpochInfo();
     call.result.expectOk().expectTuple()["blocks"].expectUint(720);
     call.result.expectOk().expectTuple()["rate"].expectUintWithDecimals(0.1);
-    call.result.expectOk().expectTuple()["end-block"].expectUint(1443);
+    call.result.expectOk().expectTuple()["end-block"].expectUint(1444);
 
     // Epoch info
     call = await liquidationRewardsDiko.getBlocksPerEpoch();
@@ -570,7 +570,7 @@ Clarinet.test({
 
     // Reward data
     let call: any = await liquidationRewards.getRewardData(0);
-    call.result.expectTuple()["share-block"].expectUint(723);
+    call.result.expectTuple()["share-block"].expectUint(724);
     call.result
       .expectTuple()
       ["total-amount"].expectUintWithDecimals(44233.410744);
