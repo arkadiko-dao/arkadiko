@@ -523,7 +523,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
                         tokenXToReceive === 0 || !foundPair
                           ? 'bg-indigo-400 hover:bg-indigo-400 dark:text-indigo-600 cursor-not-allowed dark:bg-indigo-200'
                           : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
-                        'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                        'w-full inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm font-medium text-sm sm:text-xl rounded-md text-white hover:bg-indigo-700 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                       )}
                     >
                       {isLoading

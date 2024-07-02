@@ -215,6 +215,14 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     }
   };
 
+  const clearTokenXAmount = () => {
+    setTokenXAmount(0.0);
+  }
+
+  const clearTokenYAmount = () => {
+    setTokenYAmount(0.0);
+  }
+
   const calculateTokenYAmount = (value: number) => {
     setTokenYAmount(Number((currentPrice * value).toFixed(6)));
     if (currentPrice * value > balanceSelectedTokenY) {
@@ -356,7 +364,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         <Container>
           <main className="relative flex flex-col items-center justify-center flex-1 py-12 pb-8">
             <p className="w-full max-w-lg mb-2">
-              <RouterLink className="" to={`/pool`} exact>
+              <RouterLink to={`/pool`} exact>
                 <span className="p-1.5 rounded-md inline-flex items-center">
                   <StyledIcon
                     as="ArrowLeftIcon"
@@ -460,38 +468,48 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                   ) : (
                     <>
                       <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
-                        <div className="flex items-center p-4 pb-2">
+                        <div className="flex flex-col p-4 pb-2 sm:flex-row sm:items-center">
                           <TokenSwapList
                             selected={tokenX}
                             setSelected={setTokenX}
                             disabled={true}
                           />
 
-                          <label htmlFor="tokenXAmount" className="sr-only">
-                            {tokenX.name}
-                          </label>
-                          <input
-                            type="number"
-                            inputMode="decimal"
-                            autoFocus={true}
-                            autoComplete="off"
-                            autoCorrect="off"
-                            name="tokenXAmount"
-                            id="tokenXAmount"
-                            pattern="^[0-9]*[.,]?[0-9]*$"
-                            placeholder="0.0"
-                            value={tokenXAmount || ''}
-                            onChange={onInputXChange}
-                            min={0}
-                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-900 dark:text-zinc-50"
-                            style={{ appearance: 'textfield' }}
-                          />
+                          <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                            <label htmlFor="tokenXAmount" className="sr-only">
+                              {tokenX.name}
+                            </label>
+                            <input
+                              type="number"
+                              inputMode="decimal"
+                              autoFocus={true}
+                              autoComplete="off"
+                              autoCorrect="off"
+                              name="tokenXAmount"
+                              id="tokenXAmount"
+                              pattern="^[0-9]*[.,]?[0-9]*$"
+                              placeholder="0.0"
+                              value={tokenXAmount || ''}
+                              onChange={onInputXChange}
+                              min={0}
+                              className="flex-1 p-0 m-0 text-xl font-semibold truncate border-0 sm:text-right focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-900 dark:text-zinc-50"
+                              style={{ appearance: 'textfield' }}
+                            />
+
+                            <button
+                              type="button"
+                              onClick={clearTokenXAmount}
+                              className="relative z-10 flex items-center justify-center w-6 h-6 text-gray-400 transform bg-white border border-gray-300 rounded-md sm:hidden dark:bg-zinc-800 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:hover:text-indigo-400"
+                            >
+                              <StyledIcon as="XIcon" size={3} />
+                            </button>
+                          </div>
                         </div>
 
-                        <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                        <div className="flex items-center justify-end p-4 pt-0 text-xs sm:text-sm">
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center justify-start">
-                              <p className="text-gray-500">
+                              <p className="text-gray-500 dark:text-gray-50">
                                 Balance:{' '}
                                 {balanceSelectedTokenX.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
@@ -525,38 +543,49 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                       </div>
 
                       <div className="border border-gray-200 rounded-md shadow-sm bg-gray-50 hover:border-gray-300 focus-within:border-indigo-200 dark:border-zinc-600 dark:bg-zinc-900 dark:hover:border-zinc-900 dark:focus-within:border-indigo-200">
-                        <div className="flex items-center p-4 pb-2">
+                        <div className="flex flex-col p-4 pb-2 sm:flex-row sm:items-center">
                           <TokenSwapList
                             selected={tokenY}
                             setSelected={setTokenY}
                             disabled={true}
                           />
 
-                          <label htmlFor="tokenYAmount" className="sr-only">
-                            {tokenY.name}
-                          </label>
-                          <input
-                            type="number"
-                            inputMode="decimal"
-                            autoFocus={true}
-                            autoComplete="off"
-                            autoCorrect="off"
-                            name="tokenYAmount"
-                            id="tokenYAmount"
-                            pattern="^[0-9]*[.,]?[0-9]*$"
-                            placeholder="0.0"
-                            value={tokenYAmount || ''}
-                            onChange={onInputYChange}
-                            min={0}
-                            className="flex-1 p-0 m-0 text-xl font-semibold text-right truncate border-0 focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-900 dark:text-zinc-50"
-                            style={{ appearance: 'textfield' }}
-                          />
+                          <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                            <label htmlFor="tokenYAmount" className="sr-only">
+                              {tokenY.name}
+                            </label>
+                            <input
+                              type="number"
+                              inputMode="decimal"
+                              autoFocus={true}
+                              autoComplete="off"
+                              autoCorrect="off"
+                              name="tokenYAmount"
+                              id="tokenYAmount"
+                              pattern="^[0-9]*[.,]?[0-9]*$"
+                              placeholder="0.0"
+                              value={tokenYAmount || ''}
+                              onChange={onInputYChange}
+                              min={0}
+                              className="flex-1 p-0 m-0 text-xl font-semibold truncate border-0 sm:text-right focus:outline-none focus:ring-0 bg-gray-50 dark:bg-zinc-900 dark:text-zinc-50"
+                              style={{ appearance: 'textfield' }}
+                            />
+
+                            <button
+                              type="button"
+                              onClick={clearTokenYAmount}
+                              className="relative z-10 flex items-center justify-center w-6 h-6 text-gray-400 transform bg-white border border-gray-300 rounded-md sm:hidden dark:bg-zinc-800 hover:text-indigo-700 focus:outline-none focus:ring-offset-0 focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:hover:text-indigo-400"
+                            >
+                              <StyledIcon as="XIcon" size={3} />
+                            </button>
+                          </div>
+
                         </div>
 
-                        <div className="flex items-center justify-end p-4 pt-0 text-sm">
+                        <div className="flex items-center justify-end p-4 pt-0 text-xs sm:text-sm">
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center justify-start">
-                              <p className="text-gray-500">
+                              <p className="text-gray-500 dark:text-gray-50">
                                 Balance:{' '}
                                 {balanceSelectedTokenY.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
@@ -694,7 +723,7 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
                       tokenYAmount === 0 || !foundPair
                         ? 'bg-indigo-400 hover:bg-indigo-400 dark:text-indigo-600 cursor-not-allowed dark:bg-indigo-200'
                         : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer',
-                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-xl rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                      'w-full mt-4 inline-flex items-center justify-center text-center px-4 py-3 border border-transparent shadow-sm font-medium text-sm sm:text-xl rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                     )}
                   >
                     {isLoading
