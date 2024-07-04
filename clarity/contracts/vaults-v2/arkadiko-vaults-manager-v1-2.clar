@@ -180,7 +180,11 @@
       fee-block-last
     ))
     (fee-block-change (/ debt-payoff-used (get redemption-fee-block-rate collateral-info)))
-    (new-redemption-last-block (+ fee-block-last-cap fee-block-change))
+
+    (new-redemption-last-block (if (< (+ fee-block-last-cap fee-block-change) burn-block-height)
+      (+ fee-block-last-cap fee-block-change)
+      burn-block-height
+    ))
 
     (collateral-needed (/ (* (get collateral vault) debt-payoff-used) collateral-value))
     (collateral-fee (/ (* collateral-needed (get current-fee fee)) u10000))
