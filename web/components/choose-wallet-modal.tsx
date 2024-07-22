@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { StyledIcon } from '../components/ui/styled-icon';
+import { ExternalLinkIcon } from "@heroicons/react/outline";
 
 type Props = {
   open: boolean;
@@ -85,7 +86,18 @@ export function ChooseWalletModal({
                       <span className="flex flex-col text-left">
                         <span>Leather Wallet</span>
                         {!window.LeatherProvider && !window.HiroWalletProvider && (
-                          <span className="text-sm text-gray-600 dark:text-zinc-400">Not installed</span>
+                          <span className="text-sm text-gray-600 dark:text-zinc-400">
+                            Not installed -{' '}
+                            <a
+                              href="https://www.leather.io/"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              className="inline-flex items-center font-semibold hover:underline text-dark-green-500"
+                            >
+                              Download
+                              <ExternalLinkIcon className="w-3 h-3 ml-1 text-dark-green-500 opacity-80" />
+                            </a>
+                          </span>
                         )}
                       </span>
                     </button>
@@ -101,7 +113,18 @@ export function ChooseWalletModal({
                       <span className="flex flex-col text-left">
                         <span>Xverse Wallet</span>
                         {!xVerseInstalled && (
-                          <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                          <span className="text-sm text-gray-600 dark:text-zinc-400">
+                            Not installed -{' '}
+                            <a
+                              href="https://www.xverse.app/"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              className="inline-flex items-center font-semibold hover:underline text-dark-green-500"
+                            >
+                              Download
+                              <ExternalLinkIcon className="w-3 h-3 ml-1 text-dark-green-500 opacity-80" />
+                            </a>
+                          </span>
                         )}
                       </span>
                     </button>
@@ -162,7 +185,41 @@ export function ChooseWalletModal({
                       <span className="flex flex-col text-left">
                         <span>Asigna Wallet</span>
                         {!window.AsignaProvider && (
-                          <span className="text-sm text-gray-600 dark:text-zinc-500">Not installed</span>
+                          <span className="text-sm text-gray-600 dark:text-zinc-400">
+                            Not installed -{' '}
+                            <a
+                              href="https://www.asigna.io/"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              className="inline-flex items-center font-semibold hover:underline text-dark-green-500"
+                            >
+                              Download
+                              <ExternalLinkIcon className="w-3 h-3 ml-1 text-dark-green-500 opacity-80" />
+                            </a>
+                          </span>
+                        )}
+                      </span>
+                    </button>
+
+                    <button type="button" onClick={() => { onProviderChosen('orange'); }} disabled={!window.OrangeStacksProvider} className="w-full flex items-center gap-x-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-500 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-black text-gray-800 dark:text-zinc-200 dark:border-zinc-700 rounded-md dark:hover:border-gray-500 p-4 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:hover:border-gray-200 disabled:dark:bg-zinc-700">
+                      <span>
+                        <img src="/assets/orange-wallet.png" className="w-12 h-12" />
+                      </span>
+                      <span className="flex flex-col text-left">
+                        <span>Orange Wallet</span>
+                        {!window.OrangeStacksProvider && (
+                          <span className="text-sm text-gray-600 dark:text-zinc-400">
+                            Not installed -{' '}
+                            <a
+                              href="https://www.orangecrypto.com/"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              className="inline-flex items-center font-semibold hover:underline text-dark-green-500"
+                            >
+                              Download
+                              <ExternalLinkIcon className="w-3 h-3 ml-1 text-dark-green-500 opacity-80" />
+                            </a>
+                          </span>
                         )}
                       </span>
                     </button>

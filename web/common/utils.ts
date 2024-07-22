@@ -71,6 +71,8 @@ export const resolveProvider = () => {
     return window.XverseProviders?.StacksProvider;
   } else if (providerName === 'asigna' && window.AsignaProvider) {
     return window.AsignaProvider;
+  } else if (providerName === 'orange' && window.OrangeStacksProvider) {
+    return window.OrangeStacksProvider;
   } else if (window.LeatherProvider) {
     return window.LeatherProvider;
   } else if (window.HiroWalletProvider) {
