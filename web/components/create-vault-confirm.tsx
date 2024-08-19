@@ -155,6 +155,29 @@ export const CreateVaultConfirm = ({ setStep, coinAmounts, setCoinAmounts }) => 
                 </div>
               </div>
 
+              <div className="mt-4">
+                <Alert type={Alert.type.WARNING} title="Important note">
+                  <p>
+                    By opening a vault you confirm that you understand the risks of a DeFi platform, including{' '}
+                    <span className="font-semibold">
+                      smart contract, liquidation and redemption risks
+                    </span>
+                    .
+                  </p>
+
+                  <p className="mt-1">
+                    <a
+                      href="https://docs.arkadiko.finance/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-yellow-700 underline hover:text-yellow-600"
+                    >
+                      Learn more about Arkadiko.
+                    </a>
+                  </p>
+                </Alert>
+              </div>
+
               <div className="pt-5">
                 <div className="flex justify-end">
                   <button
