@@ -7,10 +7,10 @@ const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-alex-dual-yield-v1-1',
+  contractName: 'arkadiko-stable-swap-rewards-v1-1',
   functionName: 'mint-diko',
   functionArgs: [
-    tx.uintCV(10),
+    tx.uintCV(100),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
