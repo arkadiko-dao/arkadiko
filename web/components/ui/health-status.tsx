@@ -64,7 +64,11 @@ export const debtClassToLabel = (debtClass: string, redemptionPosition: number) 
       return 'Redemption Risk';
     }
   } else if (debtClass.includes('orange-500') || redemptionPosition <= 10) {
-    return 'Danger';
+    if (debtClass.includes('orange-500')) {
+      return 'Danger - Liquidation';
+    } else {
+      return 'Danger - Redemption';
+    }
   }
 
   return 'Neutral';
