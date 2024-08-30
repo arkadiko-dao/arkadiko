@@ -42,25 +42,33 @@ const configMap: Record<StatusType, StatusTypeConfig> = {
   },
 };
 
-export const debtClassToType = (debtClass: string) => {
-  if (debtClass.includes('green-500')) {
+export const debtClassToType = (debtClass: string, redemptionPosition: number) => {
+  if (debtClass.includes('green-500') && redemptionPosition > 5) {
     return StatusType.SUCCESS;
-  } else if (debtClass.includes('orange-500')) {
-    return StatusType.WARNING;
-  } else if (debtClass.includes('red-600')) {
+  } else if (debtClass.includes('red-600') || redemptionPosition <= 4) {
     return StatusType.ERROR;
+  } else if (debtClass.includes('orange-500') || redemptionPosition <= 10) {
+    return StatusType.WARNING;
   }
 
   return StatusType.NEUTRAL;
 }
 
-export const debtClassToLabel = (debtClass: string) => {
-  if (debtClass.includes('green-500')) {
+export const debtClassToLabel = (debtClass: string, redemptionPosition: number) => {
+  if (debtClass.includes('green-500') && redemptionPosition > 5) {
     return 'Healthy';
-  } else if (debtClass.includes('orange-500')) {
-    return 'Danger';
-  } else if (debtClass.includes('red-600')) {
-    return 'Liquidation Close';
+  } else if (debtClass.includes('red-600') || redemptionPosition <= 4) {
+    if (debtClass.includes('red-600')) {
+      return 'Liquidation Close';
+    } else {
+      return 'Redemption Risk';
+    }
+  } else if (debtClass.includes('orange-500') || redemptionPosition <= 10) {
+    if (debtClass.includes('orange-500')) {
+      return 'Danger - Liquidation';
+    } else {
+      return 'Danger - Redemption';
+    }
   }
 
   return 'Neutral';
