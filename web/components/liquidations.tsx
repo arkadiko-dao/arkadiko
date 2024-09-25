@@ -99,8 +99,8 @@ export const Liquidations: React.FC = () => {
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
-        FungibleConditionCode.Equal,
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))).value,
+        FungibleConditionCode.LessEqual,
+        uintCV(Number((parseFloat(stakeAmount) * 1000000 * 1.01).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
     ];
@@ -120,7 +120,7 @@ export const Liquidations: React.FC = () => {
           contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
         ])
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
