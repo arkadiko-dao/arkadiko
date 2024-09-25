@@ -18,6 +18,7 @@ import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
 import { Liquidations } from './liquidations';
+import { Redemptions } from './redemptions';
 import { LegacyLiquidations } from './legacy-liquidations';
 import { Admin } from './admin';
 
