@@ -158,7 +158,7 @@ export const Liquidations: React.FC = () => {
           contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
         ])
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
