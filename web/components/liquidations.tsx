@@ -141,6 +141,34 @@ export const Liquidations: React.FC = () => {
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'wstx-token', 'wstx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(stStxContractAddress, 'ststx-token', 'ststx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(xbtcContractAddress, 'Wrapped-Bitcoin', 'wrapped-bitcoin')
+      )
     ];
 
     await doContractCall({
