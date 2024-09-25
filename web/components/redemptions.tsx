@@ -132,183 +132,21 @@ export const Redemptions: React.FC = () => {
     }, resolveProvider() || window.StacksProvider);
   };
 
-  const unstake = async () => {
-    const postConditions = [
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.Equal,
-        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
-    ];
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-2',
-      functionName: 'unstake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))),
-        listCV([
-          contractPrincipalCV(contractAddress, 'wstx-token'),
-          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
-        ])
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
-  };
-
-  const getPendingRewards = async (tokenAddress: string, tokenName: string) => {
-    const call = await callReadOnlyFunction({
-      contractAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-2',
-      functionName: 'get-pending-rewards',
-      functionArgs: [
-        standardPrincipalCV(stxAddress),
-        contractPrincipalCV(tokenAddress, tokenName),
-      ],
-      senderAddress: stxAddress || '',
-      network: network,
-    });
-    const resultDetails = cvToJSON(call).value.value;
-
-    return resultDetails;
-  };
-
-  const loadRewards = async () => {
-    setIsLoadingRewards(true);
-
-    const dikoRewards = await getPendingRewards(contractAddress, 'arkadiko-token');
-    if (dikoRewards > 0) {
-      rewardData.push(
-        <LiquidationReward
-          key={0}
-          token={`${contractAddress}.arkadiko-token`}
-          claimable={dikoRewards}
-          tokenIsStx={false}
-        />
-      );
-    }
-    const xbtcRewards = await getPendingRewards(xbtcContractAddress, 'Wrapped-Bitcoin');
-    if (xbtcRewards > 0) {
-      rewardData.push(
-        <LiquidationReward
-          key={1}
-          token={`${xbtcContractAddress}.Wrapped-Bitcoin`}
-          claimable={xbtcRewards}
-          tokenIsStx={false}
-        />
-      );
-    }
-    const stxRewards = await getPendingRewards(contractAddress, 'wstx-token');
-    if (stxRewards > 0) {
-      rewardData.push(
-        <LiquidationReward
-          key={2}
-          token={`${contractAddress}.wstx-token`}
-          claimable={stxRewards}
-          tokenIsStx={true}
-        />
-      );
-    }
-    const stStxRewards = await getPendingRewards(stStxContractAddress, 'ststx-token');
-    if (stStxRewards > 0) {
-      rewardData.push(
-        <LiquidationReward
-          key={3}
-          token={`${stStxContractAddress}.ststx-token`}
-          claimable={stStxRewards}
-          tokenIsStx={false}
-        />
-      );
-    }
-
-    setIsLoadingRewards(false);
-    setLoadedRewards(true);
-  };
-
   useEffect(() => {
-    const getDikoPrice = async () => {
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-swap-v2-1',
-        functionName: 'get-pair-details',
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-token'),
-          contractPrincipalCV(contractAddress, 'usda-token'),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const resultPairDetails = cvToJSON(call).value.value.value;
-      const balanceX = resultPairDetails["balance-x"].value;
-      const balanceY = resultPairDetails["balance-y"].value;
-      return balanceY / balanceX;
-    };
-
-    const getTotalPooled = async () => {
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'usda-token',
-        functionName: 'get-balance',
-        functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-2'),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(call).value.value;
-      return result;
-    };
-
-    const getUserPooled = async () => {
-      const call = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-vaults-pool-liq-v1-2',
-        functionName: 'get-stake-of',
-        functionArgs: [
-          standardPrincipalCV(stxAddress || ''),
-        ],
-        senderAddress: stxAddress || '',
-        network: network,
-      });
-      const result = cvToJSON(call).value.value;
-      return result;
-    };
-
     const fetchInfo = async () => {
-      // Fetch info
-      const [
-        totalPooled,
-        userPooled,
-        dikoPrice,
-      ] = await Promise.all([
-        getTotalPooled(),
-        getUserPooled(),
-        getDikoPrice(),
-      ]);
+      const types = await callReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-vaults-tokens-v1-1',
+        functionName: 'get-token',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'wstx-token'),
+        ],
+        senderAddress: address,
+        network: network,
+      });
+      const json = cvToJSON(types.value);
 
-      setTotalPooled(totalPooled);
-      setUserPooled(userPooled);
-
-      setButtonStakeDisabled(false);
-      setButtonUnstakeDisabled(userPooled == 0)
-
-      const dikoPerYear = 612500000; // 10% of all emissions
-      setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100000.0);
-      setIsLoading(false);
+      console.log('yay', json);
     };
 
     fetchInfo();
@@ -330,9 +168,9 @@ export const Redemptions: React.FC = () => {
           <main className="relative flex-1 py-12">
 
             <section>
-              <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
+              <header className="pt-2 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">DIKO emissions</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Redemption Info</h3>
                 </div>
               </header>
               <div className="mt-4">
