@@ -103,6 +103,13 @@ export const Liquidations: React.FC = () => {
         uintCV(Number((parseFloat(stakeAmount) * 1000000 * 1.01).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
+      ),
     ];
 
     await doContractCall({
