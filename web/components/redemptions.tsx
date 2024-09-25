@@ -42,20 +42,20 @@ export const Redemptions: React.FC = () => {
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
   const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
 
+  // TODO: remove this
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
   const [stakeAmount, setStakeAmount] = useState(0);
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [userPooled, setUserPooled] = useState(0);
   const [totalPooled, setTotalPooled] = useState(0);
-  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(612500000000);
   const [dikoApr, setDikoApr] = useState(0);
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
 
-  const [loadedRewards, setLoadedRewards] = useState(false);
-  const [isLoadingRewards, setIsLoadingRewards] = useState(false);
-  const [rewardData, setRewardData] = useState([]);
+  const [stxRedemptionInfo, setStxRedemptionInfo] = useState({});
+  const [stStxRedemptionInfo, setStStxRedemptionInfo] = useState({});
+  const [xBtcRedemptionInfo, setXBtcRedemptionInfo] = useState({});
 
   const onInputStakeChange = (event: any) => {
     const value = event.target.value;
@@ -75,81 +75,35 @@ export const Redemptions: React.FC = () => {
     setUnstakeAmount((userPooled / 1000000).toString());
   };
 
-  const redeemStx = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stacker-payer-v3-8',
-      functionName: 'redeem-stx',
-      functionArgs: [uintCV(state.balance['xstx'])],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
-  };
-
-  const stake = async () => {
-    const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
-    ];
-
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-2',
-      functionName: 'stake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))),
-        listCV([
-          contractPrincipalCV(contractAddress, 'wstx-token'),
-          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
-        ])
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        setState(prevState => ({
-          ...prevState,
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
-  };
-
   useEffect(() => {
-    const fetchInfo = async () => {
+    const fetchInfo = async (address, tokenName) => {
       const types = await callReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-tokens-v1-1',
         functionName: 'get-token',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'wstx-token'),
+          contractPrincipalCV(address, tokenName),
         ],
-        senderAddress: address,
+        senderAddress: stxAddress,
         network: network,
       });
       const json = cvToJSON(types.value);
 
-      console.log('yay', json);
+      return json;
     };
 
-    fetchInfo();
+    const fetchAll = async () => {
+      const stxInfo = await fetchInfo(contractAddress, 'wstx-token');
+      const stStxInfo = await fetchInfo(stStxContractAddress, 'ststx-token');
+      const xBtcInfo = await fetchInfo(xbtcContractAddress, 'Wrapped-Bitcoin');
+
+      setStxRedemptionInfo(stxInfo);
+      setStStxRedemptionInfo(stStxInfo);
+      setXBtcRedemptionInfo(xBtcInfo);
+      setIsLoading(false);
+    }
+
+    fetchAll();
   }, []);
 
   const tabs = [
@@ -160,7 +114,7 @@ export const Redemptions: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Liquidations</title>
+        <title>Redemptions</title>
       </Helmet>
 
       {state.userData ? (
@@ -176,7 +130,7 @@ export const Redemptions: React.FC = () => {
               <div className="mt-4">
                 <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-2">
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
-                    <p className="text-xs font-semibold text-indigo-600 uppercase">Rewards to distribute per year</p>
+                    <p className="text-xs font-semibold text-indigo-600 uppercase">stSTX Redemptions min/max fee</p>
                     {isLoading ? (
                       <>
                         <Placeholder className="py-2" width={Placeholder.width.THIRD} />
@@ -185,10 +139,14 @@ export const Redemptions: React.FC = () => {
                     ) : (
                       <>
                         <p className="mt-1 text-xl font-semibold text-indigo-800">
-                          {microToReadable(dikoRewardsToAdd).toLocaleString(undefined, {
+                          {microToReadable(stStxRedemptionInfo['redemption-fee-min']).toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
-                          })} DIKO
+                          })}{" "}up to{" "}
+                          {microToReadable(stStxRedemptionInfo['redemption-fee-max']).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 6,
+                          })}
                         </p>
                       </>
                     )}
