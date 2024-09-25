@@ -89,7 +89,7 @@ export const Redemptions: React.FC = () => {
       });
       const json = cvToJSON(types.value);
 
-      return json;
+      return json.value;
     };
 
     const fetchAll = async () => {
@@ -128,7 +128,7 @@ export const Redemptions: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-3">
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
                     <p className="text-xs font-semibold text-indigo-600 uppercase">stSTX Redemptions min/max fee</p>
                     {isLoading ? (
@@ -137,37 +137,58 @@ export const Redemptions: React.FC = () => {
                         <Placeholder className="py-2" width={Placeholder.width.FULL} />
                       </>
                     ) : (
-                      <>
-                        <p className="mt-1 text-xl font-semibold text-indigo-800">
-                          {microToReadable(stStxRedemptionInfo['redemption-fee-min']).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 6,
-                          })}{" "}up to{" "}
-                          {microToReadable(stStxRedemptionInfo['redemption-fee-max']).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 6,
-                          })}
-                        </p>
-                      </>
+                      <p className="mt-1 text-xl font-semibold text-indigo-800">
+                        {(stStxRedemptionInfo['redemption-fee-min']?.value / 100.0).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 6,
+                        })}%{" "}up to{" "}
+                        {(stStxRedemptionInfo['redemption-fee-max']?.value / 100.0).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 6,
+                        })}%
+                      </p>
                     )}
                   </div>
 
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
-                    <p className="text-xs font-semibold text-indigo-600 uppercase">APR</p>
+                    <p className="text-xs font-semibold text-indigo-600 uppercase">STX Redemptions min/max fee</p>
                     {isLoading ? (
                       <>
                         <Placeholder className="py-2" width={Placeholder.width.THIRD} />
                         <Placeholder className="py-2" width={Placeholder.width.FULL} />
                       </>
                     ) : (
+                      <p className="mt-1 text-xl font-semibold text-indigo-800">
+                        {(stxRedemptionInfo['redemption-fee-min']?.value / 100.0).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 6,
+                        })}%{" "}up to{" "}
+                        {(stxRedemptionInfo['redemption-fee-max']?.value / 100.0).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 6,
+                        })}%
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
+                    <p className="text-xs font-semibold text-indigo-600 uppercase">xBTC Redemptions min/max fee</p>
+                    {isLoading ? (
                       <>
-                        <p className="mt-1 text-xl font-semibold text-indigo-800">
-                          {dikoApr.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}%
-                        </p>
+                        <Placeholder className="py-2" width={Placeholder.width.THIRD} />
+                        <Placeholder className="py-2" width={Placeholder.width.FULL} />
                       </>
+                    ) : (
+                      <p className="mt-1 text-xl font-semibold text-indigo-800">
+                        {(xBtcRedemptionInfo['redemption-fee-min']?.value / 100.0).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 6,
+                        })}%{" "}up to{" "}
+                        {(xBtcRedemptionInfo['redemption-fee-max']?.value / 100.0).toLocaleString(undefined, {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 6,
+                        })}%
+                      </p>
                     )}
                   </div>
                 </div>
@@ -177,7 +198,7 @@ export const Redemptions: React.FC = () => {
             <section>
               <header className="pt-10 pb-5 border-b border-gray-200 dark:border-zinc-600 sm:flex sm:justify-between sm:items-end">
                 <div>
-                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">USDA pool</h3>
+                  <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Redeem least healthy vaults</h3>
                 </div>
               </header>
               <div className="mt-4">
@@ -299,7 +320,7 @@ export const Redemptions: React.FC = () => {
                                     type="button"
                                     className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                                     disabled={buttonStakeDisabled}
-                                    onClick={stake}
+                                    onClick={() => {}}
                                   >
                                     Add USDA to pool
                                   </button>
@@ -326,7 +347,7 @@ export const Redemptions: React.FC = () => {
                                     type="button"
                                     className="inline-flex justify-center px-4 py-2 mb-4 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                                     disabled={buttonUnstakeDisabled}
-                                    onClick={unstake}
+                                    onClick={() => {}}
                                   >
                                     Remove USDA from pool
                                   </button>
