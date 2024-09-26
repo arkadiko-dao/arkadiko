@@ -284,51 +284,6 @@ export const Redemptions: React.FC = () => {
                           </div>
                         </div>
 
-                        <dl className="mt-4 mb-6 space-y-2">
-                          <div className="flex justify-between">
-                            <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Status</dt>
-                            <dd className="flex text-xs font-semibold text-right text-gray-700/70">
-                              <span className={`flex items-center flex-grow text-gray-100 px-2 py-0.5 rounded-xl ${collateral.classes?.innerBg}`}>
-                                Closed
-                                <Tooltip
-                                  className="ml-2"
-                                  shouldWrapChildren={true}
-                                  label={`Vault closed. Click on Borrow to open a vault.`}
-                                >
-                                  <StyledIcon
-                                    as="InformationCircleIcon"
-                                    size={4}
-                                    className="block ml-2 text-gray-100"
-                                  />
-                                </Tooltip>
-                              </span>
-                            </dd>
-                          </div>
-                          <div className="flex justify-between">
-                            <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Liquidation ratio</dt>
-                            <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                              <span className="flex-grow">{collateral.liquidationRatio / 100}%</span>
-                            </dd>
-                          </div>
-                          <div className="flex justify-between">
-                            <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Current liquidity available</dt>
-                            <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                              <span className="flex-grow">${
-                                (collateral.liquidityAvailable / 1000000).toLocaleString(undefined, {
-                                  minimumFractionDigits: 0,
-                                  maximumFractionDigits: 0,
-                                })
-                              }</span>
-                            </dd>
-                          </div>
-                          <div className="flex justify-between">
-                            <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Stability Fee</dt>
-                            <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
-                              <span className="flex-grow">{collateral.stabilityFeeApy / 100}%</span>
-                            </dd>
-                          </div>
-                        </dl>
-
                         {state.userData ? (
                           <>
                             <RouterLink
@@ -336,9 +291,21 @@ export const Redemptions: React.FC = () => {
                               exact
                               className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                             >
-                              No liquidity available
+                              Redeem Vault
                               <StyledIcon
-                                as="InformationCircleIcon"
+                                as="ExclamationIcon"
+                                size={4}
+                              />
+                            </RouterLink>
+
+                            <RouterLink
+                              to={`vaults/${collateral.name === "STX" ? stxVault['owner'] : collateral.name === "xBTC" ? xBtcVault['owner'] : stStxVault['owner']}/${collateral['name']}`}
+                              exact
+                              className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                            >
+                              View Vault
+                              <StyledIcon
+                                as="ArrowRightIcon"
                                 size={4}
                               />
                             </RouterLink>
