@@ -69,7 +69,6 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
 
     const vault = collateralToRedeem === 'stSTX' ? stStxVault : collateralToRedeem === 'xBTC' ? xBtcVault : stxVault;
     const remainingDebt = Math.max((vault['debt'] + vault['stability-fee']) - redeemAmount, 0);
-    console.log(vault);
 
     const BASE_URL = process.env.HINT_API_URL;
     const collateralLeft = vault['collateral'] - (redeemAmount / prices[collateralToRedeem]);
