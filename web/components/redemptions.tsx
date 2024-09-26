@@ -48,17 +48,12 @@ export const Redemptions: React.FC = () => {
 
   // TODO: remove this
   const [isLoading, setIsLoading] = useState(true);
-  const [stakeAmount, setStakeAmount] = useState(0);
-  const [unstakeAmount, setUnstakeAmount] = useState(0);
-  const [userPooled, setUserPooled] = useState(0);
-  const [totalPooled, setTotalPooled] = useState(0);
-  const [dikoApr, setDikoApr] = useState(0);
-  const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
-  const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
-
   const [stxRedemptionInfo, setStxRedemptionInfo] = useState({});
   const [stStxRedemptionInfo, setStStxRedemptionInfo] = useState({});
   const [xBtcRedemptionInfo, setXBtcRedemptionInfo] = useState({});
+  const [stxVault, setStxVault] = useState({});
+  const [stStxVault, setStStxVault] = useState({});
+  const [xBtcVault, setxBtcVault] = useState({});
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -124,9 +119,37 @@ export const Redemptions: React.FC = () => {
       setCollateralItems(items);
     }
 
-    console.log(state.collateralTypes);
     if (!startedLoading && Object.keys(state?.collateralTypes).length >= 3) fetchData();
   }, [state.collateralTypes]);
+
+  useEffect(() => {
+    const fetchVaultsToRedeem = async () => {
+      console.log('fetchin vault...');
+      const url1 = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/list?token=SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token';
+      const url2 = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/list?token=SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token';
+      const url3 = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/list?token=SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin';
+
+      // stSTX
+      const response1 = await fetch(url1, { credentials: 'omit' });
+      const data1 = await response1.json();
+      console.log(data1[0]);
+      setStStxVault(data1[0]);
+
+      // wSTX
+      const response2 = await fetch(url2, { credentials: 'omit' });
+      const data2 = await response2.json();
+      console.log(data2[0]);
+      setStxVault(data2[0]);
+
+      // xBTC
+      const response3 = await fetch(url3, { credentials: 'omit' });
+      const data3 = await response3.json();
+      console.log(data3[0]);
+      setxBtcVault(data3[0]);
+    };
+
+    if (collateralItems.length >= 3) fetchVaultsToRedeem();
+  }, [collateralItems]);
 
   return (
     <>
@@ -230,10 +253,6 @@ export const Redemptions: React.FC = () => {
                             </div>
                             <div className="ml-4">
                               <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
-                              <Status
-                                type={Status.type.NEUTRAL}
-                                label='No open vault'
-                              />
                             </div>
                           </div>
                         </div>
