@@ -99,9 +99,16 @@ export const Liquidations: React.FC = () => {
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
-        FungibleConditionCode.Equal,
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))).value,
+        FungibleConditionCode.LessEqual,
+        uintCV(Number((parseFloat(stakeAmount) * 1000000 * 1.01).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
       ),
     ];
 
@@ -120,7 +127,7 @@ export const Liquidations: React.FC = () => {
           contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
         ])
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
@@ -141,6 +148,34 @@ export const Liquidations: React.FC = () => {
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'wstx-token', 'wstx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(stStxContractAddress, 'ststx-token', 'ststx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(xbtcContractAddress, 'Wrapped-Bitcoin', 'wrapped-bitcoin')
+      )
     ];
 
     await doContractCall({
@@ -158,7 +193,7 @@ export const Liquidations: React.FC = () => {
           contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
         ])
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
