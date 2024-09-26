@@ -58,7 +58,6 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
 
   const redeemVaultTransact = async () => {
     const amount = uintCV(Number((parseFloat(redeemAmount) * 1000000).toFixed(0)));
-    console.log(contractAddress, stStxVault);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
@@ -69,7 +68,6 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
     ];
 
     const vault = collateralToRedeem === 'stSTX' ? stStxVault : collateralToRedeem === 'xBTC' ? xBtcVault : stxVault;
-    console.log(vault);
     const remainingDebt = Math.max(vault.debt - redeemAmount, 0);
 
     const BASE_URL = process.env.HINT_API_URL;
