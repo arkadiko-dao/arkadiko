@@ -34,6 +34,7 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { collExtraInfo } from './collateral-card';
 import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
 import { StyledIcon } from './ui/styled-icon';
+import { RedeemVault } from '@components/redeem-vault';
 
 export const Redemptions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -46,7 +47,6 @@ export const Redemptions: React.FC = () => {
   const [state, setState] = useContext(AppContext);
   const [{ collateralTypes }, _x] = useContext(AppContext);
 
-  // TODO: remove this
   const [isLoading, setIsLoading] = useState(true);
   const [stxRedemptionInfo, setStxRedemptionInfo] = useState({});
   const [stStxRedemptionInfo, setStStxRedemptionInfo] = useState({});
@@ -54,6 +54,8 @@ export const Redemptions: React.FC = () => {
   const [stxVault, setStxVault] = useState({});
   const [stStxVault, setStStxVault] = useState({});
   const [xBtcVault, setxBtcVault] = useState({});
+  const [collateralToRedeem, setCollateralToRedeem] = useState('');
+  const [showRedeemModal, setShowRedeemModal] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -123,6 +125,18 @@ export const Redemptions: React.FC = () => {
 
   const redeemVault = async (collateralName: string) => {
     console.log('redeemVault', collateralName);
+    setCollateralToRedeem(collateralName);
+    setShowRedeemModal(true);
+    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-tokens-v1-1'),
+    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-data-v1-1'),
+    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-sorted-v1-1'),
+    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-active-v1-1'),
+    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-helpers-v1-1'),
+    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-3'),
+    // tx.standardPrincipalCV(''),
+    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wstx-token'),
+    // tx.uintCV(100000000),
+    // tx.noneCV()
   };
 
   useEffect(() => {
@@ -156,6 +170,15 @@ export const Redemptions: React.FC = () => {
         <title>Redemptions</title>
       </Helmet>
 
+      <RedeemVault
+        showRedeemModal={showRedeemModal}
+        setShowRedeemModal={setShowRedeemModal}
+        collateralToRedeem={collateralToRedeem}
+        stxVault={stxVault}
+        stStxVault={stStxVault}
+        xBtcVault={xBtcVault}
+      />
+
       {state.userData ? (
         <Container>
           <main className="relative flex-1 py-12">
@@ -166,6 +189,7 @@ export const Redemptions: React.FC = () => {
                   <h3 className="text-lg leading-6 text-gray-900 font-headings dark:text-zinc-50">Redemption Info</h3>
                 </div>
               </header>
+
               <div className="mt-4">
                 <div className="grid grid-cols-1 gap-5 mt-4 sm:grid-cols-3">
                   <div className="p-4 overflow-hidden border border-indigo-200 rounded-lg shadow-sm bg-indigo-50 dark:bg-indigo-200">
