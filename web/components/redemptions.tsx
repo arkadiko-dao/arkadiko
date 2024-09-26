@@ -91,7 +91,6 @@ export const Redemptions: React.FC = () => {
       setStartedLoading(true);
 
       const items = [];
-      console.log('GOT TYPES', collateralTypes);
       await asyncForEach(Object.keys(collateralTypes), async (tokenSymbol: string) => {
         // const tokenAddress = tokenSymbol === 'stSTX' ? stStxContractAddress : tokenSymbol === 'xBTC' ? xbtcContractAddress : contractAddress;
         // const tokenName = tokenSymbol === 'stSTX' ? 'ststx' : tokenSymbol === 'xBTC' ? 'Wrapped-Bitcoin' : 'wstx';
@@ -122,9 +121,12 @@ export const Redemptions: React.FC = () => {
     if (!startedLoading && Object.keys(state?.collateralTypes).length >= 3) fetchData();
   }, [state.collateralTypes]);
 
+  const redeemVault = async (collateralName: string) => {
+    console.log('redeemVault', collateralName);
+  };
+
   useEffect(() => {
     const fetchVaultsToRedeem = async () => {
-      console.log('fetchin vault...');
       const url1 = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/list?token=SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token';
       const url2 = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/list?token=SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token';
       const url3 = 'https://arkadiko-vaults-api-029bd7781bb7.herokuapp.com/api/list?token=SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin';
@@ -132,19 +134,16 @@ export const Redemptions: React.FC = () => {
       // stSTX
       const response1 = await fetch(url1, { credentials: 'omit' });
       const data1 = await response1.json();
-      console.log(data1[0]);
       setStStxVault(data1[0]);
 
       // wSTX
       const response2 = await fetch(url2, { credentials: 'omit' });
       const data2 = await response2.json();
-      console.log(data2[0]);
       setStxVault(data2[0]);
 
       // xBTC
       const response3 = await fetch(url3, { credentials: 'omit' });
       const data3 = await response3.json();
-      console.log(data3[0]);
       setxBtcVault(data3[0]);
     };
 
@@ -286,9 +285,8 @@ export const Redemptions: React.FC = () => {
 
                         {state.userData ? (
                           <>
-                            <RouterLink
-                              to='#'
-                              exact
+                            <button
+                              onClick={() => redeemVault(collateral.name)}
                               className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                             >
                               Redeem Vault
@@ -296,7 +294,7 @@ export const Redemptions: React.FC = () => {
                                 as="ExclamationIcon"
                                 size={4}
                               />
-                            </RouterLink>
+                            </button>
 
                             <RouterLink
                               to={`vaults/${collateral.name === "STX" ? stxVault['owner'] : collateral.name === "xBTC" ? xBtcVault['owner'] : stStxVault['owner']}/${collateral['name']}`}
