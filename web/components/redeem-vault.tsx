@@ -69,6 +69,7 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
 
     const vault = collateralToRedeem === 'stSTX' ? stStxVault : collateralToRedeem === 'xBTC' ? xBtcVault : stxVault;
     const remainingDebt = Math.max((vault['debt'] + vault['stability-fee']) - redeemAmount, 0);
+    console.log(vault);
 
     const BASE_URL = process.env.HINT_API_URL;
     const collateralLeft = vault['collateral'] - (redeemAmount / prices[collateralToRedeem]);
@@ -91,7 +92,7 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
         contractPrincipalCV(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-oracle-v2-3'),
         standardPrincipalCV(vault['owner']),
-        contractPrincipalCV(contractAddress, 'wstx-token'),
+        contractPrincipalCV(vault['token'].split('.')[0], vault['token'].split('.')[1]),
         amount,
         someCV(standardPrincipalCV(hint['prevOwner'])),
       ],
