@@ -261,88 +261,25 @@ export const Redemptions: React.FC = () => {
                           <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 ${collateral.classes?.iconColor} mr-6 shrink-0`} />
                           <div className="flex flex-col">
                             <p className={`text-sm font-semibold brightness-75 ${collateral.classes?.innerText}`}>
-                              With{' '}
-                              {collateral.name === "STX" ?
-                                  state.userData && state.balance["stx"] > 0 ?
-                                    `${microToReadable(state.balance["stx"]).toLocaleString(undefined, {
-                                      minimumFractionDigits: 0,
-                                      maximumFractionDigits: 0,
-                                    })}`
-                                  :
-                                  `2.000`
-                                :
-                                collateral.name === "stSTX" ?
-                                  state.userData && (parseFloat(state.balance["ststx"] !== '0')) ?
-                                    `${(parseFloat(state.balance["ststx"]) / 1000000).toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 6,
-                                    })}`
-                                  :
-                                  `2.000`
-                                :
-                                collateral.name === "xBTC" ?
-                                  state.userData && (parseFloat(state.balance["xbtc"] !== '0')) ?
-                                    `${(parseFloat(state.balance["xbtc"]) / 100000000).toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 6,
-                                    })}`
-                                  :
-                                  `1`
-                                :
-                                collateral.name === "auto-alex" ?
-                                  state.userData && state.balance["atalex"] > 0 ?
-                                    `${(parseFloat(state.balance["atalex"]) / 100000000).toLocaleString(undefined, {
-                                      minimumFractionDigits: 0,
-                                      maximumFractionDigits: 0,
-                                    })}`
-                                  :
-                                  `50.000`
-                                  : null
-                              }
-                              <span className="text-xs">
+                              Collateral{' '}
+                              <span className="truncate">
+                                {collateral.name === "STX" ? stxVault['collateral']
+                                : collateral.name === "stSTX" ? stStxVault['collateral']
+                                : collateral.name === "xBTC" ? xBtcVault['collateral']
+                                : null}
                                 {' '}{collateral.name}
                               </span>,</p>
                             <p className={`text-lg font-semibold ${collateral.classes?.innerText} brightness-50 dark:brightness-100`}>
-                              borrow up to {' '}
+                              has {' '}
 
-                              {collateral.name === "STX" ?
-                                state.userData && state.balance["stx"] > 0 ?
-                                  ((microToReadable(state.balance["stx"]) * 2.0) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                                    minimumFractionDigits: 0,
-                                    maximumFractionDigits: 0,
-                                  })
-                                :
-                                ((2000 * 2.0) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                                  minimumFractionDigits: 0,
-                                  maximumFractionDigits: 0,
-                                })
+                              {collateral.name === "STX" ? stxVault['debt']
                               :
-                              collateral.name === "xBTC" ?
-                                state.userData && (parseFloat(state.balance["xbtc"] !== '0.00')) ?
-                                  (((parseFloat(state.balance["xbtc"]) / 100000000) * 60000) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                                    minimumFractionDigits: 0,
-                                    maximumFractionDigits: 0,
-                                  })
-                                :
-                                ((1 * 60000) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                                  minimumFractionDigits: 0,
-                                  maximumFractionDigits: 0,
-                                })
+                              collateral.name === "xBTC" ? stStxVault['debt']
                               :
-                              collateral.name === "stSTX" ?
-                                state.userData && (parseFloat(state.balance["ststx"] !== '0.00')) ?
-                                  (((parseFloat(state.balance["ststx"]) / 1000000) * 2.1) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                                    minimumFractionDigits: 0,
-                                    maximumFractionDigits: 0,
-                                  })
-                                :
-                                ((2000 * 2.1) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
-                                  minimumFractionDigits: 0,
-                                  maximumFractionDigits: 0,
-                                })
+                              collateral.name === "stSTX" ? xBtcVault['debt']
                               : null}
 
-                              <span className="text-sm"> USDA</span>
+                              <span className="text-sm"> USDA debt</span>
                             </p>
                           </div>
                         </div>
