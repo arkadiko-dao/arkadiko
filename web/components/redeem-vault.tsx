@@ -7,10 +7,13 @@ import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,
   contractPrincipalCV,
+  standardPrincipalCV,
   uintCV,
   createAssetInfo,
   FungibleConditionCode,
   makeStandardFungiblePostCondition,
+  noneCV,
+  someCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -32,17 +35,17 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
   const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const stakeMaxAmount = () => {
+  const redeemMaxAmount = () => {
     setRedeemAmount((state.balance['usda'] / 1000000).toString());
   };
 
-  const onInputStakeChange = (event: any) => {
+  const onInputRedeemChange = (event: any) => {
     const value = event.target.value;
-    // trying to stake
+    // trying to redeem
     if (value > state.balance['usda'] / 1000000) {
       if (errors.length < 1) {
         setErrors(
-          errors.concat([`You cannot stake more than ${state.balance['usda'] / 1000000} USDA`])
+          errors.concat([`You cannot redeem more than ${state.balance['usda'] / 1000000} USDA`])
         );
       }
       setIsRedeemButtonDisabled(true);
@@ -55,6 +58,7 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
 
   const redeemVaultTransact = async () => {
     const amount = uintCV(Number((parseFloat(redeemAmount) * 1000000).toFixed(0)));
+    console.log(contractAddress, stStxVault);
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
@@ -63,17 +67,34 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
     ];
+
+    const vault = collateralToRedeem === 'stSTX' ? stStxVault : collateralToRedeem === 'xBTC' ? xBtcVault : stxVault;
+    console.log(vault);
+    const remainingDebt = Math.max(vault.debt - redeemAmount, 0);
+
+    const BASE_URL = process.env.HINT_API_URL;
+    const url = BASE_URL + `?owner=${vault['owner']}&token=${vault['token']}&collateral=${vault['collateral']}&debt=${remainingDebt}`;
+    const response = await fetch(url);
+    const hint = await response.json();
+    console.log('got hint:', hint);
+
     await doContractCall({
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake',
+      contractName: 'arkadiko-vaults-manager-v1-1',
+      functionName: 'redeem-vault',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-data-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-sorted-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
+        contractPrincipalCV(contractAddress, 'arkadiko-oracle-v2-3'),
+        standardPrincipalCV(stStxVault['owner']),
+        contractPrincipalCV(contractAddress, 'wstx-token'),
         amount,
+        someCV(standardPrincipalCV(hint['prevOwner'])),
       ],
       postConditions,
       onFinish: data => {
@@ -93,9 +114,9 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
     <Modal
       open={showRedeemModal}
       title="Redeem Vault"
-      icon={<img className="w-10 h-10 rounded-full" src={tokenList[3].logo} alt="" />}
+      icon={<img className="w-10 h-10 rounded-full" src={tokenList[0].logo} alt="" />}
       closeModal={() => setShowRedeemModal(false)}
-      buttonText="Stake"
+      buttonText="Redeem"
       buttonAction={() => redeemVaultTransact()}
       buttonDisabled={isRedeemButtonDisabled || errors.length > 0}
       initialFocus={inputRef}
@@ -113,17 +134,17 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
       </p>
       <div className="mt-6">
         <InputAmount
-          balance={microToReadable(state.balance['diko']).toLocaleString(undefined, {
+          balance={microToReadable(state.balance['usda']).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
           })}
-          token="DIKO"
-          inputName="stakeDiko"
+          token="USDA"
+          inputName="redeemVault"
           inputId="redeemAmount"
           inputValue={redeemAmount}
-          inputLabel="Stake DIKO"
-          onInputChange={onInputStakeChange}
-          onClickMax={stakeMaxAmount}
+          inputLabel="Redeem USDA"
+          onInputChange={onInputRedeemChange}
+          onClickMax={redeemMaxAmount}
           ref={inputRef}
         />
       </div>

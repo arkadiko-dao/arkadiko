@@ -124,19 +124,8 @@ export const Redemptions: React.FC = () => {
   }, [state.collateralTypes]);
 
   const redeemVault = async (collateralName: string) => {
-    console.log('redeemVault', collateralName);
     setCollateralToRedeem(collateralName);
     setShowRedeemModal(true);
-    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-tokens-v1-1'),
-    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-data-v1-1'),
-    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-sorted-v1-1'),
-    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-active-v1-1'),
-    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-helpers-v1-1'),
-    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-3'),
-    // tx.standardPrincipalCV(''),
-    // tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wstx-token'),
-    // tx.uintCV(100000000),
-    // tx.noneCV()
   };
 
   useEffect(() => {
