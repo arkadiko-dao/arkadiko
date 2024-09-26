@@ -91,7 +91,7 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
         contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
         contractPrincipalCV(contractAddress, 'arkadiko-oracle-v2-3'),
-        standardPrincipalCV(stStxVault['owner']),
+        standardPrincipalCV(vault['owner']),
         contractPrincipalCV(contractAddress, 'wstx-token'),
         amount,
         someCV(standardPrincipalCV(hint['prevOwner'])),
