@@ -33,40 +33,44 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
+  const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+
   const [state, setState] = useContext(AppContext);
 
   const claim = async () => {
     var contract = 'arkadiko-vaults-pool-liq-v1-2';
 
-    const postConditions = [];
-    if (tokenIsStx) {
-      // PC
-      postConditions.push(
-        makeContractSTXPostCondition(
-          contractAddress,
-          contract,
-          FungibleConditionCode.Equal,
-          uintCV(claimable).value,
-        )
+    const postConditions = [
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'wstx-token', 'wstx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(stStxContractAddress, 'ststx-token', 'ststx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(xbtcContractAddress, 'Wrapped-Bitcoin', 'wrapped-bitcoin')
       )
-    } else {
-      // FT name
-      const tokenTraitsKey = Object.keys(tokenTraits).filter((key) => 
-        (tokenTraits[key].address == token.split('.')[0] && tokenTraits[key].swap == token.split('.')[1])
-      );
-      const tokenName = tokenTraits[tokenTraitsKey].ft;
-
-      // PC
-      postConditions.push(
-        makeContractFungiblePostCondition(
-          contractAddress,
-          contract,
-          FungibleConditionCode.Equal,
-          uintCV(claimable).value,
-          createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
-        )
-      )
-    }
+    ];
 
     // Call
     await doContractCall({
@@ -78,7 +82,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       functionArgs: [
         contractPrincipalCV(token.split('.')[0], token.split('.')[1])
       ],
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
