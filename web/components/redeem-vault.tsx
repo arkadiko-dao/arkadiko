@@ -25,7 +25,7 @@ interface Props {
   setShowRedeemModal: (arg: boolean) => void;
 }
 
-export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemModal, collateralToRedeem, stxVault, stStxVault, xBtcVault }) => {
+export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemModal, collateralToRedeem, prices, stxVault, stStxVault, xBtcVault }) => {
   const [state, setState] = useContext(AppContext);
   const [errors, setErrors] = useState<string[]>([]);
   const [redeemAmount, setRedeemAmount] = useState('');
@@ -71,7 +71,8 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
     const remainingDebt = Math.max((vault['debt'] + vault['stability-fee']) - redeemAmount, 0);
 
     const BASE_URL = process.env.HINT_API_URL;
-    const url = BASE_URL + `?owner=${vault['owner']}&token=${vault['token']}&collateral=${vault['collateral']}&debt=${remainingDebt}`;
+    const collateralLeft = vault['collateral'] - (redeemAmount / prices[collateralToRedeem]);
+    const url = BASE_URL + `?owner=${vault['owner']}&token=${vault['token']}&collateral=${collateralLeft}&debt=${remainingDebt}`;
     const response = await fetch(url);
     const hint = await response.json();
     console.log('got hint:', hint);

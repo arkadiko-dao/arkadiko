@@ -6,24 +6,11 @@ import { Container } from './home';
 import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
 import {
-  AnchorMode,
   callReadOnlyFunction,
   cvToJSON,
-  uintCV,
-  contractPrincipalCV,
-  standardPrincipalCV,
-  makeStandardFungiblePostCondition,
-  makeContractFungiblePostCondition,
-  FungibleConditionCode,
-  createAssetInfo,
-  listCV
+  contractPrincipalCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { microToReadable } from '@common/vault-utils';
-import { InputAmount } from './input-amount';
-import { getRPCClient } from '@common/utils';
-import { CashIcon } from '@heroicons/react/outline';
-import { EmptyState } from './ui/empty-state';
 import { Placeholder } from "./ui/placeholder";
 import { LiquidationRewardProps, LiquidationReward } from './liquidations-reward';
 import { Tooltip } from '@blockstack/ui';
@@ -35,6 +22,7 @@ import { collExtraInfo } from './collateral-card';
 import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
 import { StyledIcon } from './ui/styled-icon';
 import { RedeemVault } from '@components/redeem-vault';
+import { getPrice } from '@common/get-price';
 
 export const Redemptions: React.FC = () => {
   const { doContractCall } = useConnect();
@@ -56,9 +44,31 @@ export const Redemptions: React.FC = () => {
   const [xBtcVault, setxBtcVault] = useState({});
   const [collateralToRedeem, setCollateralToRedeem] = useState('');
   const [showRedeemModal, setShowRedeemModal] = useState(false);
+  const [prices, setPrices] = useState({});
 
   useEffect(() => {
+    const fetchPrices = async () => {
+      // Fetch info
+      const [
+        stxPrice,
+        btcPrice,
+        atAlexPrice,
+        stStxPrice
+      ] = await Promise.all([
+        getPrice("STX"),
+        getPrice("xBTC"),
+        getPrice("stSTX")
+      ]);
+
+      setPrices({
+        'STX': stxPrice / 1000000,
+        'xBTC': btcPrice / 1000000,
+        'stSTX': stStxPrice / 1000000
+      });
+    };
+
     const fetchAll = async () => {
+      const prices = await fetchPrices();
       const stxInfo = await fetchInfo(contractAddress, 'wstx-token');
       const stStxInfo = await fetchInfo(stStxContractAddress, 'ststx-token');
       const xBtcInfo = await fetchInfo(xbtcContractAddress, 'Wrapped-Bitcoin');
@@ -163,6 +173,7 @@ export const Redemptions: React.FC = () => {
         showRedeemModal={showRedeemModal}
         setShowRedeemModal={setShowRedeemModal}
         collateralToRedeem={collateralToRedeem}
+        prices={prices}
         stxVault={stxVault}
         stStxVault={stStxVault}
         xBtcVault={xBtcVault}
