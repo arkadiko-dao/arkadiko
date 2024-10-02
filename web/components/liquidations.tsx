@@ -341,7 +341,7 @@ export const Liquidations: React.FC = () => {
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
 
-      const dikoPerYear = 612500000; // 10% of all emissions
+      const dikoPerYear = 235000000; // 10% of all emissions
       setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100000.0);
       setIsLoading(false);
     };
