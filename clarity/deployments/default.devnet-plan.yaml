@@ -581,10 +581,10 @@ plan:
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
-            contract-name: arkadiko-vaults-manager-v1-1
+            contract-name: arkadiko-vaults-manager-v1-2
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             cost: 125560
-            path: contracts/vaults-v2/arkadiko-vaults-manager-v1-1.clar
+            path: contracts/vaults-v2/arkadiko-vaults-manager-v1-2.clar
             anchor-block-only: true
             clarity-version: 2
         - contract-publish:
