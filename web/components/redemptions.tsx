@@ -297,9 +297,9 @@ export const Redemptions: React.FC = () => {
 
                               {collateral.name === "STX" ? stxVault['debt']
                               :
-                              collateral.name === "xBTC" ? stStxVault['debt']
+                              collateral.name === "xBTC" ? xBtcVault['debt']
                               :
-                              collateral.name === "stSTX" ? xBtcVault['debt']
+                              collateral.name === "stSTX" ? stStxVault['debt']
                               : null}
 
                               <span className="text-sm"> USDA debt</span>
