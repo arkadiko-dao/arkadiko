@@ -48,7 +48,7 @@ export const Liquidations: React.FC = () => {
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [userPooled, setUserPooled] = useState(0);
   const [totalPooled, setTotalPooled] = useState(0);
-  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(612500000000);
+  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(117500000000);
   const [dikoApr, setDikoApr] = useState(0);
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
@@ -341,7 +341,7 @@ export const Liquidations: React.FC = () => {
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
 
-      const dikoPerYear = 235000000; // 10% of all emissions
+      const dikoPerYear = 117500000; // 4% of all emissions
       setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100000.0);
       setIsLoading(false);
     };

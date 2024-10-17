@@ -461,7 +461,7 @@ export const Stake = () => {
         return;
       }
 
-      const totalStakingRewardsYear1 = 5875000;
+      const totalStakingRewardsYear1 = 2937500;
       const dikoPoolRewards = totalStakingRewardsYear1 * 0.16;
       const dikoApr = dikoPoolRewards / totalDikoStaked;
       setApy(Number((100 * dikoApr).toFixed(2)));
@@ -629,7 +629,7 @@ export const Stake = () => {
       setTotalPooledUsda(totalPooledUsda);
       setUserPooledUsda(userPooledUsda);
 
-      const dikoPerYear = totalStakingRewardsYear1 * 1000 * 0.04; // 4 % of all emissions, 235K DIKO
+      const dikoPerYear = totalStakingRewardsYear1 * 1000 * 0.04; // 4 % of all emissions, 117.5K DIKO
       setPooledUsdaDikoApr((dikoPerYear * dikoPrice / 1000000) / totalPooledUsda * 100000.0);
 
       setLoadingData(false);
