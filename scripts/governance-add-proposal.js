@@ -22,7 +22,7 @@ async function transact() {
           'name': tx.stringAsciiCV("aip-25-diko-emissions"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
           'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-25-arkadiko-governance-emissions"),
-          'can-mint': tx.ƒalseCV(),
+          'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
       ])
