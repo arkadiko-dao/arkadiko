@@ -16,14 +16,14 @@ async function transact() {
       tx.uintCV(867270),
       tx.uintCV(1008),
       tx.stringUtf8CV('AIP 25 - Update DIKO Emissions'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/588'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/599'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("stake-pool-diko"),
+          'name': tx.stringAsciiCV("aip-25-diko-emissions"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stake-pool-diko-v2-1"),
-          'can-mint': tx.trueCV(),
-          'can-burn': tx.trueCV()
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-25-arkadiko-governance-emissions"),
+          'can-mint': tx.ƒalseCV(),
+          'can-burn': tx.falseCV()
         }),
       ])
     ],
