@@ -12,10 +12,10 @@ async function transact() {
     contractName: 'arkadiko-governance-v4-3',
     functionName: 'propose',
     functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v1-4'),
-      tx.uintCV(845775),
-      tx.uintCV(720),
-      tx.stringUtf8CV('AIP 19 - Remove Unstaking Cooldown'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
+      tx.uintCV(867270),
+      tx.uintCV(1008),
+      tx.stringUtf8CV('AIP 25 - Update DIKO Emissions'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/588'),
       tx.listCV([
         tx.tupleCV({
