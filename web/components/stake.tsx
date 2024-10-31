@@ -629,7 +629,7 @@ export const Stake = () => {
       setTotalPooledUsda(totalPooledUsda);
       setUserPooledUsda(userPooledUsda);
 
-      const dikoPerYear = totalStakingRewardsYear1 * 1000 * 0.04; // 4 % of all emissions, 117.5K DIKO
+      const dikoPerYear = totalStakingRewardsYear1 * 1000 * 0; // 0 % of all emissions
       setPooledUsdaDikoApr((dikoPerYear * dikoPrice / 1000000) / totalPooledUsda * 100000.0);
 
       setLoadingData(false);
