@@ -14,6 +14,7 @@ import {
   standardPrincipalCV,
   makeStandardFungiblePostCondition,
   makeContractFungiblePostCondition,
+  makeContractSTXPostCondition,
   FungibleConditionCode,
   createAssetInfo,
   listCV
@@ -175,7 +176,13 @@ export const Liquidations: React.FC = () => {
         FungibleConditionCode.GreaterEqual,
         0,
         createAssetInfo(xbtcContractAddress, 'Wrapped-Bitcoin', 'wrapped-bitcoin')
-      )
+      ),
+      makeContractSTXPostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0
+      ),
     ];
 
     await doContractCall({
