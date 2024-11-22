@@ -83,6 +83,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
         contractPrincipalCV(token.split('.')[0], token.split('.')[1])
       ],
       postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
