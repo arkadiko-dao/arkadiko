@@ -201,6 +201,7 @@ export const Liquidations: React.FC = () => {
         ])
       ],
       postConditions,
+      postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
           ...prevState,
