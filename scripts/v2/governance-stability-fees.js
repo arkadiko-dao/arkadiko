@@ -12,15 +12,15 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
-      tx.uintCV(843680),
+      tx.uintCV(872050),
       tx.uintCV(720),
-      tx.stringUtf8CV('AIP 21b - Stability Fee Decrease'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/590'),
+      tx.stringUtf8CV('AIP 26 - Arkadiko buybacks'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/600'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("aip-21-b-stability-fees"),
+          'name': tx.stringAsciiCV("aip-26-diko-buybacks"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-21-stability-fees"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-26-arkadiko-buybacks"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
