@@ -14,7 +14,7 @@ async function transact() {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
       tx.uintCV(843680),
       tx.uintCV(720),
-      tx.stringUtf8CV('AIP 21b - Stability Fee Decrease'),
+      tx.stringUtf8CV('AIP 26 - Arkadiko buybacks'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/590'),
       tx.listCV([
         tx.tupleCV({
