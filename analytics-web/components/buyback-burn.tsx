@@ -67,7 +67,7 @@ export const BuyBackBurn: React.FC = () => {
 
       <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600 lg:hidden">
         <div className="bg-white dark:bg-zinc-800">
-          <div className="mx-auto bg-white dark:bg-zinc-800 sm:py-6 max-w-7xl">
+          <div className="mx-auto bg-white dark:bg-zinc-800 max-w-7xl">
             <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
               <section className="py-2" key={1}>
                 <table className="w-full">
@@ -137,6 +137,14 @@ export const BuyBackBurn: React.FC = () => {
                     </tr>
                   </tbody>
                 </table>
+              </section>
+              <section className="py-2 text-center">
+                <button
+                  className="inline-flex items-center justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  type="button"
+                >
+                  Expand
+                </button>
               </section>
             </div>
           </div>
@@ -221,6 +229,18 @@ export const BuyBackBurn: React.FC = () => {
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                       999,535,31{' '}
                       <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={4}>
+                      <div className="text-center">
+                        <button
+                          className="inline-flex items-center justify-center px-4 py-2 my-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                          type="button"
+                        >
+                          Expand
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
