@@ -16,7 +16,7 @@ export const BuyBackBurn: React.FC = () => {
         <div className="bg-white dark:bg-zinc-800">
           <div className="mx-auto bg-white dark:bg-zinc-800 max-w-7xl">
             <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
-              <section className="py-2" key={1}>
+              <section className="py-2">
                 <table className="w-full">
                   <thead>
                     <tr>
@@ -36,7 +36,7 @@ export const BuyBackBurn: React.FC = () => {
                       >
                         <div className="flex items-center">Time</div>
                       </th>
-                      <td className="pt-3 pb-2 pr-4">
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
                         <a
                           href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
                           target="_blank"
@@ -53,7 +53,7 @@ export const BuyBackBurn: React.FC = () => {
                       >
                         <div className="flex items-center">DIKO Burnt</div>
                       </th>
-                      <td className="pt-3 pb-2 pr-4">
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
                         46,148{' '}
                         <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                       </td>
@@ -65,7 +65,7 @@ export const BuyBackBurn: React.FC = () => {
                       >
                         <div className="flex items-center">Cumulative DIKO Burnt</div>
                       </th>
-                      <td className="pt-3 pb-2 pr-4">
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
                         92,617{' '}
                         <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                       </td>
@@ -77,7 +77,7 @@ export const BuyBackBurn: React.FC = () => {
                       >
                         <div className="flex items-center">Total Supply</div>
                       </th>
-                      <td className="pt-3 pb-2 pr-4">
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
                         99,073,83{' '}
                         <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                       </td>
@@ -85,14 +85,85 @@ export const BuyBackBurn: React.FC = () => {
                   </tbody>
                 </table>
               </section>
-              <section className="py-2 text-center">
-                <button
-                  className="inline-flex items-center justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                  type="button"
-                >
-                  Expand
-                </button>
+              <section className="py-2">
+                <table className="w-full">
+                  <thead>
+                    <tr>
+                      <th className="sr-only" scope="col">
+                        Data Type
+                      </th>
+                      <th className="sr-only" scope="col">
+                        Amount
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">Time</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        <a
+                          href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
+                          target="_blank"
+                          className="text-right text-indigo-500 underline"
+                        >
+                          December 9th, 2024
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">DIKO Burnt</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        46,469{' '}
+                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">Cumulative DIKO Burnt</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        46,469{' '}
+                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">Total Supply</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        99,895,531{' '}
+                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </section>
+              {false && (
+                <section className="py-2 text-center">
+                  <button
+                    className="inline-flex items-center justify-center px-4 py-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    type="button"
+                  >
+                    Expand
+                  </button>
+                </section>
+              )}
             </div>
           </div>
         </div>
@@ -132,7 +203,7 @@ export const BuyBackBurn: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  <tr key={1} className="bg-white">
+                  <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                       <a
                         href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
@@ -155,7 +226,7 @@ export const BuyBackBurn: React.FC = () => {
                       <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                     </td>
                   </tr>
-                  <tr key={1} className="bg-white">
+                  <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                       <a
                         href="https://explorer.hiro.so/txid/0xa81cf5629c32831de2ebcba39d7df1f0d8cd40247b6479c19f86b84e37c3462d?chain=mainnet"
