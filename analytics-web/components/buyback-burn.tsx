@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
-import { stacksNetwork as network } from '@common/utils';
-import { Placeholder } from '../../web/components/ui/placeholder';
+import React from 'react';
 import { tokenList } from '../../web/components/token-swap-list';
 
 export const BuyBackBurn: React.FC = () => {
