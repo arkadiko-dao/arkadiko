@@ -5,56 +5,6 @@ import { Placeholder } from '../../web/components/ui/placeholder';
 import { tokenList } from '../../web/components/token-swap-list';
 
 export const BuyBackBurn: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [dikoTotalSupply, setDikoTotalSupply] = useState(0);
-  const [dikoFloat, setDikoFloat] = useState(0);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
-      const supplyCall = await callReadOnlyFunction({
-        contractAddress,
-        contractName: 'arkadiko-token',
-        functionName: 'get-total-supply',
-        functionArgs: [],
-        senderAddress: contractAddress,
-        network: network,
-      });
-      const json = cvToJSON(supplyCall);
-
-      const totalSupply = Number(json.value.value) / 1000000;
-      const investorTokens = 6482362 + 600000 + 200000 + 600000 + 600000;
-      const mmTokens = 0;
-      const foundationTokens = 29000000 - investorTokens - 5800000;
-      const teamTokens = 21000000 - 30 * 475000;
-      const lockedTokens = foundationTokens + teamTokens;
-      const emissionTokens = totalSupply - lockedTokens;
-      const burnedTokens = 58000;
-
-      setIsLoading(false);
-      setDikoTotalSupply(100000000);
-      const float = investorTokens + emissionTokens + mmTokens - burnedTokens;
-      setDikoFloat(float);
-    };
-
-    fetchData();
-  });
-
-  const tokens = [
-    {
-      name: 'DIKO',
-      logo: tokenList[1].logo,
-      totalSupply: dikoTotalSupply.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 6,
-      }),
-      float: dikoFloat.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 6,
-      }),
-    },
-  ];
-
   return (
     <section className="mt-8">
       <header className="pb-5 border-b border-gray-200 sm:flex sm:justify-between sm:items-end">
@@ -95,7 +45,7 @@ export const BuyBackBurn: React.FC = () => {
                           target="_blank"
                           className="text-right text-indigo-500 underline"
                         >
-                          10:49:30 AM 12/17/2024
+                          December 17th, 2024
                         </a>
                       </td>
                     </tr>
@@ -131,7 +81,7 @@ export const BuyBackBurn: React.FC = () => {
                         <div className="flex items-center">Total Supply</div>
                       </th>
                       <td className="pt-3 pb-2 pr-4">
-                        999,073,83{' '}
+                        99,073,83{' '}
                         <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                       </td>
                     </tr>
@@ -192,7 +142,7 @@ export const BuyBackBurn: React.FC = () => {
                         target="_blank"
                         className="text-indigo-500 underline"
                       >
-                        10:49:30 AM 12/17/2024
+                        December 17th, 2024
                       </a>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
@@ -204,7 +154,7 @@ export const BuyBackBurn: React.FC = () => {
                       <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      999,073,83{' '}
+                      99,849,383{' '}
                       <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                     </td>
                   </tr>
@@ -215,7 +165,7 @@ export const BuyBackBurn: React.FC = () => {
                         target="_blank"
                         className="text-indigo-500 underline"
                       >
-                        9:15:49 AM 12/9/2024
+                        December 9th, 2024
                       </a>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
@@ -227,22 +177,24 @@ export const BuyBackBurn: React.FC = () => {
                       <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      999,535,31{' '}
+                      99,895,531{' '}
                       <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
                     </td>
                   </tr>
-                  <tr>
-                    <td colSpan={4}>
-                      <div className="text-center">
-                        <button
-                          className="inline-flex items-center justify-center px-4 py-2 my-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-                          type="button"
-                        >
-                          Expand
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  {false && (
+                    <tr>
+                      <td colSpan={4}>
+                        <div className="text-center">
+                          <button
+                            className="inline-flex items-center justify-center px-4 py-2 my-2 text-base font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+                            type="button"
+                          >
+                            Expand
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
