@@ -195,15 +195,17 @@ export const App: React.FC = () => {
       });
       const json = cvToJSON(types.value);
       console.log('Got collateral type with:', json);
-      collTypes[json.value['token-name'].value] = {
-        name: json.value['token-name'].value,
-        collateralToDebtRatio: json.value['liquidation-ratio'].value,
-        liquidationPenalty: json.value['liquidation-penalty'].value / 100,
-        liquidationRatio: json.value['liquidation-ratio'].value,
-        maximumDebt: json.value['max-debt'].value,
-        stabilityFee: json.value['stability-fee'].value,
-        stabilityFeeApy: json.value['stability-fee'].value
-      };
+      if (json.value['token-name']) {
+        collTypes[json.value['token-name'].value] = {
+          name: json.value['token-name'].value,
+          collateralToDebtRatio: json.value['liquidation-ratio'].value,
+          liquidationPenalty: json.value['liquidation-penalty'].value / 100,
+          liquidationRatio: json.value['liquidation-ratio'].value,
+          maximumDebt: json.value['max-debt'].value,
+          stabilityFee: json.value['stability-fee'].value,
+          stabilityFeeApy: json.value['stability-fee'].value
+        };
+      }
       setState(prevState => ({
         ...prevState,
         collateralTypes: { ...collTypes },

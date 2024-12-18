@@ -27,7 +27,7 @@ export const Admin = () => {
       functionArgs: [
         contractPrincipalCV('SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR', 'Wrapped-Bitcoin'),
         stringAsciiCV('xBTC'),
-        uintCV(300000 * 1000000),
+        uintCV(0 * 1000000),
         uintCV(500000000),
         uintCV(900),
         uintCV(14000),
