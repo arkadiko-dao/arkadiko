@@ -21,7 +21,7 @@ export const StakeUsdaSection = ({
               USDA
             </h3>
             <p className="max-w-3xl mt-2 text-sm text-gray-500 dark:text-zinc-400">
-              The Liquidation Pool is an <span className="font-semibold">automated</span> mechanism that purchases Vault collateral in auctions at a discount. You will <span className="font-semibold">earn DIKO rewards for providing USDA</span> liquidity to the pool. Note that your USDA is converted when auctions are executed, resulting in buying collateral <span className="font-semibold">10% below market prices</span>.
+              The Liquidation Pool is an <span className="font-semibold">automated</span> mechanism that purchases Vault collateral in auctions at a discount. Note that your USDA is converted when liquidations are executed, resulting in buying collateral <span className="font-semibold">10% below market prices</span>.
             </p>
           </div>
           <div className="flex items-center mt-2 sm:mt-0">

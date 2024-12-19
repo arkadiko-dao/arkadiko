@@ -42,6 +42,7 @@ export const Liquidations: React.FC = () => {
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
   const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+  const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,7 +126,8 @@ export const Liquidations: React.FC = () => {
         listCV([
           contractPrincipalCV(contractAddress, 'wstx-token'),
           contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          contractPrincipalCV(sbtcContractAddress, 'sbtc-token')
         ])
       ],
       postConditions,
@@ -198,7 +200,8 @@ export const Liquidations: React.FC = () => {
         listCV([
           contractPrincipalCV(contractAddress, 'wstx-token'),
           contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          contractPrincipalCV(sbtcContractAddress, 'sbtc-token')
         ])
       ],
       postConditions: [],
