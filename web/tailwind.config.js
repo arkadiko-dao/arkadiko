@@ -26,7 +26,7 @@ module.exports = {
         'xBTC': '#F7931A',
         'atAlex': '#A714FD',
         'stSTX': '#318d8b',
-        'sBTC': '#F7931A'
+        'sBTC': '#ff5512'
       }
     },
   },
