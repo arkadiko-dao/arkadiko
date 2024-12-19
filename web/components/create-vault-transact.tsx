@@ -28,6 +28,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const callCollateralizeAndMint = async () => {
     const decimals = coinAmounts['token-name'].toLowerCase().includes('stx') ? 1000000 : 100000000;
@@ -115,6 +116,19 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
             stStxContractAddress,
             'ststx-token',
             'ststx'
+          )
+        ),
+      ];
+    } else if (coinAmounts['token-name'].toLowerCase() === 'sbtc') {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          address || '',
+          FungibleConditionCode.LessEqual,
+          amount.value,
+          createAssetInfo(
+            sbtcContractAddress,
+            'sbtc-token',
+            'sbtc-token'
           )
         ),
       ];

@@ -27,12 +27,12 @@ export const Balances = () => {
       </span>
       <span className="block text-sm sm:mt-0 sm:inline-block">
         <span className="font-semibold">
-          {(parseFloat(state.balance['xbtc']) / 100000000).toLocaleString(undefined, {
+          {microToReadable(state.balance['sbtc'] / 100).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 6,
           })}
         </span>{' '}
-        <span className="opacity-75">xBTC</span>
+        <span className="opacity-75">sBTC</span>
       </span>
       <span className="block text-sm sm:mt-0 sm:inline-block">
         <span className="font-semibold">

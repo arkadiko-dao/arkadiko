@@ -36,6 +36,8 @@ const tokenToName = (token: string) => {
     return 'atALEXv2';
   } else if (token === 'ststx-token') {
     return 'stSTX';
+  } else if (token === 'sbtc-token') {
+    return 'sBTC';
   } else {
     return '';
   }

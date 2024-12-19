@@ -35,6 +35,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+  const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const [state, setState] = useContext(AppContext);
 
@@ -62,6 +63,13 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
         FungibleConditionCode.GreaterEqual,
         0,
         createAssetInfo(stStxContractAddress, 'ststx-token', 'ststx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(sbtcContractAddress, 'sbtc-token', 'sbtc-token')
       ),
       makeContractFungiblePostCondition(
         contractAddress,

@@ -43,6 +43,16 @@ export const CreateVaultStepOne: React.FC<VaultProps> = ({ setStep }) => {
             </RouterLink>
 
             <RouterLink
+              to={'/vaults/new?token=sbtc'}
+              onClick={() => setStep(1)}
+              exact
+              className="border border-transparent w-1/2 p-6 mr-6 text-lg font-semibold text-center text-gray-500 dark:text-zinc-300 bg-white dark:bg-zinc-700 rounded-md shadow md:w-1/6 hover:bg-white/80"
+            >
+              <img className="w-10 h-10 mx-auto mb-3 rounded-full" src={tokenList[11].logo} alt="" />
+              sBTC
+            </RouterLink>
+
+            <RouterLink
               to={'/vaults/new?token=stx'}
               onClick={() => setStep(1)}
               exact
