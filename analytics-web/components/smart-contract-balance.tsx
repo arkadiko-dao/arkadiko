@@ -11,6 +11,7 @@ export const SmartContractBalance = ({ address, description, name }) => {
   const [xBtcBalance, setXbtcBalance] = useState(0.0);
   const [atAlexBalance, setAtAlexBalance] = useState(0.0);
   const [stStxBalance, setStStxBalance] = useState(0.0);
+  const [sBtcBalance, setSbtcBalance] = useState(0.0);
 
   const [stDikoBalance, setStDikoBalance] = useState(0.0);
   const [wstxDikoBalance, setWstxDikoBalance] = useState(0.0);
@@ -121,6 +122,13 @@ export const SmartContractBalance = ({ address, description, name }) => {
         setXbtcBalance(0.0);
       }
 
+      const sbtcBalance = data.fungible_tokens[`SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token`];
+      if (sbtcBalance) {
+        setSbtcBalance(sBtcBalance.balance / 100000000);
+      } else {
+        setSbtcBalance(0.0);
+      }
+
       const xbtcUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
       if (xbtcUsdaBalance) {
         setXbtcUsdaBalance(xbtcUsdaBalance.balance / 1000000);
@@ -173,6 +181,15 @@ export const SmartContractBalance = ({ address, description, name }) => {
                 maximumFractionDigits: 6,
               })}{' '}
               <span className="text-sm font-normal">stSTX</span>
+            </p>
+          ) : null}
+          {sBtcBalance ? (
+            <p className="text-lg font-semibold text-gray-800">
+              {sBtcBalance.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+              })}{' '}
+              <span className="text-sm font-normal">sBTC</span>
             </p>
           ) : null}
           {dikoBalance ? (
