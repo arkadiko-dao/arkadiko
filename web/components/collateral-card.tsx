@@ -276,7 +276,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
           </table>
         </div>
       ) : (
-        <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-4">
+        <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-3">
           {collateralItems.length > 0 && !isLoading && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
             <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
               <div className="flex flex-col flex-1 px-6 py-8">
