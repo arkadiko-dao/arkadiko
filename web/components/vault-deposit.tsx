@@ -43,6 +43,7 @@ export const VaultDeposit: React.FC<Props> = ({
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
   const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+  const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -95,7 +96,20 @@ export const VaultDeposit: React.FC<Props> = ({
           )
         ),
       ];
-    } else {
+    } else if (vault['collateralToken'].toLowerCase() === 'sbtc') {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          senderAddress || '',
+          FungibleConditionCode.LessEqual,
+          new BN(parseFloat(extraCollateralDeposit) * decimals),
+          createAssetInfo(
+            sbtcContractAddress,
+            'sbtc-token',
+            'sbtc-token'
+          )
+        ),
+      ];
+    }  else {
       postConditions = [
         makeStandardFungiblePostCondition(
           senderAddress || '',

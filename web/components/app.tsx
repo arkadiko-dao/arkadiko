@@ -31,6 +31,7 @@ export const getBalance = async (address: string) => {
   const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
   const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+  const sBtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
   let lpXusdUsdaBalance = 0;
   let lpXusdUsdaBalance2 = 0;
 
@@ -93,6 +94,10 @@ export const getBalance = async (address: string) => {
     data.fungible_tokens[
       `${stStxContractAddress}.ststx-token::ststx`
     ];
+  const sbtcBalance =
+    data.fungible_tokens[
+      `${sBtcContractAddress}.sbtc-token::sbtc-token`
+    ];
   const welshBalance =
     data.fungible_tokens[
       `${welshContractAddress}.welshcorgicoin-token::welshcorgicoin`
@@ -110,6 +115,7 @@ export const getBalance = async (address: string) => {
     ldn: ldnBalance ? ldnBalance.balance : 0,
     welsh: welshBalance ? welshBalance.balance : 0,
     ststx: stStxBalance ? stStxBalance.balance : 0,
+    sbtc: sbtcBalance ? sbtcBalance.balance : 0,
     'auto-alex': atAlexBalance ? atAlexBalance.balance : 0,
     dikousda: lpDikoUsdaBalance ? lpDikoUsdaBalance.balance : 0,
     wstxusda: lpStxUsdaBalance ? lpStxUsdaBalance.balance : 0,
@@ -159,6 +165,7 @@ export const App: React.FC = () => {
         ldn: account.ldn.toString(),
         welsh: account.welsh.toString(),
         ststx: account.ststx.toString(),
+        sbtc: account.sbtc.toString(),
         'auto-alex': account['auto-alex'].toString(),
         dikousda: account.dikousda.toString(),
         wstxusda: account.wstxusda.toString(),
@@ -188,15 +195,17 @@ export const App: React.FC = () => {
       });
       const json = cvToJSON(types.value);
       console.log('Got collateral type with:', json);
-      collTypes[json.value['token-name'].value] = {
-        name: json.value['token-name'].value,
-        collateralToDebtRatio: json.value['liquidation-ratio'].value,
-        liquidationPenalty: json.value['liquidation-penalty'].value / 100,
-        liquidationRatio: json.value['liquidation-ratio'].value,
-        maximumDebt: json.value['max-debt'].value,
-        stabilityFee: json.value['stability-fee'].value,
-        stabilityFeeApy: json.value['stability-fee'].value
-      };
+      if (json.value['token-name']) {
+        collTypes[json.value['token-name'].value] = {
+          name: json.value['token-name'].value,
+          collateralToDebtRatio: json.value['liquidation-ratio'].value,
+          liquidationPenalty: json.value['liquidation-penalty'].value / 100,
+          liquidationRatio: json.value['liquidation-ratio'].value,
+          maximumDebt: json.value['max-debt'].value,
+          stabilityFee: json.value['stability-fee'].value,
+          stabilityFeeApy: json.value['stability-fee'].value
+        };
+      }
       setState(prevState => ({
         ...prevState,
         collateralTypes: { ...collTypes },
