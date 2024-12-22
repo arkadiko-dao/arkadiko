@@ -18,17 +18,16 @@ async function sendDiko(address, amount, nonce) {
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
-    fee: new BN(10000, 10),
-    nonce: new BN(nonce, 10),
-    network
+    fee: 10000,
+    nonce: nonce,
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  return utils.processing(result, transaction.txid(), 0);
+  const result = tx.broadcastTransaction({ transaction: transaction });
+  console.log(result);
 }
 
-let nonce = 3372;
+let nonce = 4390;
 const tokens = {
   'SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT': 44270833333,
   'SPF6GBC7XRM16XE7GSNF87GSYS703XZHFHRM1XYR': 3750000000,
