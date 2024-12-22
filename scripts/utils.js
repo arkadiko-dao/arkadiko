@@ -59,11 +59,19 @@ function resolveNetwork() {
   if (env === 'mainnet') {
     const stacksNetwork = new network.StacksMainnet();
     stacksNetwork.coreApiUrl = resolveUrl();
+    stacksNetwork.client = {
+      baseUrl: resolveUrl(),
+      fetch: fetch
+    };
 
     return stacksNetwork;
   } else {
     const stacksNetwork = new network.StacksTestnet();
     stacksNetwork.coreApiUrl = resolveUrl();
+    stacksNetwork.client = {
+      baseUrl: resolveUrl(),
+      fetch: fetch
+    };
 
     return stacksNetwork;
   }
