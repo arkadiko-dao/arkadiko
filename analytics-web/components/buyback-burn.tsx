@@ -42,6 +42,76 @@ export const BuyBackBurn: React.FC = () => {
                           target="_blank"
                           className="text-right text-indigo-500 underline"
                         >
+                          December 22nd, 2024
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">DIKO Burnt</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        66,632{' '}
+                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">Cumulative DIKO Burnt</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        159,249{' '}
+                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">Total Supply</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        99,690,134{' '}
+                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section className="py-2">
+                <table className="w-full">
+                  <thead>
+                    <tr>
+                      <th className="sr-only" scope="col">
+                        Data Type
+                      </th>
+                      <th className="sr-only" scope="col">
+                        Amount
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th
+                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
+                        scope="row"
+                      >
+                        <div className="flex items-center">Time</div>
+                      </th>
+                      <td className="pt-3 pb-2 pr-4 text-gray-700">
+                        <a
+                          href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
+                          target="_blank"
+                          className="text-right text-indigo-500 underline"
+                        >
                           December 17th, 2024
                         </a>
                       </td>
@@ -203,6 +273,29 @@ export const BuyBackBurn: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
+                  <tr className="bg-white">
+                    <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                      <a
+                        href="https://explorer.hiro.so/txid/c2118283646b85d438c22aee893a839e7dd10c27b8d150716a5478e6d8770d11?chain=mainnet"
+                        target="_blank"
+                        className="text-indigo-500 underline"
+                      >
+                        December 22nd, 2024
+                      </a>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                      66,632{' '}
+                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                      159,249{' '}
+                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                      99,690,134{' '}
+                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
+                    </td>
+                  </tr>
                   <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                       <a
