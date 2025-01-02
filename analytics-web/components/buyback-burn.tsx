@@ -1,6 +1,7 @@
 import React from 'react';
 import { tokenList } from '../../web/components/token-swap-list';
 import { BuyBackEntry } from './buyback-entry';
+import { BuyBackEntryMobile } from './buyback-entry-mobile';
 
 export const BuyBackBurn: React.FC = () => {
   return (
@@ -17,214 +18,46 @@ export const BuyBackBurn: React.FC = () => {
         <div className="bg-white dark:bg-zinc-800">
           <div className="mx-auto bg-white dark:bg-zinc-800 max-w-7xl">
             <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
-              <section className="py-2">
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className="sr-only" scope="col">
-                        Data Type
-                      </th>
-                      <th className="sr-only" scope="col">
-                        Amount
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Time</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        <a
-                          href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
-                          target="_blank"
-                          className="text-right text-indigo-500 underline"
-                        >
-                          December 22nd, 2024
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">DIKO Burnt</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        66,632{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Cumulative DIKO Burnt</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        159,249{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Total Supply</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        99,690,134{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
+              <BuyBackEntryMobile
+                txid="0xf9197e024322d66bfbbf09071d233e30643bedc1cb4bced530a236e672e4d613"
+                date="January 2nd, 2024"
+                burned="83,715"
+                cumulative="318,708"
+                supply="99,136,433"
+              />
 
-              <section className="py-2">
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className="sr-only" scope="col">
-                        Data Type
-                      </th>
-                      <th className="sr-only" scope="col">
-                        Amount
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Time</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        <a
-                          href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
-                          target="_blank"
-                          className="text-right text-indigo-500 underline"
-                        >
-                          December 17th, 2024
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">DIKO Burnt</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        46,148{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Cumulative DIKO Burnt</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        92,617{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Total Supply</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        99,073,83{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
-              <section className="py-2">
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className="sr-only" scope="col">
-                        Data Type
-                      </th>
-                      <th className="sr-only" scope="col">
-                        Amount
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Time</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        <a
-                          href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
-                          target="_blank"
-                          className="text-right text-indigo-500 underline"
-                        >
-                          December 9th, 2024
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">DIKO Burnt</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        46,469{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Cumulative DIKO Burnt</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        46,469{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th
-                        className="px-4 pt-3 pb-2 text-sm font-normal text-left text-gray-500 dark:text-zinc-400"
-                        scope="row"
-                      >
-                        <div className="flex items-center">Total Supply</div>
-                      </th>
-                      <td className="pt-3 pb-2 pr-4 text-gray-700">
-                        99,895,531{' '}
-                        <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </section>
+              <BuyBackEntryMobile
+                txid="0xf9197e024322d66bfbbf09071d233e30643bedc1cb4bced530a236e672e4d613"
+                date="December 28th, 2024"
+                burned="75,744"
+                cumulative="234,993"
+                supply="99,455,141"
+              />
+
+              <BuyBackEntryMobile
+                txid="c2118283646b85d438c22aee893a839e7dd10c27b8d150716a5478e6d8770d11"
+                date="December 22nd, 2024"
+                burned="66,632"
+                cumulative="159,249"
+                supply="99,690,134"
+              />
+
+              <BuyBackEntryMobile
+                txid="0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53"
+                date="December 17th, 2024"
+                burned="46,148"
+                cumulative="92,617"
+                supply="99,849,383"
+              />
+
+              <BuyBackEntryMobile
+                txid="0xa81cf5629c32831de2ebcba39d7df1f0d8cd40247b6479c19f86b84e37c3462d"
+                date="December 9th, 2024"
+                burned="46,469"
+                cumulative="46,469"
+                supply="99,895,531"
+              />
+
               {false && (
                 <section className="py-2 text-center">
                   <button
@@ -298,52 +131,22 @@ export const BuyBackBurn: React.FC = () => {
                     supply="99,690,134"
                   />
 
-                  <tr className="bg-white">
-                    <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
-                      <a
-                        href="https://explorer.hiro.so/txid/0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53?chain=mainnet"
-                        target="_blank"
-                        className="text-indigo-500 underline"
-                      >
-                        December 17th, 2024
-                      </a>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      46,148{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      92,617{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      99,849,383{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                  </tr>
-                  <tr className="bg-white">
-                    <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
-                      <a
-                        href="https://explorer.hiro.so/txid/0xa81cf5629c32831de2ebcba39d7df1f0d8cd40247b6479c19f86b84e37c3462d?chain=mainnet"
-                        target="_blank"
-                        className="text-indigo-500 underline"
-                      >
-                        December 9th, 2024
-                      </a>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      46,469{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      46,469{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      99,895,531{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                  </tr>
+                  <BuyBackEntry
+                    txid="0x84c451d7281045fadf310946592e9738d8c0fc7fa080e041d72cdf70db04ec53"
+                    date="December 17th, 2024"
+                    burned="46,148"
+                    cumulative="92,617"
+                    supply="99,849,383"
+                  />
+
+                  <BuyBackEntry
+                    txid="0xa81cf5629c32831de2ebcba39d7df1f0d8cd40247b6479c19f86b84e37c3462d"
+                    date="December 9th, 2024"
+                    burned="46,469"
+                    cumulative="46,469"
+                    supply="99,895,531"
+                  />
+
                   {false && (
                     <tr>
                       <td colSpan={4}>
