@@ -1,5 +1,6 @@
 import React from 'react';
 import { tokenList } from '../../web/components/token-swap-list';
+import { BuyBackEntry } from './buyback-entry';
 
 export const BuyBackBurn: React.FC = () => {
   return (
@@ -273,29 +274,30 @@ export const BuyBackBurn: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  <tr className="bg-white">
-                    <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
-                      <a
-                        href="https://explorer.hiro.so/txid/c2118283646b85d438c22aee893a839e7dd10c27b8d150716a5478e6d8770d11?chain=mainnet"
-                        target="_blank"
-                        className="text-indigo-500 underline"
-                      >
-                        December 22nd, 2024
-                      </a>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      66,632{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      159,249{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      99,690,134{' '}
-                      <img className="w-4 h-4 inline ml-1.5" src={tokenList[1].logo} alt="" />
-                    </td>
-                  </tr>
+                  <BuyBackEntry
+                    txid="0xf9197e024322d66bfbbf09071d233e30643bedc1cb4bced530a236e672e4d613"
+                    date="January 2nd, 2024"
+                    burned="83,715"
+                    cumulative="318,708"
+                    supply="99,136,433"
+                  />
+
+                  <BuyBackEntry
+                    txid="0xf9197e024322d66bfbbf09071d233e30643bedc1cb4bced530a236e672e4d613"
+                    date="December 28th, 2024"
+                    burned="75,744"
+                    cumulative="234,993"
+                    supply="99,455,141"
+                  />
+
+                  <BuyBackEntry
+                    txid="c2118283646b85d438c22aee893a839e7dd10c27b8d150716a5478e6d8770d11"
+                    date="December 22nd, 2024"
+                    burned="66,632"
+                    cumulative="159,249"
+                    supply="99,690,134"
+                  />
+
                   <tr className="bg-white">
                     <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                       <a
