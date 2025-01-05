@@ -42,8 +42,8 @@ const configMap: Record<StatusType, StatusTypeConfig> = {
   },
 };
 
-export const debtClassToType = (debtClass: string, redemptionPosition: number) => {
-  if (debtClass.includes('green-500') && redemptionPosition > 5) {
+export const debtClassToType = (collateral: string, debtClass: string, redemptionPosition: number) => {
+  if (debtClass.includes('green-500') && (collateral === 'sBTC' || redemptionPosition > 5)) {
     return StatusType.SUCCESS;
   } else if (debtClass.includes('red-600') || redemptionPosition <= 4) {
     return StatusType.ERROR;
@@ -54,8 +54,8 @@ export const debtClassToType = (debtClass: string, redemptionPosition: number) =
   return StatusType.NEUTRAL;
 }
 
-export const debtClassToLabel = (debtClass: string, redemptionPosition: number) => {
-  if (debtClass.includes('green-500') && redemptionPosition > 5) {
+export const debtClassToLabel = (collateral: string, debtClass: string, redemptionPosition: number) => {
+  if (debtClass.includes('green-500') && (collateral === 'sBTC' || redemptionPosition > 5)) {
     return 'Healthy';
   } else if (debtClass.includes('red-600') || redemptionPosition <= 4) {
     if (debtClass.includes('red-600')) {

@@ -290,6 +290,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                       {Number(state.vaults[collateral.name]['status']) === 101 ? (
                         <Status
                           type={debtClassToType(
+                            collateral.name,
                             debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
                               prices[collateral.name] / collateral.decimals,
                               state.vaults[collateral.name]['debt'],
@@ -298,6 +299,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                             state.vaults[collateral.name]['position']
                           )}
                           label={debtClassToLabel(
+                            collateral.name,
                             debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
                               prices[collateral.name] / collateral.decimals,
                               state.vaults[collateral.name]['debt'],
@@ -394,6 +396,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                           <span className="flex items-center flex-grow">
                             <Status
                               type={debtClassToType(
+                                collateral.name,
                                 debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
                                   prices[collateral.name] / collateral.decimals,
                                   state.vaults[collateral.name]['debt'],

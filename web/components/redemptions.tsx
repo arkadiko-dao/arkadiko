@@ -19,7 +19,7 @@ import { classNames } from '@common/class-names';
 import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { collExtraInfo } from './collateral-card';
-import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
+import { Status } from './ui/health-status';
 import { StyledIcon } from './ui/styled-icon';
 import { RedeemVault } from '@components/redeem-vault';
 import { getPrice } from '@common/get-price';
