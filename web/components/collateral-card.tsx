@@ -611,7 +611,23 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                     </dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Redemptions</dt>
+                    <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300 flex items-center flex-grow">
+                      Redemptions
+
+                      {collateral.name === 'sBTC' && (
+                        <Tooltip
+                          className="ml-2"
+                          shouldWrapChildren={true}
+                          label="Redemptions cannot technically be disabled but are set at a level that makes it unprofitable for arbitrageurs"
+                        >
+                          <StyledIcon
+                            as="InformationCircleIcon"
+                            size={4}
+                            className="block ml-2 text-gray-700 cursor-pointer"
+                          />
+                        </Tooltip>
+                      )}
+                    </dt>
                     <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
                       {collateral.name === 'sBTC' ? (
                         <span className="flex-grow">Disabled</span>
