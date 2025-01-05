@@ -265,85 +265,89 @@ export const Redemptions: React.FC = () => {
                 </div>
               </header>
               <div className="mt-4">
-                <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-3">
+                <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2">
                   {collateralItems.length > 0 && !isLoading && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
-                    <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
-                      <div className="flex flex-col flex-1 px-6 py-8">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center">
-                            <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/60 dark:bg-white/10 rounded-md shadow-2xl ${collateral.classes.tokenShadow} border border-gray-400/30`}>
-                              <img className="w-8 h-8" src={collateral.logo} alt="" />
+                    <>
+                      {collateral.name !== 'sBTC' && (
+                        <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
+                          <div className="flex flex-col flex-1 px-6 py-8">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center">
+                                <div className={`flex items-center justify-center w-16 h-16 shrink-0 bg-white/60 dark:bg-white/10 rounded-md shadow-2xl ${collateral.classes.tokenShadow} border border-gray-400/30`}>
+                                  <img className="w-8 h-8" src={collateral.logo} alt="" />
+                                </div>
+                                <div className="ml-4">
+                                  <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
+                                </div>
+                              </div>
                             </div>
-                            <div className="ml-4">
-                              <h2 className="mb-2 text-xl font-medium font-semibold leading-6 text-gray-700 dark:text-zinc-100">{collateral.name}</h2>
+
+                            <div className={`px-4 py-8 mt-8 mb-4 rounded-lg ${collateral.classes?.innerBg} bg-opacity-[.08] flex items-center justify-center`}>
+                              <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 ${collateral.classes?.iconColor} mr-6 shrink-0`} />
+                              <div className="flex flex-col">
+                                <p className={`text-sm font-semibold brightness-75 ${collateral.classes?.innerText}`}>
+                                  Collateral{' '}
+                                  <span className="truncate">
+                                    {collateral.name === "STX" ? stxVault['collateral']
+                                    : collateral.name === "stSTX" ? stStxVault['collateral']
+                                    : collateral.name === "xBTC" ? xBtcVault['collateral']
+                                    : null}
+                                    {' '}{collateral.name}
+                                  </span>,</p>
+                                <p className={`text-lg font-semibold ${collateral.classes?.innerText} brightness-50 dark:brightness-100`}>
+                                  has {' '}
+
+                                  {collateral.name === "STX" ? stxVault['debt']
+                                  :
+                                  collateral.name === "xBTC" ? xBtcVault['debt']
+                                  :
+                                  collateral.name === "stSTX" ? stStxVault['debt']
+                                  : null}
+
+                                  <span className="text-sm"> USDA debt</span>
+                                </p>
+                              </div>
                             </div>
+
+                            {state.userData ? (
+                              <>
+                                <button
+                                  onClick={() => redeemVault(collateral.name)}
+                                  className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                >
+                                  Redeem Vault
+                                  <StyledIcon
+                                    as="ExclamationIcon"
+                                    size={4}
+                                  />
+                                </button>
+
+                                <RouterLink
+                                  to={`vaults/${collateral.name === "STX" ? stxVault['owner'] : collateral.name === "xBTC" ? xBtcVault['owner'] : stStxVault['owner']}/${collateral['name']}`}
+                                  exact
+                                  className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                >
+                                  View Vault
+                                  <StyledIcon
+                                    as="ArrowRightIcon"
+                                    size={4}
+                                  />
+                                </RouterLink>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => doOpenAuth()}
+                                className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              >
+                                Connect Wallet
+                              </button>
+                            )}
+
                           </div>
                         </div>
-
-                        <div className={`px-4 py-8 mt-8 mb-4 rounded-lg ${collateral.classes?.innerBg} bg-opacity-[.08] flex items-center justify-center`}>
-                          <StyledIcon as="SparklesIcon" size={6} className={`brightness-50 dark:brightness-100 ${collateral.classes?.iconColor} mr-6 shrink-0`} />
-                          <div className="flex flex-col">
-                            <p className={`text-sm font-semibold brightness-75 ${collateral.classes?.innerText}`}>
-                              Collateral{' '}
-                              <span className="truncate">
-                                {collateral.name === "STX" ? stxVault['collateral']
-                                : collateral.name === "stSTX" ? stStxVault['collateral']
-                                : collateral.name === "xBTC" ? xBtcVault['collateral']
-                                : null}
-                                {' '}{collateral.name}
-                              </span>,</p>
-                            <p className={`text-lg font-semibold ${collateral.classes?.innerText} brightness-50 dark:brightness-100`}>
-                              has {' '}
-
-                              {collateral.name === "STX" ? stxVault['debt']
-                              :
-                              collateral.name === "xBTC" ? xBtcVault['debt']
-                              :
-                              collateral.name === "stSTX" ? stStxVault['debt']
-                              : null}
-
-                              <span className="text-sm"> USDA debt</span>
-                            </p>
-                          </div>
-                        </div>
-
-                        {state.userData ? (
-                          <>
-                            <button
-                              onClick={() => redeemVault(collateral.name)}
-                              className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                            >
-                              Redeem Vault
-                              <StyledIcon
-                                as="ExclamationIcon"
-                                size={4}
-                              />
-                            </button>
-
-                            <RouterLink
-                              to={`vaults/${collateral.name === "STX" ? stxVault['owner'] : collateral.name === "xBTC" ? xBtcVault['owner'] : stStxVault['owner']}/${collateral['name']}`}
-                              exact
-                              className={`flex items-center justify-center gap-x-2 w-full px-6 py-3 mt-6 text-base font-medium text-center border border-transparent rounded-md text-white ${collateral.classes?.innerBg} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                            >
-                              View Vault
-                              <StyledIcon
-                                as="ArrowRightIcon"
-                                size={4}
-                              />
-                            </RouterLink>
-                          </>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => doOpenAuth()}
-                            className="w-full px-6 py-3 mt-6 text-base font-medium text-center text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          >
-                            Connect Wallet
-                          </button>
-                        )}
-
-                      </div>
-                    </div>
+                      )}
+                    </>
                   ))}
                 </div>
               </div>
