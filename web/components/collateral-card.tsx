@@ -610,6 +610,16 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                       <span className="flex-grow">{collateral.stabilityFeeApy / 100}%</span>
                     </dd>
                   </div>
+                  <div className="flex justify-between">
+                    <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Redemptions</dt>
+                    <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
+                      {collateral.name === 'sBTC' ? (
+                        <span className="flex-grow">Disabled</span>
+                      ) : (
+                        <span className="flex-grow">Enabled</span>
+                      )}
+                    </dd>
+                  </div>
                 </dl>
 
                 {state.userData ? (
