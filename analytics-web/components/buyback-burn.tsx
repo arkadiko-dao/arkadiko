@@ -23,7 +23,7 @@ export const BuyBackBurn: React.FC = () => {
                 date="January 8th, 2025"
                 burned="85,309"
                 cumulative="404,017"
-                supply="98,732,416"
+                supply="99,051,124"
               />
 
               <BuyBackEntryMobile
@@ -120,7 +120,7 @@ export const BuyBackBurn: React.FC = () => {
                     date="January 8th, 2025"
                     burned="85,309"
                     cumulative="404,017"
-                    supply="98,732,416"
+                    supply="99,051,124"
                   />
 
                   <BuyBackEntry
