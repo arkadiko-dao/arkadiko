@@ -4,7 +4,6 @@ import { stacksNetwork as network } from '@common/utils';
 import { Placeholder } from '../../web/components/ui/placeholder';
 import { tokenList } from '../../web/components/token-swap-list';
 
-
 export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [dikoMarketCap, setDikoMarketCap] = useState(0);
@@ -18,8 +17,8 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
       const supplyCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "arkadiko-token",
-        functionName: "get-total-supply",
+        contractName: 'arkadiko-token',
+        functionName: 'get-total-supply',
         functionArgs: [],
         senderAddress: contractAddress,
         network: network,
@@ -30,21 +29,21 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const investorTokens = 6482362 + 600000 + 200000 + 600000 + 600000;
       const mmTokens = 0;
       const foundationTokens = 29000000 - investorTokens - 5800000;
-      const teamTokens = 21000000 - (30 * 475000);
+      const teamTokens = 21000000 - 30 * 475000;
       const lockedTokens = foundationTokens + teamTokens;
       const emissionTokens = totalSupply - lockedTokens;
-      const burnedTokens = 58000 + 46469 + 46148 + 66632 + 75744 + 83715; // TODO: update every burn TX
+      const burnedTokens = 58000 + 46469 + 46148 + 66632 + 75744 + 83715 + 85309; // TODO: update every burn TX
 
       setIsLoading(false);
       setDikoTotalSupply(100000000 - burnedTokens);
-      const float = (investorTokens + emissionTokens + mmTokens - burnedTokens);
+      const float = investorTokens + emissionTokens + mmTokens - burnedTokens;
       setDikoFloat(float);
       setDikoMarketCap(lastDikoPrice * float);
 
       const usdaSupplyCall = await callReadOnlyFunction({
         contractAddress,
-        contractName: "usda-token",
-        functionName: "get-total-supply",
+        contractName: 'usda-token',
+        functionName: 'get-total-supply',
         functionArgs: [],
         senderAddress: contractAddress,
         network: network,
@@ -64,19 +63,33 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
     {
       name: 'DIKO',
       logo: tokenList[1].logo,
-      totalSupply: dikoTotalSupply.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }),
-      float: dikoFloat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }),
-      marketCap: dikoMarketCap.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      totalSupply: dikoTotalSupply.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      }),
+      float: dikoFloat.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      }),
+      marketCap: dikoMarketCap.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
     },
     {
       name: 'USDA',
       logo: tokenList[0].logo,
       totalSupply: '—',
-      float: usdaFloat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }),
-      marketCap: usdaMarketCap.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      float: usdaFloat.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      }),
+      marketCap: usdaMarketCap.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
     },
   ];
-
 
   return (
     <section className="mt-8">
@@ -193,16 +206,28 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                    >
                       Token
                     </th>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                    >
                       Total Supply
                     </th>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                    >
                       Circulating Supply
                     </th>
-                    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                    >
                       Market Cap
                     </th>
                   </tr>
@@ -216,9 +241,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
                             <img className="w-10 h-10 rounded-full" src={token.logo} alt="" />
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {token.name}
-                            </div>
+                            <div className="text-sm font-medium text-gray-900">{token.name}</div>
                           </div>
                         </div>
                       </td>
@@ -226,14 +249,18 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
                         {isLoading ? (
                           <Placeholder className="py-2" width={Placeholder.width.HALF} />
                         ) : (
-                          <span>{token.totalSupply} {token.name}</span>
+                          <span>
+                            {token.totalSupply} {token.name}
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                         {isLoading ? (
                           <Placeholder className="py-2" width={Placeholder.width.HALF} />
                         ) : (
-                          <span>{token.float} {token.name}</span>
+                          <span>
+                            {token.float} {token.name}
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">

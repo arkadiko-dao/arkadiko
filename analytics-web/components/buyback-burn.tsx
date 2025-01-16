@@ -19,6 +19,14 @@ export const BuyBackBurn: React.FC = () => {
           <div className="mx-auto bg-white dark:bg-zinc-800 max-w-7xl">
             <div className="max-w-2xl mx-auto space-y-2 divide-y divide-gray-200 dark:divide-zinc-600">
               <BuyBackEntryMobile
+                txid="0x7853a13db3f341c806543b77d02f4bf068d9e0935808821c6bc9fe7d45838a65"
+                date="January 8th, 2025"
+                burned="85,309"
+                cumulative="404,017"
+                supply="99,051,124"
+              />
+
+              <BuyBackEntryMobile
                 txid="0x5faffd5bea74f695c891eb659d435e784855ef6c55cd827770d7d8fcfc91b519"
                 date="January 2nd, 2025"
                 burned="83,715"
@@ -107,6 +115,14 @@ export const BuyBackBurn: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
+                  <BuyBackEntry
+                    txid="0x7853a13db3f341c806543b77d02f4bf068d9e0935808821c6bc9fe7d45838a65"
+                    date="January 8th, 2025"
+                    burned="85,309"
+                    cumulative="404,017"
+                    supply="99,051,124"
+                  />
+
                   <BuyBackEntry
                     txid="0x5faffd5bea74f695c891eb659d435e784855ef6c55cd827770d7d8fcfc91b519"
                     date="January 2nd, 2025"
