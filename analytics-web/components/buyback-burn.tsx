@@ -23,7 +23,7 @@ export const BuyBackBurn: React.FC = () => {
                 date="January 8th, 2025"
                 burned="85,309"
                 cumulative="404,017"
-                supply="99,051,124"
+                supply="99,595,983"
               />
 
               <BuyBackEntryMobile
@@ -31,7 +31,7 @@ export const BuyBackBurn: React.FC = () => {
                 date="January 2nd, 2025"
                 burned="83,715"
                 cumulative="318,708"
-                supply="99,136,433"
+                supply="99,681,292"
               />
 
               <BuyBackEntryMobile
@@ -39,7 +39,7 @@ export const BuyBackBurn: React.FC = () => {
                 date="December 28th, 2024"
                 burned="75,744"
                 cumulative="234,993"
-                supply="99,455,141"
+                supply="99,765,007"
               />
 
               <BuyBackEntryMobile
@@ -47,7 +47,7 @@ export const BuyBackBurn: React.FC = () => {
                 date="December 22nd, 2024"
                 burned="66,632"
                 cumulative="159,249"
-                supply="99,690,134"
+                supply="99,840,751"
               />
 
               <BuyBackEntryMobile
@@ -55,7 +55,7 @@ export const BuyBackBurn: React.FC = () => {
                 date="December 17th, 2024"
                 burned="46,148"
                 cumulative="92,617"
-                supply="99,849,383"
+                supply="99,907,383"
               />
 
               <BuyBackEntryMobile
@@ -63,7 +63,7 @@ export const BuyBackBurn: React.FC = () => {
                 date="December 9th, 2024"
                 burned="46,469"
                 cumulative="46,469"
-                supply="99,895,531"
+                supply="99,953,531"
               />
 
               {false && (
@@ -120,7 +120,7 @@ export const BuyBackBurn: React.FC = () => {
                     date="January 8th, 2025"
                     burned="85,309"
                     cumulative="404,017"
-                    supply="99,051,124"
+                    supply="99,595,983"
                   />
 
                   <BuyBackEntry
@@ -128,7 +128,7 @@ export const BuyBackBurn: React.FC = () => {
                     date="January 2nd, 2025"
                     burned="83,715"
                     cumulative="318,708"
-                    supply="99,136,433"
+                    supply="99,681,292"
                   />
 
                   <BuyBackEntry
@@ -136,7 +136,7 @@ export const BuyBackBurn: React.FC = () => {
                     date="December 28th, 2024"
                     burned="75,744"
                     cumulative="234,993"
-                    supply="99,455,141"
+                    supply="99,765,007"
                   />
 
                   <BuyBackEntry
@@ -144,7 +144,7 @@ export const BuyBackBurn: React.FC = () => {
                     date="December 22nd, 2024"
                     burned="66,632"
                     cumulative="159,249"
-                    supply="99,690,134"
+                    supply="99,840,751"
                   />
 
                   <BuyBackEntry
@@ -152,7 +152,7 @@ export const BuyBackBurn: React.FC = () => {
                     date="December 17th, 2024"
                     burned="46,148"
                     cumulative="92,617"
-                    supply="99,849,383"
+                    supply="99,907,383"
                   />
 
                   <BuyBackEntry
@@ -160,7 +160,7 @@ export const BuyBackBurn: React.FC = () => {
                     date="December 9th, 2024"
                     burned="46,469"
                     cumulative="46,469"
-                    supply="99,895,531"
+                    supply="99,953,531"
                   />
 
                   {false && (
