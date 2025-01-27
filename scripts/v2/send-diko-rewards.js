@@ -119,11 +119,19 @@ async function exec() {
     addresses.forEach((address) => {
       const addressCollateral = Number(addressCollaterals[address]) / 100000000.0;
       const formattedCollateral = totalCollateral / 100000000.0;
-      console.log(key, address, `${addressCollateral} sBTC`, `${(addressCollateral / formattedCollateral * 2000.0).toFixed(0)} DIKO`);
+      const dikoAmount = Math.floor(addressCollateral / formattedCollateral * 2000.0);
+      console.log(key, address, `${addressCollateral} sBTC`, `${dikoAmount} DIKO`);
+      if (amounts[address]) {
+        amounts[address] += Number(dikoAmount);
+      } else {
+        amounts[address] = Number(dikoAmount);
+      }
     });
 
     console.log('\n');
   });
+
+  console.log(amounts);
 };
 
 function collectAddresses(keys) {
