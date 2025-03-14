@@ -279,21 +279,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
         <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-3">
           {collateralItems.length > 0 && !isLoading && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
             <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} relative flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
-
-              {collateral.name === "sBTC" ? (
-                <div className="absolute px-4 py-2 text-sm font-medium text-indigo-500 border border-indigo-200 rounded-lg shadow-sm -right-2 -top-5 dark:border-indigo-300 bg-indigo-50 dark:bg-indigo-200">
-                  <Tooltip
-                    shouldWrapChildren={true}
-                    label="For the first 2 months, sBTC vaults will receive 2,000 $DIKO/day (pro rata) as an incentive, airdropped after each Proof of Transfer (PoX) cycle."
-                  >
-                    <div className="flex items-center">
-                      <StyledIcon as="GiftIcon" size={5} className="inline mr-2 text-indigo-500" />
-                      <p>Rewards</p>
-                    </div>
-                  </Tooltip>
-                </div>
-              ) : null}
-
               <div className="flex flex-col flex-1 px-6 py-8">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center">
