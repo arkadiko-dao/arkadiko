@@ -41,7 +41,7 @@ export const VaultWithdraw: React.FC<Props> = ({
 
     const tokenAddress = tokenInfo['address'];
     const token = tokenInfo['name'];
-    const decimals = token === 'Wrapped-Bitcoin' || token === 'auto-alex' ? 100000000 : 1000000;
+    const decimals = token === 'Wrapped-Bitcoin' || token === 'sbtc-token' || token === 'auto-alex' ? 100000000 : 1000000;
     const collateralAmount = Number(vault.collateral) - Number(parseFloat(collateralToWithdraw) * decimals);
     const debtAmount = Number(vault.debt);
 
