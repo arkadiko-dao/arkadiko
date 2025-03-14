@@ -9,7 +9,7 @@ async function transact() {
     contractAddress: CONTRACT_ADDRESS,
     contractName: 'arkadiko-diko-incinerator-v1',
     functionName: 'burn',
-    functionArgs: [tx.uintCV(195000 * 1000000)],
+    functionArgs: [tx.uintCV(244000 * 1000000)],
     fee: 10000,
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1
