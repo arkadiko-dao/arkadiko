@@ -33,7 +33,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       const teamTokens = 21000000 - (30 * 475000);
       const lockedTokens = foundationTokens + teamTokens;
       const emissionTokens = totalSupply - lockedTokens;
-      const burnedTokens = 58000 + 46469 + 46148 + 66632 + 75744 + 83715 + 85309 + 120265 + 131964 + 127169 + 197085 + 164744 + 195000; // TODO: update every burn TX
+      const burnedTokens = 58000 + 46469 + 46148 + 66632 + 75744 + 83715 + 85309 + 120265 + 131964 + 127169 + 197085 + 164744 + 195000 + 244000; // TODO: update every burn TX
 
       setIsLoading(false);
       setDikoTotalSupply(100000000 - burnedTokens);
