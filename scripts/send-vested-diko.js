@@ -11,7 +11,7 @@ async function sendDiko(address, amount, nonce) {
     contractName: "arkadiko-token",
     functionName: "transfer",
     functionArgs: [
-      tx.uintCV(amount),
+      tx.uintCV(3 * amount),
       tx.standardPrincipalCV(CONTRACT_ADDRESS),
       tx.standardPrincipalCV(address),
       tx.someCV(tx.bufferCVFromString("DIKO Vest 1/48"))
@@ -27,7 +27,7 @@ async function sendDiko(address, amount, nonce) {
   console.log(result);
 }
 
-let nonce = 4390;
+let nonce = 4528;
 const tokens = {
   'SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT': 44270833333,
   'SPF6GBC7XRM16XE7GSNF87GSYS703XZHFHRM1XYR': 3750000000,
