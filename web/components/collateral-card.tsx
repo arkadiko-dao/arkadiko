@@ -43,7 +43,7 @@ export const debtClass = (liquidationRatio: number, ratio: number) => {
 
 export const collExtraInfo = {
   'STX': {
-    key: 2,
+    key: 3,
     logo: '/assets/tokens/stx.svg',
     path: '/vaults/new?token=stx',
     decimals: 1,
@@ -68,8 +68,21 @@ export const collExtraInfo = {
       innerText: 'text-stSTX'
     }
   },
+  'sBTC': {
+    key: 2,
+    logo: '/assets/tokens/sbtc.png',
+    path: '/vaults/new?token=sBTC',
+    decimals: 100,
+    classes: {
+      wrapper: 'border-sBTC/20 hover:border-sBTC/40 shadow-sBTC/10 from-sBTC/5 to-sBTC/10',
+      tokenShadow: 'shadow-sBTC/10',
+      innerBg: 'bg-sBTC',
+      iconColor: 'text-sBTC/80',
+      innerText: 'text-sBTC'
+    }
+  },
   'xBTC': {
-    key: 3,
+    key: 4,
     logo: '/assets/tokens/xbtc.svg',
     path: '/vaults/new?token=xBTC',
     decimals: 100,
@@ -82,7 +95,7 @@ export const collExtraInfo = {
     }
   },
   'atALEXv2': {
-    key: 4,
+    key: 5,
     logo: '/assets/tokens/atalex.svg',
     path: '/vaults/new?token=auto-alex',
     decimals: 100,
@@ -181,6 +194,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       setPrices({
         'STX': stxPrice / 1000000,
         'xBTC': btcPrice / 1000000,
+        'sBTC': btcPrice / 1000000,
         'atALEXv2': atAlexPrice / 100000000,
         'stSTX': stStxPrice / 1000000
       });
@@ -264,7 +278,7 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       ) : (
         <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-3">
           {collateralItems.length > 0 && !isLoading && collateralItems.sort((a, b) => a.key - b.key).map((collateral) => (
-            <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
+            <div key={collateral.name} className={`group border shadow-md ${collateral.classes?.wrapper} relative flex flex-col bg-gradient-to-br rounded-md transition duration-700 ease-in-out`}>
               <div className="flex flex-col flex-1 px-6 py-8">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center">
@@ -276,19 +290,23 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                       {Number(state.vaults[collateral.name]['status']) === 101 ? (
                         <Status
                           type={debtClassToType(
+                            collateral.name,
                             debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
                               prices[collateral.name] / collateral.decimals,
                               state.vaults[collateral.name]['debt'],
                               state.vaults[collateral.name]['collateral']
-                            ) * 100.0))
-                          }
+                            ) * 100.0),
+                            state.vaults[collateral.name]['position']
+                          )}
                           label={debtClassToLabel(
+                            collateral.name,
                             debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
                               prices[collateral.name] / collateral.decimals,
                               state.vaults[collateral.name]['debt'],
                               state.vaults[collateral.name]['collateral']
-                            ) * 100.0))
-                          }
+                            ) * 100.0),
+                            state.vaults[collateral.name]['position']
+                          )}
                         />
                       ) : (
                         <Status
@@ -378,12 +396,14 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                           <span className="flex items-center flex-grow">
                             <Status
                               type={debtClassToType(
+                                collateral.name,
                                 debtClass(collateral.liquidationRatio / 100, getCollateralToDebtRatio(
                                   prices[collateral.name] / collateral.decimals,
                                   state.vaults[collateral.name]['debt'],
                                   state.vaults[collateral.name]['collateral']
-                                ) * 100.0))
-                            }
+                                ) * 100.0),
+                                state.vaults[collateral.name]['position']
+                              )}
                             />
                             <span className={`ml-2 text-sm font-semibold ${collateral.classes.innerText} brightness-50 dark:brightness-100`}>
                               {
@@ -435,6 +455,15 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                             :
                             `1`
                           :
+                          collateral.name === "sBTC" ?
+                            state.userData && (parseFloat(state.balance["sbtc"] !== '0')) ?
+                              `${(parseFloat(state.balance["sbtc"]) / 100000000).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 6,
+                              })}`
+                            :
+                            `1`
+                          :
                           collateral.name === "auto-alex" ?
                             state.userData && state.balance["atalex"] > 0 ?
                               `${(parseFloat(state.balance["atalex"]) / 100000000).toLocaleString(undefined, {
@@ -471,6 +500,18 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                             })
                           :
                           ((1 * prices['xBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })
+                        :
+                        collateral.name === "sBTC" ?
+                          state.userData && (parseFloat(state.balance["sbtc"] !== '0.00')) ?
+                            (((parseFloat(state.balance["sbtc"]) / 100000000) * prices['sBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            })
+                          :
+                          ((1 * prices['sBTC']) / (collateral.collateralToDebtRatio / 10000)).toLocaleString(undefined, {
                             minimumFractionDigits: 0,
                             maximumFractionDigits: 0,
                           })
@@ -567,6 +608,32 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                     <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Stability Fee</dt>
                     <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
                       <span className="flex-grow">{collateral.stabilityFeeApy / 100}%</span>
+                    </dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="flex items-center flex-grow text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">
+                      Redemptions
+
+                      {collateral.name === 'sBTC' && (
+                        <Tooltip
+                          className="ml-2"
+                          shouldWrapChildren={true}
+                          label="Redemptions cannot technically be disabled but are set at a level that makes it unprofitable for arbitrageurs"
+                        >
+                          <StyledIcon
+                            as="InformationCircleIcon"
+                            size={4}
+                            className="block ml-2 text-gray-400 cursor-pointer"
+                          />
+                        </Tooltip>
+                      )}
+                    </dt>
+                    <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
+                      {collateral.name === 'sBTC' ? (
+                        <span className="flex-grow">Disabled</span>
+                      ) : (
+                        <span className="flex-grow">Enabled</span>
+                      )}
                     </dd>
                   </div>
                 </dl>

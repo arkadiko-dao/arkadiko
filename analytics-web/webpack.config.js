@@ -67,6 +67,7 @@ module.exports = {
     chunkFilename: !isDevelopment ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
     filename: !isDevelopment ? '[name].[contenthash].js' : '[name].js',
     publicPath: '/',
+    hashFunction: 'xxhash64'
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.json'],

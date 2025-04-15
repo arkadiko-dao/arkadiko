@@ -13,6 +13,7 @@ module.exports = {
     { pattern: /xBTC/ },
     { pattern: /atAlex/ },
     { pattern: /stSTX/ },
+    { pattern: /sBTC/ },
   ],
   theme: {
     extend: {
@@ -24,7 +25,8 @@ module.exports = {
         'STX': '#FC6432',
         'xBTC': '#F7931A',
         'atAlex': '#A714FD',
-        'stSTX': '#318d8b'
+        'stSTX': '#318d8b',
+        'sBTC': '#ff5512'
       }
     },
   },

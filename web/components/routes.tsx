@@ -18,6 +18,7 @@ import { ManageVault } from './manage-vault';
 import { ViewProposal } from './view-proposal';
 import { Stake } from './stake';
 import { Liquidations } from './liquidations';
+import { Redemptions } from './redemptions';
 import { LegacyLiquidations } from './legacy-liquidations';
 import { Admin } from './admin';
 
@@ -44,6 +45,7 @@ export function Routes() {
       <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={AddSwapLiquidity} />
       <Route exact path="/swap/remove/:currencyIdA/:currencyIdB" component={RemoveSwapLiquidity} />
       <Route exact path="/pool" component={Pool} />
+      <Route exact path="/redemptions" component={Redemptions} />
 
       <Route exact path="/auctions" component={Liquidations} />
       <Route exact path="/liquidations" component={Liquidations} />

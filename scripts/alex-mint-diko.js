@@ -7,20 +7,20 @@ const BN = require('bn.js');
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: 'arkadiko-alex-dual-yield-v1-1',
+  contractName: 'arkadiko-stable-swap-rewards-v1-1',
   functionName: 'mint-diko',
   functionArgs: [
-    tx.uintCV(10),
+    tx.uintCV(100),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
-  network
+  network: 'mainnet'
 };
 
 async function transact() {
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  await utils.processing(result, transaction.txid(), 0);
+  const result = tx.broadcastTransaction({ transaction: transaction });
+  console.log(result);
 };
 
 transact();

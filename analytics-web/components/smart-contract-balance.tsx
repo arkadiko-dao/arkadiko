@@ -11,13 +11,12 @@ export const SmartContractBalance = ({ address, description, name }) => {
   const [xBtcBalance, setXbtcBalance] = useState(0.0);
   const [atAlexBalance, setAtAlexBalance] = useState(0.0);
   const [stStxBalance, setStStxBalance] = useState(0.0);
+  const [sBtcBalance, setSbtcBalance] = useState(0.0);
 
   const [stDikoBalance, setStDikoBalance] = useState(0.0);
   const [wstxDikoBalance, setWstxDikoBalance] = useState(0.0);
   const [wstxUsdaBalance, setWstxUsdaBalance] = useState(0.0);
   const [dikoUsdaBalance, setDikoUsdaBalance] = useState(0.0);
-  const [wstxXbtcBalance, setWstxXbtcBalance] = useState(0.0);
-  const [xbtcUsdaBalance, setXbtcUsdaBalance] = useState(0.0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -107,13 +106,6 @@ export const SmartContractBalance = ({ address, description, name }) => {
         setDikoUsdaBalance(0.0);
       }
 
-      const wstxXbtcBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-wstx-xbtc::wstx-xbtc`];
-      if (wstxXbtcBalance) {
-        setWstxXbtcBalance(wstxXbtcBalance.balance / 1000000);
-      } else {
-        setWstxXbtcBalance(0.0);
-      }
-
       const xbtcBalance = data.fungible_tokens[`SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin`];
       if (xbtcBalance) {
         setXbtcBalance(xbtcBalance.balance / 100000000);
@@ -121,11 +113,11 @@ export const SmartContractBalance = ({ address, description, name }) => {
         setXbtcBalance(0.0);
       }
 
-      const xbtcUsdaBalance = data.fungible_tokens[`${contractAddress}.arkadiko-swap-token-xbtc-usda::xbtc-usda`];
-      if (xbtcUsdaBalance) {
-        setXbtcUsdaBalance(xbtcUsdaBalance.balance / 1000000);
+      const sbtcBalance = data.fungible_tokens['SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token'];
+      if (sbtcBalance) {
+        setSbtcBalance(data.fungible_tokens['SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc-token'].balance / 100000000);
       } else {
-        setXbtcUsdaBalance(0.0);
+        setSbtcBalance(0.0);
       }
     };
     if (mounted) {
@@ -173,6 +165,15 @@ export const SmartContractBalance = ({ address, description, name }) => {
                 maximumFractionDigits: 6,
               })}{' '}
               <span className="text-sm font-normal">stSTX</span>
+            </p>
+          ) : null}
+          {sBtcBalance ? (
+            <p className="text-lg font-semibold text-gray-800">
+              {sBtcBalance.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+              })}{' '}
+              <span className="text-sm font-normal">sBTC</span>
             </p>
           ) : null}
           {dikoBalance ? (
@@ -263,24 +264,6 @@ export const SmartContractBalance = ({ address, description, name }) => {
                 maximumFractionDigits: 6,
               })}{' '}
               <span className="text-sm font-normal">DIKO/USDA</span>
-            </p>
-          ) : null}
-          {wstxXbtcBalance ? (
-            <p className="text-lg font-semibold text-gray-800">
-              {wstxXbtcBalance.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6,
-              })}{' '}
-              <span className="text-sm font-normal">wSTX/xBTC</span>
-            </p>
-          ) : null}
-          {xbtcUsdaBalance ? (
-            <p className="text-lg font-semibold text-gray-800">
-              {xbtcUsdaBalance.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6,
-              })}{' '}
-              <span className="text-sm font-normal">xBTC/USDA</span>
             </p>
           ) : null}
         </div>

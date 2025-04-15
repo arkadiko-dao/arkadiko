@@ -14,6 +14,7 @@ import {
   standardPrincipalCV,
   makeStandardFungiblePostCondition,
   makeContractFungiblePostCondition,
+  makeContractSTXPostCondition,
   FungibleConditionCode,
   createAssetInfo,
   listCV
@@ -41,6 +42,7 @@ export const Liquidations: React.FC = () => {
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
   const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+  const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const [state, setState] = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +50,7 @@ export const Liquidations: React.FC = () => {
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [userPooled, setUserPooled] = useState(0);
   const [totalPooled, setTotalPooled] = useState(0);
-  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(612500000000);
+  const [dikoRewardsToAdd, setDikoRewardsToAdd] = useState(0);
   const [dikoApr, setDikoApr] = useState(0);
   const [buttonUnstakeDisabled, setButtonUnstakeDisabled] = useState(true);
   const [buttonStakeDisabled, setButtonStakeDisabled] = useState(true);
@@ -99,9 +101,16 @@ export const Liquidations: React.FC = () => {
     const postConditions = [
       makeStandardFungiblePostCondition(
         stxAddress || '',
-        FungibleConditionCode.Equal,
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))).value,
+        FungibleConditionCode.LessEqual,
+        uintCV(Number((parseFloat(stakeAmount) * 1000000 * 1.01).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
       ),
     ];
 
@@ -117,9 +126,11 @@ export const Liquidations: React.FC = () => {
         listCV([
           contractPrincipalCV(contractAddress, 'wstx-token'),
           contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          contractPrincipalCV(sbtcContractAddress, 'sbtc-token')
         ])
       ],
+      postConditions,
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
@@ -141,6 +152,40 @@ export const Liquidations: React.FC = () => {
         uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(contractAddress, 'wstx-token', 'wstx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(stStxContractAddress, 'ststx-token', 'ststx')
+      ),
+      makeContractFungiblePostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0,
+        createAssetInfo(xbtcContractAddress, 'Wrapped-Bitcoin', 'wrapped-bitcoin')
+      ),
+      makeContractSTXPostCondition(
+        contractAddress,
+        'arkadiko-vaults-pool-liq-v1-2',
+        FungibleConditionCode.GreaterEqual,
+        0
+      ),
     ];
 
     await doContractCall({
@@ -155,9 +200,11 @@ export const Liquidations: React.FC = () => {
         listCV([
           contractPrincipalCV(contractAddress, 'wstx-token'),
           contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin')
+          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          contractPrincipalCV(sbtcContractAddress, 'sbtc-token')
         ])
       ],
+      postConditions: [],
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
@@ -306,7 +353,7 @@ export const Liquidations: React.FC = () => {
       setButtonStakeDisabled(false);
       setButtonUnstakeDisabled(userPooled == 0)
 
-      const dikoPerYear = 612500000; // 10% of all emissions
+      const dikoPerYear = 0; // 0% of all emissions
       setDikoApr((dikoPerYear * dikoPrice) / totalPooled * 100000.0);
       setIsLoading(false);
     };
