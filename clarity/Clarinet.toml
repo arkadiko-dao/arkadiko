@@ -576,3 +576,21 @@ epoch = 2.4
 path = "contracts/tests/malicious-ft.clar"
 clarity_version = 2
 epoch = 2.4
+
+# Oracles
+
+[contracts.dia-oracle]
+path = "contracts/tests/oracles/dia-oracle.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.pyth-oracle-v3]
+path = "contracts/tests/oracles/pyth-oracle-v3.clar"
+clarity_version = 2
+epoch = 2.4
+
+[contracts.data-core-v2]
+path = "contracts/tests/oracles/data-core-v2.clar"
+clarity_version = 2
+epoch = 2.4
+
