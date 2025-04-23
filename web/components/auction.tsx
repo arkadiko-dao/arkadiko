@@ -56,7 +56,7 @@ export const Auction: React.FC<AuctionProps> = ({
         contractName: 'arkadiko-auction-engine-v3-1',
         functionName: 'get-minimum-collateral-amount',
         functionArgs: [
-          contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-3'),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-4'),
           uintCV(id),
         ],
         senderAddress: stxAddress || '',
