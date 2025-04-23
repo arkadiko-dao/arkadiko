@@ -15,7 +15,7 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-sorted-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-active-v1-1'),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-helpers-v1-1'),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-3'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v2-4'),
     tx.standardPrincipalCV(''),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wstx-token'),
     tx.uintCV(100000000),
