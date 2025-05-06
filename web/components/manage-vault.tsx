@@ -267,7 +267,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-2',
+      contractName: 'arkadiko-vaults-operations-v1-3',
       functionName: 'close-vault',
       functionArgs: args,
       postConditionMode: 0x01,
