@@ -12,12 +12,12 @@ const txOptions = {
   functionArgs: [
     tx.listCV([
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-manager-v1-1'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-operations-v1-1'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-operations-v1-3'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-active-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-fees-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-liq-v1-1'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-liq-v1-2'),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-operations-v1-2'),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-operations-v1-3'),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stacker-payer-v3-9'),
     ])
   ],
