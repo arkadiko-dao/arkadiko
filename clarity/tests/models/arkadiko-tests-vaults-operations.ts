@@ -22,12 +22,12 @@ class VaultsOperations {
   }
 
   getShutdownActivated() {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-operations-v1-1", "get-shutdown-activated", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-operations-v1-3", "get-shutdown-activated", [
     ], this.deployer.address);
   }
 
   getMintFee() {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-operations-v1-1", "get-mint-fee", [
+    return this.chain.callReadOnlyFn("arkadiko-vaults-operations-v1-3", "get-mint-fee", [
     ], this.deployer.address);
   }
 
@@ -39,7 +39,7 @@ class VaultsOperations {
     prevHint: string,
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "open-vault", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "open-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -64,7 +64,7 @@ class VaultsOperations {
     prevHint: string,
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "update-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -86,7 +86,7 @@ class VaultsOperations {
     token: string,
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "close-vault", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "close-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -100,7 +100,7 @@ class VaultsOperations {
 
   setShutdownActivated(caller: Account, activated: boolean) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "set-shutdown-activated", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "set-shutdown-activated", [
         types.bool(activated)
       ], caller.address)
     ]);
@@ -109,7 +109,7 @@ class VaultsOperations {
 
   setMintFee(caller: Account, fee: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "set-mint-fee", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "set-mint-fee", [
         types.uint(fee * 10000)
       ], caller.address)
     ]);
