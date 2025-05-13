@@ -35,7 +35,7 @@ Clarinet.test({
 
     // Set price
     oracleManager.updatePrice("STX", 0.5);    
-    oracleManager.updatePrice("BTC", 30000, 100000000);
+    oracleManager.updatePrice("xBTC", 30000, 100000000);
 
     let result = vaultsHelpers.getCollateralToDebt(deployer, "wstx-token", 1000, 250);
     result.expectOk().expectTuple()["ratio"].expectUint(2 * 10000);

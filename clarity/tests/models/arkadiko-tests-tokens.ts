@@ -21,24 +21,11 @@ class OracleManager {
   }
 
   updatePrice(token: string, price: number, decimals: number = 1000000) {
-    let tokenId = 1;
-    if (token == "xBTC" || token == "BTC") {
-      tokenId = 2;
-    } else if (token == "DIKO") {
-      tokenId = 5;
-    } else if (token == "auto-alex" || token == "atALEX") {
-      tokenId = 6;
-    } else if (token == "auto-alex-v2" || token == "atALEXv2") {
-      tokenId = 7;
-    } else if (token == "stSTX" || token == "ststx-token") {
-      tokenId = 8;
-    }
-
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-3", "update-price-owner", [
-        types.uint(tokenId),
+      Tx.contractCall("arkadiko-oracle-v2-4", "update-price-manual", [
+        types.ascii(token),
+        types.uint(decimals),
         types.uint(price * 1000000),
-        types.uint(decimals)
       ], this.deployer.address),
     ]);
     return block.receipts[0].result;

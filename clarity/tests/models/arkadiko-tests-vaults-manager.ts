@@ -44,7 +44,7 @@ class VaultsManager {
         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-liq-v1-2')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-4')),
         types.principal(owner),
         types.principal(Utils.qualifiedName(token)),
       ], this.deployer.address)
@@ -60,7 +60,7 @@ class VaultsManager {
     let block = this.chain.mineBlock([
       Tx.contractCall("arkadiko-vaults-manager-v1-1", "get-collateral-for-liquidation", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-4')),
         types.principal(Utils.qualifiedName(token)),
         types.uint(collateral * 1000000),
         types.uint(debt * 1000000),
@@ -83,7 +83,7 @@ class VaultsManager {
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-4')),
         types.principal(owner),
         types.principal(Utils.qualifiedName(token)),
         types.uint(debtPayoff * 1000000),
