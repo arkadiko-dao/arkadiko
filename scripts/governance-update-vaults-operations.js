@@ -14,7 +14,7 @@ async function transact() {
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
       tx.uintCV(896662),
-      tx.stringUtf8CV('Fix - improve UX on stability fee payments and fix redemption fee'),
+      tx.stringUtf8CV('Fix - improve UX on stability fee payments and fix redemption fee underflow'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/592'),
       tx.listCV([
         tx.tupleCV({
