@@ -120,6 +120,16 @@ export const tokenList = [
     address: contractAddress,
     fullName: 'ststx-token',
     decimals: 6
+  },
+  {
+    id: 12,
+    name: 'sBTC',
+    nameInPair: 'sbtc',
+    logo: '/assets/tokens/sbtc.png',
+    listed: false,
+    address: contractAddress,
+    fullName: 'sbtc-token',
+    decimals: 8
   }
 ];
 

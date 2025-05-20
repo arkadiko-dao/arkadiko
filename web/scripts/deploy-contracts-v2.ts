@@ -59,8 +59,8 @@ const contracts: Contract[] = [
 
   { name: 'arkadiko-vaults-data-v1-1', file: 'vaults-v2/arkadiko-vaults-data-v1-1' },
   { name: 'arkadiko-vaults-helpers-v1-1', file: 'vaults-v2/arkadiko-vaults-helpers-v1-1' },
-  { name: 'arkadiko-vaults-manager-v1-2', file: 'vaults-v2/arkadiko-vaults-manager-v1-2' },
-  { name: 'arkadiko-vaults-operations-v1-1', file: 'vaults-v2/arkadiko-vaults-operations-v1-1' },
+  { name: 'arkadiko-vaults-manager-v1-2', file: 'vaults-v2/arkadiko-vaults-manager-v1-1' },
+  { name: 'arkadiko-vaults-operations-v1-3', file: 'vaults-v2/arkadiko-vaults-operations-v1-3' },
   { name: 'arkadiko-vaults-pool-active-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-active-v1-1' },
   { name: 'arkadiko-vaults-pool-fees-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-fees-v1-1' },
   { name: 'arkadiko-vaults-pool-liq-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-liq-v1-1' },

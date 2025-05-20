@@ -43,6 +43,7 @@ export const VaultDeposit: React.FC<Props> = ({
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
   const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
   const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+  const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const senderAddress = useSTXAddress();
   const { doContractCall } = useConnect();
@@ -56,7 +57,7 @@ export const VaultDeposit: React.FC<Props> = ({
     }
     const tokenAddress = tokenInfo['address'];
     const token = tokenInfo['name'];
-    const decimals = token === 'Wrapped-Bitcoin' || token === 'auto-alex' ? 100000000 : 1000000;
+    const decimals = token === 'Wrapped-Bitcoin' || token === 'sbtc-token' || token === 'auto-alex' ? 100000000 : 1000000;
     const collateralAmount = Number(vault.collateral) + Number(parseFloat(extraCollateralDeposit) * decimals);
     const debtAmount = Number(vault.debt);
 
@@ -95,7 +96,20 @@ export const VaultDeposit: React.FC<Props> = ({
           )
         ),
       ];
-    } else {
+    } else if (vault['collateralToken'].toLowerCase() === 'sbtc') {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          senderAddress || '',
+          FungibleConditionCode.LessEqual,
+          new BN(parseFloat(extraCollateralDeposit) * decimals),
+          createAssetInfo(
+            sbtcContractAddress,
+            'sbtc-token',
+            'sbtc-token'
+          )
+        ),
+      ];
+    }  else {
       postConditions = [
         makeStandardFungiblePostCondition(
           senderAddress || '',
@@ -161,7 +175,7 @@ export const VaultDeposit: React.FC<Props> = ({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-2',
+      contractName: 'arkadiko-vaults-operations-v1-3',
       functionName: 'update-vault',
       functionArgs: args,
       postConditionMode: 0x01,
@@ -179,7 +193,7 @@ export const VaultDeposit: React.FC<Props> = ({
 
   const depositMaxAmount = () => {
     const token = vault['collateralToken'].toLowerCase();
-    const decimals = token === 'xbtc' || token === 'auto-alex' ? 100000000 : 1000000;
+    const decimals = token === 'xbtc' || token === 'sbtc' || token === 'auto-alex' ? 100000000 : 1000000;
     if (token === 'stx') {
       setExtraCollateralDeposit((state.balance['stx'] / decimals - 1).toString());
     } else {

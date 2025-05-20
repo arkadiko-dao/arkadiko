@@ -16,6 +16,7 @@ export const welshContractAddress = process.env.WELSH_CONTRACT_ADDRESS || '';
 export const ldnContractAddress = process.env.LDN_CONTRACT_ADDRESS || '';
 export const atAlexContractAddress = process.env.ATALEX_CONTRACT_ADDRESS || '';
 export const stStxContractAddress = process.env.STSTX_CONTRACT_ADDRESS || '';
+export const sBtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
 export const getLiquidationPrice = (
   liquidationRatio: number,
@@ -24,7 +25,7 @@ export const getLiquidationPrice = (
   collateralToken: string
 ) => {
   const token = collateralToken.toLocaleLowerCase();
-  const denominator = token.includes('xbtc') || token.includes('alex') ? 1 : 100;
+  const denominator = token.includes('sbtc') || token.includes('xbtc') || token.includes('alex') ? 1 : 100;
   return ((liquidationRatio * coinsMinted) / (stxCollateral * denominator)).toFixed(4);
 };
 
@@ -48,7 +49,7 @@ export const availableCollateralToWithdraw = (
   const decimals = token.includes('alex') ? 1000000 : 10000;
   const minimumStxCollateral = 1.1 * (collateralToDebt * coinsMinted) / (price / decimals);
   if (currentStxCollateral - minimumStxCollateral > 0) {
-    const decimals = token.includes('xbtc') || token.includes('alex') ? 8 : 6;
+    const decimals = token.includes('sbtc') || token.includes('xbtc') || token.includes('alex') ? 8 : 6;
     return (currentStxCollateral - minimumStxCollateral).toFixed(decimals);
   }
 
@@ -73,7 +74,7 @@ export const calculateMintFee = async (debtAmount: number) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const fetchedPrice = await callReadOnlyFunction({
     contractAddress,
-    contractName: "arkadiko-vaults-operations-v1-2",
+    contractName: "arkadiko-vaults-operations-v1-3",
     functionName: "get-mint-fee",
     functionArgs: [],
     senderAddress: contractAddress,
@@ -92,6 +93,8 @@ export const tokenNameToTicker = (name: string) => {
     return 'xBTC';
   } else if (name.toLowerCase() === 'ststx') {
     return 'stSTX';
+  } else if (name.toLowerCase() === 'sbtc') {
+    return 'sBTC';
   } else {
     return 'atALEXv2';
   }
@@ -348,6 +351,13 @@ export const tokenTraits: TokenTraits = {
     swap: 'ststx-token',
     multihop: [],
     ft: 'ststx-token'
+  },
+  sbtc: {
+    address: sBtcContractAddress,
+    name: 'sbtc-token',
+    swap: 'sbtc-token',
+    multihop: [],
+    ft: 'sbtc-token'
   }
 };
 

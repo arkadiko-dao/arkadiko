@@ -5,6 +5,8 @@ import { useSTXAddress } from '@common/use-stx-address';
 import {
   AnchorMode,
   uintCV,
+  contractPrincipalCV,
+  stringAsciiCV,
   standardPrincipalCV,
   callReadOnlyFunction,
   cvToJSON
@@ -20,9 +22,20 @@ export const Admin = () => {
       network,
       contractAddress,
       stxAddress,
-      contractName: "",
-      functionName: "",
+      contractName: "arkadiko-vaults-tokens-v1-1",
+      functionName: "set-token",
       functionArgs: [
+        contractPrincipalCV('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4', 'sbtc-token'),
+        stringAsciiCV('sBTC'),
+        uintCV(0 * 1000000),
+        uintCV(500000000),
+        uintCV(900),
+        uintCV(14000),
+        uintCV(1000),
+        uintCV(3000),
+        uintCV(6000),
+        uintCV(144),
+        uintCV(500000000)
       ],
       postConditionMode: 0x01,
       onFinish: data => {
@@ -41,7 +54,7 @@ export const Admin = () => {
     <>
       <div className="p-8 md:p-12 bg-white rounded-xl flex items-center shadow-[0px_10px_10px_-5px_#00000003,0px_20px_25px_-5px_#0000000A]">
         <div className="flex flex-col w-full min-h-full">
-          <h1 className="text-4xl font-headings">Stacking DAO Admin</h1>
+          <h1 className="text-4xl font-headings">Arkadiko Admin</h1>
           <p className="mt-4">
             Sign multisig transactions (logged in as {stxAddress})
           </p>

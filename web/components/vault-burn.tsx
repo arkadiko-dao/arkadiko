@@ -52,7 +52,7 @@ export const VaultBurn: React.FC<Props> = ({
       makeStandardFungiblePostCondition(
         senderAddress || '',
         FungibleConditionCode.LessEqual,
-        uintCV(parseInt(totalToBurn * 1000000, 10)).value,
+        uintCV(parseInt(totalToBurn * 1000000 * 1.1, 10)).value,
         createAssetInfo(contractAddress, 'usda-token', 'usda')
       ),
     ];
@@ -105,10 +105,10 @@ export const VaultBurn: React.FC<Props> = ({
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-2',
+      contractName: 'arkadiko-vaults-operations-v1-3',
       functionName: 'update-vault',
       functionArgs: args,
-      postConditionMode: 0x01,
+      postConditions,
       onFinish: data => {
         console.log('finished burn!', data);
         setState(prevState => ({

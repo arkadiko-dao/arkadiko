@@ -11,24 +11,23 @@ async function sendDiko(address, amount, nonce) {
     contractName: "arkadiko-token",
     functionName: "transfer",
     functionArgs: [
-      tx.uintCV(amount),
+      tx.uintCV(3 * amount),
       tx.standardPrincipalCV(CONTRACT_ADDRESS),
       tx.standardPrincipalCV(address),
       tx.someCV(tx.bufferCVFromString("DIKO Vest 1/48"))
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
-    fee: new BN(10000, 10),
-    nonce: new BN(nonce, 10),
-    network
+    fee: 10000,
+    nonce: nonce,
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
-  return utils.processing(result, transaction.txid(), 0);
+  const result = tx.broadcastTransaction({ transaction: transaction });
+  console.log(result);
 }
 
-let nonce = 3372;
+let nonce = 4528;
 const tokens = {
   'SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT': 44270833333,
   'SPF6GBC7XRM16XE7GSNF87GSYS703XZHFHRM1XYR': 3750000000,
@@ -53,6 +52,7 @@ const tokens = {
   'SP33E9NRZQ3YCJM0A3Z6WA91JQKW62T5SPYHYTJHC': 937500000,
   'SP3DVRHY4JSHEHQFRBCDDE3M30QGHW4BJMPF331H9': 937500000,
   'SPMQAMQP7SD25HRENNHHRK38PY5M2AE6SWVZVY56': 2300000000,
+  'SPQ91KHXB3F7K6VGW4ZVQST0G824SDBGZWE9PVGD': 2300000000,
   'SP16ESG0STV1YE553GK3C9FZ0YRBA5YVBYDAXC6X5': 5208333000,
 }
 

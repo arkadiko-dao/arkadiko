@@ -51,21 +51,11 @@ Clarinet.test({
     call.result.expectBool(false);
 
     call = wstxToken.getProtocolAddresses();
-    call.result
-      .expectList()[0]
-      .expectPrincipal(Utils.qualifiedName("arkadiko-vaults-manager-v1-2"));
-    call.result
-      .expectList()[1]
-      .expectPrincipal(Utils.qualifiedName("arkadiko-vaults-operations-v1-1"));
-    call.result
-      .expectList()[2]
-      .expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
-    call.result
-      .expectList()[3]
-      .expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
-    call.result
-      .expectList()[4]
-      .expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
+    call.result.expectList()[0].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-manager-v1-2"));
+    call.result.expectList()[1].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-operations-v1-3"));
+    call.result.expectList()[2].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
+    call.result.expectList()[3].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
+    call.result.expectList()[4].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
   },
 });
 

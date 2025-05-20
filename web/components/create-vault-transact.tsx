@@ -28,6 +28,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
+  const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const callCollateralizeAndMint = async () => {
     const decimals = coinAmounts['token-name'].toLowerCase().includes('stx') ? 1000000 : 100000000;
@@ -118,6 +119,19 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
           )
         ),
       ];
+    } else if (coinAmounts['token-name'].toLowerCase() === 'sbtc') {
+      postConditions = [
+        makeStandardFungiblePostCondition(
+          address || '',
+          FungibleConditionCode.LessEqual,
+          amount.value,
+          createAssetInfo(
+            sbtcContractAddress,
+            'sbtc-token',
+            'sbtc-token'
+          )
+        ),
+      ];
     } else {
       // atALEX
       postConditions = [
@@ -138,7 +152,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       network,
       contractAddress,
       stxAddress: address,
-      contractName: 'arkadiko-vaults-operations-v1-2',
+      contractName: 'arkadiko-vaults-operations-v1-3',
       functionName: 'open-vault',
       functionArgs: args,
       postConditions,

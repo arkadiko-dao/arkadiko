@@ -11,6 +11,7 @@ import { TokenPriceSelect } from './token-price-select';
 import { callReadOnlyFunction, stringAsciiCV, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { DefiLlama } from './defillama';
+import { BuyBackBurn } from './buyback-burn';
 
 async function asyncForEach(array: any, callback: any) {
   for (let index = 0; index < array.length; index++) {
@@ -142,7 +143,7 @@ export const Home: React.FC = () => {
     const fetchPoolData = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/tickers`);
       setPoolData(response.data);
-    }
+    };
 
     fetchPools();
     fetchPoolData();
@@ -299,6 +300,8 @@ export const Home: React.FC = () => {
         <DefiLlama />
 
         <MarketCap lastDikoPrice={lastDikoPrice} lastUsdaPrice={1.0} />
+
+        <BuyBackBurn />
 
         <Pools pools={pools} poolData={poolData} />
 

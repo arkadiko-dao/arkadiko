@@ -267,7 +267,7 @@ export const ManageVault = ({ match }) => {
       network,
       contractAddress,
       stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-2',
+      contractName: 'arkadiko-vaults-operations-v1-3',
       functionName: 'close-vault',
       functionArgs: args,
       postConditionMode: 0x01,
@@ -726,7 +726,7 @@ export const ManageVault = ({ match }) => {
                         <span className="block mt-1 text-xs text-gray-400 dark:text-gray-500">(based on the oracle price)</span>
                       </p>
                       <p className="mt-2.5 text-xl font-semibold text-gray-900">
-                        ${price / (['xbtc'].includes(vault?.collateralType?.toLowerCase()) ? decimals / 100 : decimals)}
+                        ${price / (['xbtc', 'sbtc'].includes(vault?.collateralType?.toLowerCase()) ? decimals / 100 : decimals)}
                       </p>
                     </div>
                     <div className="p-2 bg-gray-200 dark:bg-gray-300 rounded-3xl">
