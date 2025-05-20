@@ -9,31 +9,38 @@ const BN = require('bn.js');
 async function transact() {
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
-    contractName: 'arkadiko-governance-v4-2',
+    contractName: 'arkadiko-governance-v4-3',
     functionName: 'propose-dao',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
-      tx.uintCV(),
-      tx.stringUtf8CV('Fix - improve UX on stability fee payments'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/582'),
+      tx.uintCV(896662),
+      tx.stringUtf8CV('Fix - improve UX on stability fee payments and fix redemption fee underflow'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/592'),
       tx.listCV([
         tx.tupleCV({
           'name': tx.stringAsciiCV("vaults-operations"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-vaults-operations-v1-2"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-vaults-operations-v1-3"),
+          'can-mint': tx.trueCV(),
+          'can-burn': tx.trueCV()
+        }),
+        tx.tupleCV({
+          'name': tx.stringAsciiCV("vaults-manager"),
+          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-vaults-manager-v1-2"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         })
       ])
     ],
-    fee: new BN(100000, 10),
     senderKey: process.env.STACKS_PRIVATE_KEY,
     postConditionMode: 1,
-    network
+    network: 'mainnet'
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
+  const result = tx.broadcastTransaction({ transaction: transaction });
+  console.log(result);
   await utils.processing(result, transaction.txid(), 0);
 };
 
