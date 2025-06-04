@@ -8,7 +8,7 @@ import {
   cvToJSON,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { makeContractCall } from '@common/contract-call';
 
 import { tokenTraits } from '@common/vault-utils';
