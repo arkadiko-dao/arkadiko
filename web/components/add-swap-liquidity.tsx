@@ -9,7 +9,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { request } from '@stacks/connect';
+import { makeContractCall } from '@common/contract-call';
 
 import { tokenTraits } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
@@ -327,28 +327,31 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
     //     )
     //   );
     // }
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-swap-v2-1',
-      functionName: 'add-to-position',
-      functionArgs: [
-        Cl.contractPrincipal(tokenX['address'], tokenXParam),
-        Cl.contractPrincipal(tokenY['address'], tokenYParam),
-        Cl.contractPrincipal(contractAddress, swapTrait),
-        Cl.uint(parseInt(tokenXInput * Math.pow(10, tokenX['decimals']), 10)),
-        Cl.uint(parseInt(tokenYInput * Math.pow(10, tokenY['decimals']), 10)),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'add-to-position',
+        functionArgs: [
+          Cl.contractPrincipal(tokenX['address'], tokenXParam),
+          Cl.contractPrincipal(tokenY['address'], tokenYParam),
+          Cl.contractPrincipal(contractAddress, swapTrait),
+          Cl.uint(parseInt(tokenXInput * Math.pow(10, tokenX['decimals']), 10)),
+          Cl.uint(parseInt(tokenYInput * Math.pow(10, tokenY['decimals']), 10)),
+        ],
+        postConditions: postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   return (
