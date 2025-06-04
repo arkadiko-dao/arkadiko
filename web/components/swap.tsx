@@ -4,10 +4,9 @@ import { AppContext } from '@common/context';
 import { Container } from './home';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { request } from '@stacks/connect';
+import { makeContractCall } from '@common/contract-call';
 import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
@@ -19,6 +18,7 @@ import axios from 'axios';
 import { StyledIcon } from './ui/styled-icon';
 import { ChooseWalletModal } from './choose-wallet-modal';
 import { Redirect } from 'react-router-dom';
+import { Cl } from '@stacks/transactions';
 
 export const Swap: React.FC = () => {
   const env = process.env.REACT_APP_NETWORK_ENV;
@@ -401,10 +401,10 @@ export const Swap: React.FC = () => {
       return;
     }
 
-    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
-    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    let principalZ = contractPrincipalCV(tokenY['address'], tokenZTrait); // TODO: token Z address
-    const amount = uintCV((parseFloat(tokenXAmount) * Math.pow(10, tokenX['decimals'])).toFixed(0));
+    let principalX = Cl.contractPrincipal(tokenX['address'], tokenXTrait);
+    let principalY = Cl.contractPrincipal(tokenY['address'], tokenYTrait);
+    let principalZ = Cl.contractPrincipal(tokenY['address'], tokenZTrait); // TODO: token Z address
+    const amount = Cl.uint((parseFloat(tokenXAmount) * Math.pow(10, tokenX['decimals'])).toFixed(0));
     let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
@@ -419,9 +419,9 @@ export const Swap: React.FC = () => {
         principalY,
         principalZ,
         amount,
-        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-        inverseDirectionX ? trueCV() : falseCV(),
-        inverseDirectionY ? trueCV() : falseCV()
+        Cl.uint((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+        inverseDirectionX ? Cl.bool(true) : Cl.bool(false),
+        inverseDirectionY ? Cl.bool(true) : Cl.bool(false)
       ],
       postConditions,
       onFinish: data => {
@@ -449,9 +449,9 @@ export const Swap: React.FC = () => {
     let tokenNameY = tokenY['name'];
     const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
-    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
+    let principalX = Cl.contractPrincipal(tokenX['address'], tokenXTrait);
+    let principalY = Cl.contractPrincipal(tokenY['address'], tokenYTrait);
+    const amount = Cl.uint(tokenXAmount * Math.pow(10, tokenX['decimals']));
 
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
@@ -466,30 +466,31 @@ export const Swap: React.FC = () => {
 
     console.log('BUILDING TX');
     console.log(postConditions);
-    const response = await request('stx_callContract', {
-      contract: `${contractAddress}.arkadiko-swap-v2-1`,
-      functionName: contractName,
-      functionArgs: [
-        principalX,
-        principalY,
-        amount,
-        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-      ],
-      postConditions,
-      network: process.env.REACT_APP_NETWORK_ENV,
-    });
-    console.log('got response', response);
-
-    // onFinish: data => {
-    //   console.log('finished swap!', data);
-    //   setState(prevState => ({
-    //     ...prevState,
-    //     showTxModal: true,
-    //     currentTxMessage: '',
-    //     currentTxId: data.txId,
-    //     currentTxStatus: 'pending',
-    //   }));
-    // }
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName: "arkadiko-swap-v2-1",
+        functionName: contractName,
+        functionArgs: [
+          principalX,
+          principalY,
+          amount,
+          Cl.uint((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+        ],
+        postConditions: postConditions,
+        network,
+      },
+      async (error?, txId?) => {
+        setState(prevState => ({
+          ...prevState,
+          showTxModal: true,
+          currentTxMessage: '',
+          currentTxId: txId,
+          currentTxStatus: 'pending',
+        }));
+      }
+    );
   };
 
   let tabs = [];
