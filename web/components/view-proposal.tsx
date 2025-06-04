@@ -3,13 +3,7 @@ import { Modal } from '@blockstack/ui';
 import { Container } from './home';
 import {
   fetchCallReadOnlyFunction,
-  contractPrincipalCV,
-  createAssetInfo,
-  uintCV,
-  cvToJSON,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  standardPrincipalCV,
+  Cl
 } from '@stacks/transactions';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -17,7 +11,6 @@ import { request } from '@stacks/connect';
 import { AppContext } from '@common/context';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
-import BN from 'bn.js';
 import { Placeholder } from './ui/placeholder';
 import { classNames } from '@common/class-names';
 import { StyledIcon } from './ui/styled-icon';
@@ -57,7 +50,7 @@ export const ViewProposal = ({ match }) => {
         contractAddress,
         contractName: CONTRACT_NAME,
         functionName: 'get-proposal-by-id',
-        functionArgs: [uintCV(match.params.id)],
+        functionArgs: [Cl.uint(match.params.id)],
         senderAddress: stxAddress || contractAddress,
         network: network,
       });
@@ -103,9 +96,9 @@ export const ViewProposal = ({ match }) => {
           contractName: CONTRACT_NAME,
           functionName: 'get-tokens-by-member-by-id',
           functionArgs: [
-            uintCV(match.params.id),
-            standardPrincipalCV(stxAddress || ''),
-            contractPrincipalCV(contractAddress, 'arkadiko-token'),
+            Cl.uint(match.params.id),
+            Cl.standardPrincipal(stxAddress || ''),
+            Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
           ],
           senderAddress: stxAddress || '',
           network: network,
@@ -119,9 +112,9 @@ export const ViewProposal = ({ match }) => {
           contractName: CONTRACT_NAME,
           functionName: 'get-tokens-by-member-by-id',
           functionArgs: [
-            uintCV(match.params.id),
-            standardPrincipalCV(stxAddress || ''),
-            contractPrincipalCV(contractAddress, 'stdiko-token'),
+            Cl.uint(match.params.id),
+            Cl.standardPrincipal(stxAddress || ''),
+            Cl.contractPrincipal(contractAddress, 'stdiko-token'),
           ],
           senderAddress: stxAddress || '',
           network: network,
@@ -146,12 +139,13 @@ export const ViewProposal = ({ match }) => {
 
   const addVoteDikoFor = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfDikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfDikoVotes * 1000000, 10),
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
     ];
     await request('stx_callContract', {
       network,
@@ -160,13 +154,13 @@ export const ViewProposal = ({ match }) => {
       contractName: CONTRACT_NAME,
       functionName: 'vote-for',
       functionArgs: [
-        contractPrincipalCV(
+        Cl.contractPrincipal(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-stake-pool-diko-v2-1'
         ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfDikoVotes * 1000000),
+        Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+        Cl.uint(match.params.id),
+        Cl.uint(amountOfDikoVotes * 1000000),
       ],
       postConditions,
       onFinish: data => {
@@ -182,12 +176,13 @@ export const ViewProposal = ({ match }) => {
 
   const addVoteDikoAgainst = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfDikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfDikoVotes * 1000000, 10),
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
     ];
     await request('stx_callContract', {
       network,
@@ -196,13 +191,13 @@ export const ViewProposal = ({ match }) => {
       contractName: CONTRACT_NAME,
       functionName: 'vote-against',
       functionArgs: [
-        contractPrincipalCV(
+        Cl.contractPrincipal(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-stake-pool-diko-v2-1'
         ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfDikoVotes * 1000000),
+        Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+        Cl.uint(match.params.id),
+        Cl.uint(amountOfDikoVotes * 1000000),
       ],
       postConditions,
       onFinish: data => {
@@ -224,9 +219,9 @@ export const ViewProposal = ({ match }) => {
       contractName: CONTRACT_NAME,
       functionName: 'return-votes-to-member',
       functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(match.params.id),
-        standardPrincipalCV(stxAddress),
+        Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+        Cl.uint(match.params.id),
+        Cl.standardPrincipal(stxAddress),
       ],
       onFinish: data => {
         setState(prevState => ({
@@ -247,9 +242,9 @@ export const ViewProposal = ({ match }) => {
       contractName: CONTRACT_NAME,
       functionName: 'return-votes-to-member',
       functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
-        uintCV(match.params.id),
-        standardPrincipalCV(stxAddress),
+        Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
+        Cl.uint(match.params.id),
+        Cl.standardPrincipal(stxAddress),
       ],
       onFinish: data => {
         setState(prevState => ({
@@ -269,12 +264,13 @@ export const ViewProposal = ({ match }) => {
 
   const addVoteStdikoFor = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfStdikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfStdikoVotes * 1000000, 10),
+        asset: `${contractAddress}.stdiko-token::stdiko`,
+      },
     ];
     await request('stx_callContract', {
       network,
@@ -283,13 +279,13 @@ export const ViewProposal = ({ match }) => {
       contractName: CONTRACT_NAME,
       functionName: 'vote-for',
       functionArgs: [
-        contractPrincipalCV(
+        Cl.contractPrincipal(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-stake-pool-diko-v2-1'
         ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfStdikoVotes * 1000000),
+        Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
+        Cl.uint(match.params.id),
+        Cl.uint(amountOfStdikoVotes * 1000000),
       ],
       postConditions,
       onFinish: data => {
@@ -305,12 +301,13 @@ export const ViewProposal = ({ match }) => {
 
   const addVoteStdikoAgainst = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfStdikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfStdikoVotes * 1000000, 10),
+        asset: `${contractAddress}.stdiko-token::stdiko`,
+      },
     ];
     await request('stx_callContract', {
       network,
@@ -319,13 +316,13 @@ export const ViewProposal = ({ match }) => {
       contractName: CONTRACT_NAME,
       functionName: 'vote-against',
       functionArgs: [
-        contractPrincipalCV(
+        Cl.contractPrincipal(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-stake-pool-diko-v2-1'
         ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfStdikoVotes * 1000000),
+        Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
+        Cl.uint(match.params.id),
+        Cl.uint(amountOfStdikoVotes * 1000000),
       ],
       postConditions,
       onFinish: data => {

@@ -5,12 +5,7 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -27,14 +22,15 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   const inputRef = useRef<HTMLInputElement>(null);
 
   const unstakeDiko = async () => {
-    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
+    const amount = Cl.uint(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.LessEqual,
-        amount.value,
-        createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "lte",
+        amount: amount.value,
+        asset: `${contractAddress}.stdiko-token::stdiko`,
+      },
     ];
 
     await request('stx_callContract', {
@@ -44,9 +40,9 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'unstake',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
         amount,
       ],
       postConditionMode: 0x01,
@@ -58,8 +54,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
           currentTxStatus: 'pending',
         }));
         setShowUnstakeModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 

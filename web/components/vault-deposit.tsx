@@ -3,15 +3,7 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { Alert } from './ui/alert';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  FungibleConditionCode,
-  makeStandardSTXPostCondition,
-  makeStandardFungiblePostCondition,
-  createAssetInfo,
-  someCV,
-  standardPrincipalCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -139,35 +131,35 @@ export const VaultDeposit: React.FC<Props> = ({
     console.log('got hint:', hint);
 
     const args = [
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-tokens-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-data-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-sorted-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-pool-active-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-helpers-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-oracle-v2-3'
       ),
-      contractPrincipalCV(tokenAddress, token),
-      uintCV(collateralAmount),
-      uintCV(debtAmount),
-      someCV(standardPrincipalCV(hint['prevOwner'])),
-      uintCV(100)
+      Cl.contractPrincipal(tokenAddress, token),
+      Cl.uint(collateralAmount),
+      Cl.uint(debtAmount),
+      Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
+      Cl.uint(100)
     ];
 
     await request('stx_callContract', {

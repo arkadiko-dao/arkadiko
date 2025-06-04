@@ -5,12 +5,7 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -55,7 +50,7 @@ export const StakeLpModal = ({
   };
 
   const stake = async () => {
-    const amount = uintCV(Number((parseFloat(stakeAmount) * Math.pow(10, decimals)).toFixed(0)));
+    const amount = Cl.uint(Number((parseFloat(stakeAmount) * Math.pow(10, decimals)).toFixed(0)));
     let contractName = 'arkadiko-stake-pool-diko-usda-v1-1';
     let tokenContract = 'arkadiko-swap-token-diko-usda';
     let ftContract = 'diko-usda';
@@ -106,8 +101,8 @@ export const StakeLpModal = ({
         contractName: contractName,
         functionName: 'stake',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-          contractPrincipalCV(assetContractAddress, tokenContract),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          Cl.contractPrincipal(assetContractAddress, tokenContract),
           amount,
         ],
         postConditions,
@@ -119,8 +114,7 @@ export const StakeLpModal = ({
             currentTxStatus: 'pending',
           }));
           setShowStakeModal(false);
-        },
-        anchorMode: AnchorMode.Any,
+        }
       }, resolveProvider() || window.StacksProvider);
     } else {
       await request('stx_callContract', {
@@ -130,9 +124,9 @@ export const StakeLpModal = ({
         contractName: 'arkadiko-stake-registry-v2-1',
         functionName: 'stake',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-          contractPrincipalCV(contractAddress, contractName),
-          contractPrincipalCV(assetContractAddress, tokenContract),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          Cl.contractPrincipal(contractAddress, contractName),
+          Cl.contractPrincipal(assetContractAddress, tokenContract),
           amount,
         ],
         postConditions,

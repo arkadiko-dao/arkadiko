@@ -5,12 +5,7 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -54,14 +49,15 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
   };
 
   const stakeDiko = async () => {
-    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
+    const amount = Cl.uint(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        amount.value,
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: amount.value,
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
     ];
     await request('stx_callContract', {
       network,
@@ -70,9 +66,9 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
       contractName: 'arkadiko-stake-registry-v2-1',
       functionName: 'stake',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
         amount,
       ],
       postConditions,
@@ -84,8 +80,7 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
           currentTxStatus: 'pending',
         }));
         setShowStakeModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 

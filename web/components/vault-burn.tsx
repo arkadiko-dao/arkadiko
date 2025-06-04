@@ -2,14 +2,7 @@ import React, { useContext, useState, useRef } from 'react';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  someCV,
-  standardPrincipalCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -48,12 +41,13 @@ export const VaultBurn: React.FC<Props> = ({
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt(totalToBurn * 1000000 * 1.1, 10)).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "lte",
+        amount: parseInt(totalToBurn * 1000000 * 1.1, 10),
+        asset: `${contractAddress}.usda-token::usda`,
+      },
     ];
 
     const tokenAddress = tokenInfo['address'];
@@ -69,35 +63,35 @@ export const VaultBurn: React.FC<Props> = ({
     console.log('got hint:', hint);
 
     const args = [
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-tokens-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-data-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-sorted-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-pool-active-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-helpers-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-oracle-v2-3'
       ),
-      contractPrincipalCV(tokenAddress, token),
-      uintCV(collateralAmount),
-      uintCV(Math.max(0, parseInt(debtAmount, 10))),
-      someCV(standardPrincipalCV(hint['prevOwner'])),
-      uintCV(100)
+      Cl.contractPrincipal(tokenAddress, token),
+      Cl.uint(collateralAmount),
+      Cl.uint(Math.max(0, parseInt(debtAmount, 10))),
+      Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
+      Cl.uint(100)
     ];
 
     await request('stx_callContract', {

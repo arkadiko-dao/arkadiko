@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef } from 'react';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
-import { AnchorMode, contractPrincipalCV, uintCV, someCV, standardPrincipalCV, makeStandardFungiblePostCondition, createAssetInfo, FungibleConditionCode } from '@stacks/transactions';
+import { Cl } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { request } from '@stacks/connect';
@@ -51,44 +51,45 @@ export const VaultMint: React.FC<Props> = ({
     const mintFee = await calculateMintFee(Number(usdToMint) * 1000000);
 
     const args = [
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-tokens-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-data-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-sorted-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-pool-active-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-helpers-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-oracle-v2-3'
       ),
-      contractPrincipalCV(tokenAddress, token),
-      uintCV(collateralAmount),
-      uintCV(debtAmount),
-      someCV(standardPrincipalCV(hint['prevOwner'])),
-      uintCV(parseInt(mintFee, 10))
+      Cl.contractPrincipal(tokenAddress, token),
+      Cl.uint(collateralAmount),
+      Cl.uint(debtAmount),
+      Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
+      Cl.uint(parseInt(mintFee, 10))
     ];
 
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt(stabilityFee * 1.3, 10)).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
+      {
+        type: "ft-postcondition",
+        address: senderAddress!,
+        condition: "lte",
+        amount: parseInt(stabilityFee * 1.3, 10),
+        asset: `${contractAddress}.usda-token::usda`,
+      },
     ];
 
     await request('stx_callContract', {
@@ -106,8 +107,7 @@ export const VaultMint: React.FC<Props> = ({
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
