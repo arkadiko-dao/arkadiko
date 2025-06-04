@@ -2,9 +2,8 @@ import { useContext } from 'react';
 import { AppContext } from '@common/context';
 import { UserData } from '@stacks/auth';
 
-export const useSTXAddress = (): string | undefined => {
-  const [{ userData, stxAddress }, _] = useContext(AppContext);
-  if (stxAddress) return stxAddress;
+export const useSTXAddress = (altUserData: any): string | undefined => {
+  const [{ userData }, _] = useContext(AppContext);
 
   let addr;
   if (userData?.addresses && userData.addresses['stx']) addr = userData.addresses['stx'][0]?.address
@@ -25,14 +24,4 @@ export const useSTXAddress = (): string | undefined => {
 export const bnsName = (): string | undefined => {
   const [{ userData }, _] = useContext(AppContext);
   return userData?.username || useSTXAddress();
-};
-
-export const resolveSTXAddress = (userData: UserData | null) => {
-  const env = process.env.REACT_APP_NETWORK_ENV;
-  const isMainnet = env == 'mainnet';
-
-  if (isMainnet) {
-    return userData?.profile?.stxAddress?.mainnet as string;
-  }
-  return userData?.profile?.stxAddress?.testnet as string;
 };

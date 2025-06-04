@@ -54,40 +54,30 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     console.log('got provider', provider);
     if (provider) {
       try {
-        const response = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
-        console.log('gotcha', response);
+        const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+        console.log('gotcha', userData);
+        setState(prevState => ({ ...prevState, userData }));
       } catch (e) {
         localStorage.removeItem("sign-provider");
         clearSelectedProviderId();
       }
-      // await doOpenAuth(true, undefined, provider);
     } else {
       setShowChooseWalletModal(true);
     }
   };
 
-
   const onProviderChosen = async (providerString: string) => {
     localStorage.setItem("sign-provider", providerString);
     setShowChooseWalletModal(false);
 
-    if (providerString == "okx") {
-      const provider = window.okxwallet.stacks;
-      const resp = await provider.connect();
-      setStxAddress(resp["address"]);
-      setOkxProvider(provider);
-    } else {
-      try {
-        setSelectedProviderId(STACKS_PROVIDERS[providerString]);
-        const response = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
-        setUserData(response);
-      } catch (e) {
-        localStorage.removeItem("stacking-sign-provider");
-        clearSelectedProviderId();
-      }
+    try {
+      setSelectedProviderId(STACKS_PROVIDERS[providerString]);
+      const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+      setState(prevState => ({ ...prevState, userData }));
+    } catch (e) {
+      localStorage.removeItem("stacking-sign-provider");
+      clearSelectedProviderId();
     }
-
-    await gaEvent("wallet_connect");
   };
 
   const onSignOut = () => {
