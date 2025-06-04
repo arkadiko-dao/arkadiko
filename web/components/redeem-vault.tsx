@@ -5,15 +5,7 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  standardPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  noneCV,
-  someCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -56,14 +48,15 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
   };
 
   const redeemVaultTransact = async () => {
-    const amount = uintCV(Number((parseFloat(redeemAmount) * 1000000).toFixed(0)));
+    const amount = Cl.uint(Number((parseFloat(redeemAmount) * 1000000).toFixed(0)));
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        amount.value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: amount.value,
+        asset: `${contractAddress}.usda-token::usda`,
+      },
     ];
 
     const vault = collateralToRedeem === 'stSTX' ? stStxVault : collateralToRedeem === 'xBTC' ? xBtcVault : stxVault;
@@ -83,16 +76,16 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
       contractName: 'arkadiko-vaults-manager-v1-2',
       functionName: 'redeem-vault',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-data-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-sorted-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-oracle-v2-3'),
-        standardPrincipalCV(vault['owner']),
-        contractPrincipalCV(vault['token'].split('.')[0], vault['token'].split('.')[1]),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-data-v1-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-sorted-v1-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
+        Cl.contractPrincipal(contractAddress, 'arkadiko-oracle-v2-3'),
+        Cl.standardPrincipal(vault['owner']),
+        Cl.contractPrincipal(vault['token'].split('.')[0], vault['token'].split('.')[1]),
         amount,
-        someCV(standardPrincipalCV(hint['prevOwner'])),
+        Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
       ],
       postConditions,
       onFinish: data => {
@@ -103,8 +96,7 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
           currentTxStatus: 'pending',
         }));
         setShowRedeemModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 

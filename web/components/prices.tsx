@@ -8,7 +8,6 @@ import {
   fetchCallReadOnlyFunction,
   contractPrincipalCV,
   cvToJSON,
-  createStacksPrivateKey,
   standardPrincipalCV,
   makeSTXTokenTransfer,
   privateKeyToString,
@@ -141,22 +140,6 @@ export const Prices = () => {
     }
   }, [state.currentTxStatus]);
 
-  const addMocknetStx = async () => {
-    const key = '753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601';
-    const senderKey = createStacksPrivateKey(key);
-    console.log('Adding STX from mocknet address to', address, 'on network', network);
-
-    const transaction = await makeSTXTokenTransfer({
-      recipient: standardPrincipalCV(address || ''),
-      amount: new BN(5000000000),
-      senderKey: privateKeyToString(senderKey),
-      network: network,
-      anchorMode: AnchorMode.Any,
-      fee: new BN(500000),
-    });
-    await broadcastTransaction(transaction, network);
-  };
-
   const assets = [
     {
       token: 'STX',
@@ -198,22 +181,6 @@ export const Prices = () => {
         <h3 className="text-lg font-medium leading-6 text-gray-900 font-headings dark:text-zinc-50">
           Assets
         </h3>
-        <div className="flex mt-3 sm:mt-0 sm:ml-4">
-          {env == 'mocknet' ? (
-            <div className="flex items-center justify-end">
-              <span className="px-2 py-1 text-xs text-gray-800 dark:text-zinc-100">
-                Mocknet actions:
-              </span>
-              <button
-                type="button"
-                onClick={() => addMocknetStx()}
-                className="inline-flex items-center px-3 py-2 text-sm font-normal leading-4 text-indigo-700 bg-indigo-100 border border-transparent rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Get 5000 STX from mocknet
-              </button>
-            </div>
-          ) : null}
-        </div>
       </header>
 
       <div className="min-w-full mt-4 overflow-hidden overflow-x-auto align-middle border border-gray-200 rounded-lg dark:border-zinc-600 lg:hidden">

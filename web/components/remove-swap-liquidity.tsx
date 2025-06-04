@@ -3,15 +3,9 @@ import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import {
-  AnchorMode,
   fetchCallReadOnlyFunction,
   cvToJSON,
-  contractPrincipalCV,
-  uintCV,
-  makeStandardFungiblePostCondition,
-  FungibleConditionCode,
-  createAssetInfo,
-  makeContractFungiblePostCondition,
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -73,8 +67,8 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(tokenXAddress, tokenXContract),
-          contractPrincipalCV(tokenYAddress, tokenYContract),
+          Cl.contractPrincipal(tokenXAddress, tokenXContract),
+          Cl.contractPrincipal(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -173,26 +167,27 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     }
 
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt((balance / 100) * (percentageToRemove + 5), 10)).value,
-        createAssetInfo(contractAddress, swapTrait, tokenTraits[pairName]['swap'].toLowerCase())
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.LessEqual,
-        new BN(tokenXToReceive, 10),
-        createAssetInfo(contractAddress, tokenXParam, tokenXName)
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.LessEqual,
-        new BN(tokenYToReceive, 10),
-        createAssetInfo(contractAddress, tokenYParam, tokenYName)
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "lte",
+        amount: parseInt((balance / 100) * (percentageToRemove + 5), 10),
+        asset: `${contractAddress}.${swapTrait}::${tokenTraits[pairName]['swap'].toLowerCase()}`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-swap-v2-1`,
+        condition: "lte",
+        amount: parseInt(tokenXToReceive, 10),
+        asset: `${contractAddress}.${tokenXParam}::${tokenXName}`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-swap-v2-1`,
+        condition: "lte",
+        amount: parseInt(tokenYToReceive, 10),
+        asset: `${contractAddress}.${tokenXYaram}::${tokenYName}`,
+      },
     ];
     await request('stx_callContract', {
       network,
@@ -201,10 +196,10 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       contractName: 'arkadiko-swap-v2-1',
       functionName: 'reduce-position',
       functionArgs: [
-        contractPrincipalCV(tokenX['address'], tokenXParam),
-        contractPrincipalCV(tokenY['address'], tokenYParam),
-        contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(percentageToRemove),
+        Cl.contractPrincipal(tokenX['address'], tokenXParam),
+        Cl.contractPrincipal(tokenY['address'], tokenYParam),
+        Cl.contractPrincipal(contractAddress, swapTrait),
+        Cl.uint(percentageToRemove),
       ],
       postConditionMode: 0x01,
       onFinish: data => {
@@ -213,8 +208,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
