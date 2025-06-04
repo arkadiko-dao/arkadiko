@@ -4,14 +4,7 @@ import { request } from '@stacks/connect';
 import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
-  uintCV,
-  listCV,
-  makeContractFungiblePostCondition,
-  makeContractSTXPostCondition,
-  FungibleConditionCode,
-  createAssetInfo,
-  contractPrincipalCV,
-  trueCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { tokenTraits } from '@common/vault-utils';
@@ -38,44 +31,43 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const [state, setState] = useContext(AppContext);
 
   const claim = async () => {
-    var contract = 'arkadiko-vaults-pool-liq-v1-2';
-
+    const contract = 'arkadiko-vaults-pool-liq-v1-2';
     const postConditions = [
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(contractAddress, 'wstx-token', 'wstx')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(stStxContractAddress, 'ststx-token', 'ststx')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(sbtcContractAddress, 'sbtc-token', 'sbtc-token')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(xbtcContractAddress, 'Wrapped-Bitcoin', 'wrapped-bitcoin')
-      )
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.${contract}`,
+        condition: "gte",
+        amount: 0,
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.${contract}`,
+        condition: "gte",
+        amount: 0,
+        asset: `${contractAddress}.wstx-token::wstx`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.${contract}`,
+        condition: "gte",
+        amount: 0,
+        asset: `${stStxContractAddress}.ststx-token::ststx`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.${contract}`,
+        condition: "gte",
+        amount: 0,
+        asset: `${sbtcContractAddress}.sbtc-token::sbtc-token`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.${contract}`,
+        condition: "gte",
+        amount: 0,
+        asset: `${xbtcContractAddress}.Wrapped-Bitcoin::wrapped-bitcoin`,
+      }
     ];
 
     // Call
@@ -86,7 +78,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
       contractName: contract,
       functionName: 'claim-pending-rewards',
       functionArgs: [
-        contractPrincipalCV(token.split('.')[0], token.split('.')[1])
+        Cl.contractPrincipal(token.split('.')[0], token.split('.')[1])
       ],
       postConditions,
       postConditionMode: 0x01,

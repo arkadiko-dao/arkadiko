@@ -131,7 +131,7 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
       functionArgs: [
         Cl.list(rewardIds.map((id) =>  Cl.uint(id))),
         Cl.contractPrincipal(token.split('.')[0], token.split('.')[1]),
-        Cl.true()
+        Cl.bool(true)
       ],
       postConditions,
       onFinish: data => {

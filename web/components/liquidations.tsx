@@ -6,18 +6,10 @@ import { Container } from './home';
 import { request } from '@stacks/connect';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
-  AnchorMode,
+  Cl,
+  Pc,
   fetchCallReadOnlyFunction,
   cvToJSON,
-  uintCV,
-  contractPrincipalCV,
-  standardPrincipalCV,
-  makeStandardFungiblePostCondition,
-  makeContractFungiblePostCondition,
-  makeContractSTXPostCondition,
-  FungibleConditionCode,
-  createAssetInfo,
-  listCV
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
@@ -83,7 +75,7 @@ export const Liquidations: React.FC = () => {
       stxAddress,
       contractName: 'arkadiko-stacker-payer-v3-8',
       functionName: 'redeem-stx',
-      functionArgs: [uintCV(state.balance['xstx'])],
+      functionArgs: [Cl.uint(state.balance['xstx'])],
       postConditionMode: 0x01,
       onFinish: data => {
         setState(prevState => ({
@@ -91,26 +83,26 @@ export const Liquidations: React.FC = () => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
   const stake = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(Number((parseFloat(stakeAmount) * 1000000 * 1.01).toFixed(0))).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "lte",
+        amount: Number((parseFloat(stakeAmount) * 1000000 * 1.01).toFixed(0)),
+        asset: `${contractAddress}.usda-token::usda`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        condition: "gte",
+        amount: 0,
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
     ];
 
     await request('stx_callContract', {
@@ -120,13 +112,13 @@ export const Liquidations: React.FC = () => {
       contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'stake',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))),
-        listCV([
-          contractPrincipalCV(contractAddress, 'wstx-token'),
-          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
-          contractPrincipalCV(sbtcContractAddress, 'sbtc-token')
+        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        Cl.uint(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))),
+        Cl.list([
+          Cl.contractPrincipal(contractAddress, 'wstx-token'),
+          Cl.contractPrincipal(stStxContractAddress, 'ststx-token'),
+          Cl.contractPrincipal(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          Cl.contractPrincipal(sbtcContractAddress, 'sbtc-token')
         ])
       ],
       postConditions,
@@ -137,54 +129,48 @@ export const Liquidations: React.FC = () => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
   const unstake = async () => {
     const postConditions = [
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.Equal,
-        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(contractAddress, 'wstx-token', 'wstx')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(stStxContractAddress, 'ststx-token', 'ststx')
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(xbtcContractAddress, 'Wrapped-Bitcoin', 'wrapped-bitcoin')
-      ),
-      makeContractSTXPostCondition(
-        contractAddress,
-        'arkadiko-vaults-pool-liq-v1-2',
-        FungibleConditionCode.GreaterEqual,
-        0
-      ),
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        condition: "eq",
+        amount: Number((parseFloat(unstakeAmount) * 1000000).toFixed(0)),
+        asset: `${contractAddress}.usda-token::usda`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        condition: "gte",
+        amount: 0,
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        condition: "gte",
+        amount: 0,
+        asset: `${contractAddress}.wstx-token::wstx`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        condition: "gte",
+        amount: 0,
+        asset: `${stStxContractAddress}.ststx-token::ststx`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        condition: "gte",
+        amount: 0,
+        asset: `${xbtcContractAddress}.Wrapped-Bitcoin::wrapped-bitcoin`,
+      },
+      Pc.principal(`${contractAddress}.arkadiko-vaults-pool-liq-v1-2`).willSendGte(0).ustx(),
     ];
 
     await request('stx_callContract', {
@@ -194,13 +180,13 @@ export const Liquidations: React.FC = () => {
       contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'unstake',
       functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        uintCV(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))),
-        listCV([
-          contractPrincipalCV(contractAddress, 'wstx-token'),
-          contractPrincipalCV(stStxContractAddress, 'ststx-token'),
-          contractPrincipalCV(xbtcContractAddress, 'Wrapped-Bitcoin'),
-          contractPrincipalCV(sbtcContractAddress, 'sbtc-token')
+        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+        Cl.uint(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))),
+        Cl.list([
+          Cl.contractPrincipal(contractAddress, 'wstx-token'),
+          Cl.contractPrincipal(stStxContractAddress, 'ststx-token'),
+          Cl.contractPrincipal(xbtcContractAddress, 'Wrapped-Bitcoin'),
+          Cl.contractPrincipal(sbtcContractAddress, 'sbtc-token')
         ])
       ],
       postConditions: [],
@@ -211,8 +197,7 @@ export const Liquidations: React.FC = () => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
@@ -222,8 +207,8 @@ export const Liquidations: React.FC = () => {
       contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'get-pending-rewards',
       functionArgs: [
-        standardPrincipalCV(stxAddress),
-        contractPrincipalCV(tokenAddress, tokenName),
+        Cl.standardPrincipal(stxAddress),
+        Cl.contractPrincipal(tokenAddress, tokenName),
       ],
       senderAddress: stxAddress || '',
       network: network,
@@ -292,8 +277,8 @@ export const Liquidations: React.FC = () => {
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-token'),
-          contractPrincipalCV(contractAddress, 'usda-token'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
+          Cl.contractPrincipal(contractAddress, 'usda-token'),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -310,7 +295,7 @@ export const Liquidations: React.FC = () => {
         contractName: 'usda-token',
         functionName: 'get-balance',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-liq-v1-2'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-pool-liq-v1-2'),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -325,7 +310,7 @@ export const Liquidations: React.FC = () => {
         contractName: 'arkadiko-vaults-pool-liq-v1-2',
         functionName: 'get-stake-of',
         functionArgs: [
-          standardPrincipalCV(stxAddress || ''),
+          Cl.standardPrincipal(stxAddress || ''),
         ],
         senderAddress: stxAddress || '',
         network: network,
