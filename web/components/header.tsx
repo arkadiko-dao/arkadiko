@@ -2,7 +2,6 @@ import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { Menu, Transition, Disclosure } from '@headlessui/react';
 import { AppContext } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { request } from '@stacks/connect';
 import { bnsName } from '@common/use-stx-address';
 import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
@@ -13,6 +12,7 @@ import { getPendingTransactions } from '@common/transactions';
 import { MempoolContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ChooseWalletModal } from './choose-wallet-modal';
+import { clearSelectedProviderId, request, setSelectedProviderId } from '@stacks/connect';
 
 interface HeaderProps {
   signOut: () => void;
@@ -30,6 +30,14 @@ const shortAddress = (address: string | null) => {
   return '';
 };
 
+export const STACKS_PROVIDERS = {
+  xverse: 'XverseProviders.BitcoinProvider',
+  leather: 'LeatherProvider',
+  asigna: 'AsignaProvider',
+  fordefi: 'FordefiProviders.UtxoProvider',
+  //orange: 'OrangeStacksProvider',
+};
+
 export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const env = process.env.REACT_APP_NETWORK_ENV;
   const [state, _] = useContext(AppContext);
@@ -43,19 +51,43 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
+    console.log('got provider', provider);
     if (provider) {
+      try {
+        const response = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+        console.log('gotcha', response);
+      } catch (e) {
+        localStorage.removeItem("sign-provider");
+        clearSelectedProviderId();
+      }
       // await doOpenAuth(true, undefined, provider);
     } else {
       setShowChooseWalletModal(true);
     }
   };
 
+
   const onProviderChosen = async (providerString: string) => {
-    localStorage.setItem('sign-provider', providerString);
+    localStorage.setItem("sign-provider", providerString);
     setShowChooseWalletModal(false);
 
-    const provider = resolveProvider();
-    // await doOpenAuth(true, undefined, provider);
+    if (providerString == "okx") {
+      const provider = window.okxwallet.stacks;
+      const resp = await provider.connect();
+      setStxAddress(resp["address"]);
+      setOkxProvider(provider);
+    } else {
+      try {
+        setSelectedProviderId(STACKS_PROVIDERS[providerString]);
+        const response = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+        setUserData(response);
+      } catch (e) {
+        localStorage.removeItem("stacking-sign-provider");
+        clearSelectedProviderId();
+      }
+    }
+
+    await gaEvent("wallet_connect");
   };
 
   const onSignOut = () => {
