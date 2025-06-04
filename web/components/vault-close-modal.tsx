@@ -4,8 +4,7 @@ import { tokenList } from '@components/token-swap-list';
 import { AppContext } from '@common/context';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
 import { tokenTraits } from '@common/vault-utils';
 import { VaultProps } from './vault';
 
@@ -27,7 +26,6 @@ export const VaultCloseModal: React.FC<Props> = ({
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (

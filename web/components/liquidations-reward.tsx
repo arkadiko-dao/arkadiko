@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
 import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network, blocksToTime, resolveProvider } from '@common/utils';
+import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
   AnchorMode,

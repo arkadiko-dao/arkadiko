@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ThemeProvider, theme } from '@blockstack/ui';
-import { Connect } from '@stacks/connect-react';
-import { AuthOptions } from '@stacks/connect';
 import { UserSession, AppConfig } from '@stacks/auth';
 import { defaultState, AppContext, AppState } from '@common/context';
 import { Header } from '@components/header';
@@ -9,7 +7,7 @@ import { SubHeader } from '@components/sub-header';
 import { Routes } from '@components/routes';
 import { getRPCClient } from '@common/utils';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
@@ -38,7 +36,7 @@ export const getBalance = async (address: string) => {
   try {
     // xUSD/USDA
     // Need to fetch it via contract as extra token-id param needed
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
       contractName: 'token-amm-swap-pool',
       functionName: 'get-balance',
@@ -50,7 +48,7 @@ export const getBalance = async (address: string) => {
       network: network,
     });
     lpXusdUsdaBalance = cvToJSON(call).value.value;
-    const call2 = await callReadOnlyFunction({
+    const call2 = await fetchCallReadOnlyFunction({
       contractAddress: process.env.ATALEX_CONTRACT_ADDRESS!,
       contractName: 'token-amm-swap-pool',
       functionName: 'get-balance',
@@ -185,7 +183,7 @@ export const App: React.FC = () => {
     const collTypes = {};
     state.definedCollateralTypes.forEach(async tokenAddress => {
       const tokenParts = tokenAddress.split('.');
-      const types = await callReadOnlyFunction({
+      const types = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-tokens-v1-1',
         functionName: 'get-token',

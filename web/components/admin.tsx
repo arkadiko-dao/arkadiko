@@ -1,6 +1,6 @@
 import React from 'react';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { useSTXAddress } from '@common/use-stx-address';
 import {
   AnchorMode,
@@ -8,7 +8,7 @@ import {
   contractPrincipalCV,
   stringAsciiCV,
   standardPrincipalCV,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON
 } from '@stacks/transactions';
 
@@ -18,7 +18,7 @@ export const Admin = () => {
   const { doContractCall } = useConnect();
 
   const exec = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
