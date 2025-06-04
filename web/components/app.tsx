@@ -135,15 +135,13 @@ export const App: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [finishedOnboarding, setFinishedOnboarding] = useState(true);
 
-  const appConfig = new AppConfig(['store_write', 'publish_data'], document.location.href);
-  const userSession = new UserSession({ appConfig });
-
   useEffect(() => {
     setState(prevState => ({ ...prevState, currentTxId: '', currentTxStatus: '' }));
   }, [location.pathname]);
 
   const signOut = () => {
-    userSession.signUserOut();
+    disconnect();
+    clearSelectedProviderId();
     setState(defaultState());
   };
 
@@ -249,8 +247,8 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (userSession.isUserSignedIn()) {
-      const userData = userSession.loadUserData();
+    if (isConnected()) {
+      const userData = getLocalStorage();
       const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
       setFinishedOnboarding(doneOnboarding === 'true');
 
@@ -272,25 +270,8 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const handleRedirectAuth = async () => {
-    if (userSession.isSignInPending()) {
-      const userData = await userSession.handlePendingSignIn();
-      fetchBalance(resolveSTXAddress(userData));
-      fetchCollateralTypes(resolveSTXAddress(userData));
-      fetchStackingCycle();
-
-      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
-      setFinishedOnboarding(doneOnboarding === 'true');
-      setState(prevState => ({ ...prevState, userData }));
-    }
-  };
-
-  React.useEffect(() => {
-    void handleRedirectAuth();
-  }, []);
-
   const onFinishLogin = () => {
-    const userData = userSession.loadUserData();
+    const userData = getLocalStorage();
     const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
     setFinishedOnboarding(doneOnboarding === 'true');
 

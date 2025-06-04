@@ -4,7 +4,6 @@ import { request } from '@stacks/connect';
 import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
   uintCV,
   listCV,
   makeContractFungiblePostCondition,
@@ -97,8 +96,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
     });
   }
 

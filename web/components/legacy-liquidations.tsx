@@ -5,16 +5,8 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
 import {
-  AnchorMode,
   fetchCallReadOnlyFunction,
-  cvToJSON,
-  uintCV,
-  contractPrincipalCV,
-  standardPrincipalCV,
-  makeStandardFungiblePostCondition,
-  makeContractFungiblePostCondition,
-  FungibleConditionCode,
-  createAssetInfo
+  cvToJSON
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { microToReadable } from '@common/vault-utils';
@@ -80,7 +72,7 @@ export const LegacyLiquidations: React.FC = () => {
       contractName: 'arkadiko-liquidation-rewards-ui-v2-2',
       functionName: 'get-user-tracking',
       functionArgs: [
-        standardPrincipalCV(stxAddress || ''),
+        Cl.standardPrincipal(stxAddress || ''),
       ],
       senderAddress: stxAddress || '',
       network: network,
@@ -95,7 +87,7 @@ export const LegacyLiquidations: React.FC = () => {
       contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
       functionName: 'get-user-tracking',
       functionArgs: [
-        standardPrincipalCV(stxAddress || ''),
+        Cl.standardPrincipal(stxAddress || ''),
       ],
       senderAddress: stxAddress || '',
       network: network,
@@ -111,9 +103,9 @@ export const LegacyLiquidations: React.FC = () => {
         contractName: 'arkadiko-liquidation-rewards-v1-2',
         functionName: 'get-user-reward-info',
         functionArgs: [
-          uintCV(rewardId),
-          principalCV(stxAddress),
-          contractPrincipalCV(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
+          Cl.uint(rewardId),
+          Cl.principal(stxAddress),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-liquidation-pool-v1-1'),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -144,7 +136,7 @@ export const LegacyLiquidations: React.FC = () => {
         contractName: 'arkadiko-liquidation-ui-v1-2',
         functionName: 'get-user-reward-info',
         functionArgs: [
-          uintCV(rewardId),
+          Cl.uint(rewardId),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -322,7 +314,7 @@ export const LegacyLiquidations: React.FC = () => {
         contractName: 'arkadiko-liquidation-pool-v1-1',
         functionName: 'get-staker-lockup',
         functionArgs: [
-          standardPrincipalCV(stxAddress || ''),
+          Cl.standardPrincipal(stxAddress || ''),
         ],
         senderAddress: stxAddress || '',
         network: network,
