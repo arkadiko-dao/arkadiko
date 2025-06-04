@@ -40,7 +40,7 @@ export const STACKS_PROVIDERS = {
 
 export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const env = process.env.REACT_APP_NETWORK_ENV;
-  const [state, _] = useContext(AppContext);
+  const [state, setState] = useContext(AppContext);
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
   const name = bnsName();
   const address = useSTXAddress();
@@ -55,7 +55,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     if (provider) {
       try {
         const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
-        console.log('gotcha', userData);
         setState(prevState => ({ ...prevState, userData }));
       } catch (e) {
         localStorage.removeItem("sign-provider");
@@ -75,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
       const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
       setState(prevState => ({ ...prevState, userData }));
     } catch (e) {
-      localStorage.removeItem("stacking-sign-provider");
+      localStorage.removeItem("sign-provider");
       clearSelectedProviderId();
     }
   };
