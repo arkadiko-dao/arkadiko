@@ -408,34 +408,34 @@ export const Swap: React.FC = () => {
     let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-multi-hop-swap-v1-1',
-      functionName: 'swap-x-for-z',
-      functionArgs: [
-        principalX,
-        principalY,
-        principalZ,
-        amount,
-        Cl.uint((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-        inverseDirectionX ? Cl.bool(true) : Cl.bool(false),
-        inverseDirectionY ? Cl.bool(true) : Cl.bool(false)
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished multihop swap!', data);
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName: "arkadiko-multi-hop-swap-v1-1",
+        functionName: "swap-x-for-z",
+        functionArgs: [
+          principalX,
+          principalY,
+          principalZ,
+          amount,
+          Cl.uint((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+          inverseDirectionX ? Cl.bool(true) : Cl.bool(false),
+          inverseDirectionY ? Cl.bool(true) : Cl.bool(false)
+        ],
+        postConditions: postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
           showTxModal: true,
           currentTxMessage: '',
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const swapTokens = async () => {
@@ -464,8 +464,6 @@ export const Swap: React.FC = () => {
     }
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    console.log('BUILDING TX');
-    console.log(postConditions);
     await makeContractCall(
       {
         stxAddress: stxAddress,
