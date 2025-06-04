@@ -1,11 +1,8 @@
 import {
-  makeStandardSTXPostCondition,
-  makeStandardFungiblePostCondition,
+  Pc,
+  Cl,
   FungibleConditionCode,
-  makeContractFungiblePostCondition,
-  makeContractSTXPostCondition,
-  createAssetInfo,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON
 } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
@@ -72,7 +69,7 @@ export const availableCoinsToMint = (
 
 export const calculateMintFee = async (debtAmount: number) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const fetchedPrice = await callReadOnlyFunction({
+  const fetchedPrice = await fetchCallReadOnlyFunction({
     contractAddress,
     contractName: "arkadiko-vaults-operations-v1-3",
     functionName: "get-mint-fee",
@@ -387,7 +384,7 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
 
   if (tokenX['nameInPair'] === 'wstx') {
     postConditions.push(
-      makeStandardSTXPostCondition(sender, FungibleConditionCode.Equal, amountSent)
+      Pc.principal(sender).willSendEq(amountSent).ustx()
     );
   }
   postConditions.push(

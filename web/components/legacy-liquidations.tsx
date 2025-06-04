@@ -6,7 +6,7 @@ import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
 import {
   AnchorMode,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON,
   uintCV,
   contractPrincipalCV,
@@ -47,7 +47,7 @@ export const LegacyLiquidations: React.FC = () => {
   const [burnBlockHeight, setBurnBlockHeight] = useState(0);
 
   const getRewardCountV1 = async () => {
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-liquidation-rewards-v1-1',
       functionName: 'get-total-reward-ids',
@@ -61,7 +61,7 @@ export const LegacyLiquidations: React.FC = () => {
   };
 
   const getRewardCount = async () => {
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-liquidation-rewards-v1-2',
       functionName: 'get-total-reward-ids',
@@ -75,7 +75,7 @@ export const LegacyLiquidations: React.FC = () => {
   };
 
   const getUserFirstRewardId = async () => {
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-liquidation-rewards-ui-v2-2',
       functionName: 'get-user-tracking',
@@ -90,7 +90,7 @@ export const LegacyLiquidations: React.FC = () => {
   };
 
   const getUserFirstRewardIdV1 = async () => {
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-liquidation-rewards-ui-v2-1',
       functionName: 'get-user-tracking',
@@ -106,7 +106,7 @@ export const LegacyLiquidations: React.FC = () => {
 
   const getRewardsData = async (rewardId: Number) => {
     try {
-      const callUserPending = await callReadOnlyFunction({
+      const callUserPending = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-liquidation-rewards-v1-2',
         functionName: 'get-user-reward-info',
@@ -139,7 +139,7 @@ export const LegacyLiquidations: React.FC = () => {
 
   const getRewardsDataV1 = async (rewardId: Number) => {
     try {
-      const callUserPending = await callReadOnlyFunction({
+      const callUserPending = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-liquidation-ui-v1-2',
         functionName: 'get-user-reward-info',
@@ -291,7 +291,7 @@ export const LegacyLiquidations: React.FC = () => {
     };
 
     const getEpochInfo = async () => {
-      const call = await callReadOnlyFunction({
+      const call = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-liquidation-rewards-diko-v1-1',
         functionName: 'get-epoch-info',
@@ -304,7 +304,7 @@ export const LegacyLiquidations: React.FC = () => {
     };
 
     const getLockup = async () => {
-      const stxRedeemable = await callReadOnlyFunction({
+      const stxRedeemable = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-liquidation-pool-v1-1',
         functionName: 'get-lockup-blocks',
@@ -317,7 +317,7 @@ export const LegacyLiquidations: React.FC = () => {
     };
 
     const getStakerLockup = async () => {
-      const call = await callReadOnlyFunction({
+      const call = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-liquidation-pool-v1-1',
         functionName: 'get-staker-lockup',

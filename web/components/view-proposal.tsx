@@ -2,8 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Modal } from '@blockstack/ui';
 import { Container } from './home';
 import {
-  AnchorMode,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   contractPrincipalCV,
   createAssetInfo,
   uintCV,
@@ -54,7 +53,7 @@ export const ViewProposal = ({ match }) => {
       let data = await response.json();
       setStacksTipHeight(data['burn_block_height']);
 
-      const proposal = await callReadOnlyFunction({
+      const proposal = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: CONTRACT_NAME,
         functionName: 'get-proposal-by-id',
@@ -99,7 +98,7 @@ export const ViewProposal = ({ match }) => {
 
       if (data['is-open'].value == false && stxAddress) {
         // Get DIKO votes for user
-        const votedDiko = await callReadOnlyFunction({
+        const votedDiko = await fetchCallReadOnlyFunction({
           contractAddress,
           contractName: CONTRACT_NAME,
           functionName: 'get-tokens-by-member-by-id',
@@ -115,7 +114,7 @@ export const ViewProposal = ({ match }) => {
         setDikoVoted(votedDikoResult / 1000000);
 
         // Get stDIKO votes for user
-        const votedStdiko = await callReadOnlyFunction({
+        const votedStdiko = await fetchCallReadOnlyFunction({
           contractAddress,
           contractName: CONTRACT_NAME,
           functionName: 'get-tokens-by-member-by-id',
@@ -177,8 +176,7 @@ export const ViewProposal = ({ match }) => {
           currentTxStatus: 'pending',
         }));
         setShowVoteDikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
@@ -214,8 +212,7 @@ export const ViewProposal = ({ match }) => {
           currentTxStatus: 'pending',
         }));
         setShowVoteDikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
@@ -237,8 +234,7 @@ export const ViewProposal = ({ match }) => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
       postConditionMode: 0x01,
     }, resolveProvider() || window.StacksProvider);
   };
@@ -261,8 +257,7 @@ export const ViewProposal = ({ match }) => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
+      }
       postConditionMode: 0x01,
     }, resolveProvider() || window.StacksProvider);
   };
@@ -304,8 +299,7 @@ export const ViewProposal = ({ match }) => {
           currentTxStatus: 'pending',
         }));
         setShowVoteStdikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 
@@ -341,8 +335,7 @@ export const ViewProposal = ({ match }) => {
           currentTxStatus: 'pending',
         }));
         setShowVoteStdikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
+      }
     }, resolveProvider() || window.StacksProvider);
   };
 

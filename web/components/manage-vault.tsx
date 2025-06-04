@@ -14,7 +14,7 @@ import {
   standardPrincipalCV,
   contractPrincipalCV,
   cvToJSON,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   falseCV,
   makeStandardFungiblePostCondition,
   FungibleConditionCode,
@@ -85,7 +85,7 @@ export const ManageVault = ({ match }) => {
     const collateralType = collateralTypes[collateralSymbol];
     const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
 
-    const debtCall = await callReadOnlyFunction({
+    const debtCall = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-vaults-data-v1-1',
       functionName: 'get-total-debt',
@@ -114,7 +114,7 @@ export const ManageVault = ({ match }) => {
   useEffect(() => {
     const fetchVault = async () => {
       const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-      const serializedVault = await callReadOnlyFunction({
+      const serializedVault = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-data-v1-1',
         functionName: 'get-vault',
@@ -176,7 +176,7 @@ export const ManageVault = ({ match }) => {
   useEffect(() => {
     const fetchFees = async () => {
       const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
-      const feeCall = await callReadOnlyFunction({
+      const feeCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-helpers-v1-1',
         functionName: 'get-stability-fee',

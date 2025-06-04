@@ -7,7 +7,7 @@ import { request } from '@stacks/connect';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   AnchorMode,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON,
   uintCV,
   contractPrincipalCV,
@@ -217,7 +217,7 @@ export const Liquidations: React.FC = () => {
   };
 
   const getPendingRewards = async (tokenAddress: string, tokenName: string) => {
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'get-pending-rewards',
@@ -287,7 +287,7 @@ export const Liquidations: React.FC = () => {
 
   useEffect(() => {
     const getDikoPrice = async () => {
-      const call = await callReadOnlyFunction({
+      const call = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
@@ -305,7 +305,7 @@ export const Liquidations: React.FC = () => {
     };
 
     const getTotalPooled = async () => {
-      const call = await callReadOnlyFunction({
+      const call = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'usda-token',
         functionName: 'get-balance',
@@ -320,7 +320,7 @@ export const Liquidations: React.FC = () => {
     };
 
     const getUserPooled = async () => {
-      const call = await callReadOnlyFunction({
+      const call = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-pool-liq-v1-2',
         functionName: 'get-stake-of',

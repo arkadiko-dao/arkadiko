@@ -7,7 +7,7 @@ import { tokenList } from '@components/token-swap-list';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { tokenTraits } from '@common/vault-utils';
 import {
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON,
   contractPrincipalCV,
   standardPrincipalCV,
@@ -43,7 +43,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY, canAdd }) => 
     tokenYAddress: string,
     tokenYContract: string
   ) => {
-    const details = await callReadOnlyFunction({
+    const details = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-swap-v2-1',
       functionName: 'get-pair-details',
@@ -74,7 +74,7 @@ export const PoolPosition: React.FC = ({ indexTokenX, indexTokenY, canAdd }) => 
       return 0;
     }
 
-    const userLpDikoUsdaStakedCall = await callReadOnlyFunction({
+    const userLpDikoUsdaStakedCall = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: poolContract,
       functionName: 'get-stake-amount-of',

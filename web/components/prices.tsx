@@ -5,7 +5,7 @@ import BN from 'bn.js';
 import {
   AnchorMode,
   broadcastTransaction,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   contractPrincipalCV,
   cvToJSON,
   createStacksPrivateKey,
@@ -43,7 +43,7 @@ export const Prices = () => {
   const getStxUsdaAmmPrice = async () => {
     const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
     const fetchPair = async () => {
-      const details = await callReadOnlyFunction({
+      const details = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
@@ -70,7 +70,7 @@ export const Prices = () => {
   const getDikoUsdaAmmPrice = async () => {
     const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
     const fetchPair = async () => {
-      const details = await callReadOnlyFunction({
+      const details = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',

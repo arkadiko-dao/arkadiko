@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import {
   AnchorMode,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON,
   contractPrincipalCV,
   uintCV,
@@ -68,7 +68,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       tokenYAddress: string,
       tokenYContract: string
     ) => {
-      const details = await callReadOnlyFunction({
+      const details = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',

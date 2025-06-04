@@ -6,7 +6,7 @@ import { Container } from './home';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   AnchorMode,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   contractPrincipalCV,
   uintCV,
   cvToJSON,
@@ -119,7 +119,7 @@ export const Stake = () => {
 
       // TODO: Update API
       // poolInfo['Wrapped-USD/usda-token'] = data['Wrapped-USD/usda-token'];
-      const callPoolInfo = await callReadOnlyFunction({
+      const callPoolInfo = await fetchCallReadOnlyFunction({
         contractAddress: 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9',
         contractName: 'amm-swap-pool',
         functionName: 'get-pool-details',
@@ -150,7 +150,7 @@ export const Stake = () => {
       setTotalXbtcUsdaStaked(data.arkv1xbtcusda.total_staked / 1000000);
 
       // TODO: move this to API
-      const callStakedInfo = await callReadOnlyFunction({
+      const callStakedInfo = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
         functionName: 'get-total-staked',
@@ -166,7 +166,7 @@ export const Stake = () => {
       const getDikoUsdaAmmPrice = async () => {
         const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
         const fetchPair = async () => {
-          const details = await callReadOnlyFunction({
+          const details = await fetchCallReadOnlyFunction({
             contractAddress,
             contractName: 'arkadiko-swap-v2-1',
             functionName: 'get-pair-details',
@@ -214,7 +214,7 @@ export const Stake = () => {
     };
 
     const fetchLpPendingRewards = async (poolContract: string) => {
-      const dikoUsdaPendingRewardsCall = await callReadOnlyFunction({
+      const dikoUsdaPendingRewardsCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: poolContract,
         functionName: 'get-pending-rewards',
@@ -333,7 +333,7 @@ export const Stake = () => {
     };
 
     const getStakingData = async () => {
-      const userStakedCall = await callReadOnlyFunction({
+      const userStakedCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-ui-stake-v1-5',
         functionName: 'get-stake-amounts',
@@ -349,7 +349,7 @@ export const Stake = () => {
     };
 
     const getXbtcStakingData = async () => {
-      const xbtcStakedCall = await callReadOnlyFunction({
+      const xbtcStakedCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-wstx-xbtc-v1-1',
         functionName: 'get-stake-amount-of',
@@ -364,7 +364,7 @@ export const Stake = () => {
     };
 
     const getXbtcUsdaStakingData = async () => {
-      const xbtcUsdaStakedCall = await callReadOnlyFunction({
+      const xbtcUsdaStakedCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-xbtc-usda-v1-1',
         functionName: 'get-stake-amount-of',
@@ -379,7 +379,7 @@ export const Stake = () => {
     };
 
     const getXusdUsdaStakingData = async () => {
-      const xbtcUsdaStakedCall = await callReadOnlyFunction({
+      const xbtcUsdaStakedCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
         functionName: 'get-stake-amount-of',
@@ -394,7 +394,7 @@ export const Stake = () => {
     };
 
     const getXusdUsda2StakingData = async () => {
-      const xbtcUsdaStakedCall = await callReadOnlyFunction({
+      const xbtcUsdaStakedCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
         functionName: 'get-stake-amount-of',
@@ -411,7 +411,7 @@ export const Stake = () => {
     const getStakedDiko = async () => {
       if (!stxAddress) return setStakedAmount(0);
 
-      const userStakedDikoCall = await callReadOnlyFunction({
+      const userStakedDikoCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-diko-v2-1',
         functionName: 'get-stake-of',
@@ -430,7 +430,7 @@ export const Stake = () => {
     };
 
     const getDikoToStDiko = async () => {
-      const stDikoToDikoCall = await callReadOnlyFunction({
+      const stDikoToDikoCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-stake-pool-diko-v2-1',
         functionName: 'diko-for-stdiko',
@@ -969,7 +969,7 @@ export const Stake = () => {
   };
 
   const getTotalPooled = async () => {
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'usda-token',
       functionName: 'get-balance',
@@ -986,7 +986,7 @@ export const Stake = () => {
   const getUserPooled = async () => {
     if (!stxAddress) return 0;
 
-    const call = await callReadOnlyFunction({
+    const call = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-vaults-pool-liq-v1-2',
       functionName: 'get-stake-of',

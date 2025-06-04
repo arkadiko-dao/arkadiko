@@ -7,7 +7,7 @@ import { bnsName } from '@common/use-stx-address';
 import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
 import { Tooltip } from '@blockstack/ui';
-import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { getPendingTransactions } from '@common/transactions';
 import { MempoolContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     let mounted = true;
 
     const getData = async () => {
-      const proposals = await callReadOnlyFunction({
+      const proposals = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v4-3',
         functionName: 'get-proposals',

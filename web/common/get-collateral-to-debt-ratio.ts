@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { useSTXAddress } from './use-stx-address';
 import { stacksNetwork as network } from '@common/utils';
 import {
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   contractPrincipalCV,
   cvToJSON,
   uintCV,
@@ -18,7 +18,7 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
 
   useEffect(() => {
     const getCollateralToDebtRatio = async () => {
-      const collToDebt = await callReadOnlyFunction({
+      const collToDebt = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-freddie-v1-1',
         functionName: 'calculate-current-collateral-to-debt-ratio',

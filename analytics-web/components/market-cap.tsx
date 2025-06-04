@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { Placeholder } from '../../web/components/ui/placeholder';
 import { tokenList } from '../../web/components/token-swap-list';
@@ -16,7 +16,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
   useEffect(() => {
     const fetchData = async () => {
       const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
-      const supplyCall = await callReadOnlyFunction({
+      const supplyCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: "arkadiko-token",
         functionName: "get-total-supply",
@@ -41,7 +41,7 @@ export const MarketCap: React.FC = ({ lastDikoPrice, lastUsdaPrice }) => {
       setDikoFloat(float);
       setDikoMarketCap(lastDikoPrice * float);
 
-      const usdaSupplyCall = await callReadOnlyFunction({
+      const usdaSupplyCall = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: "usda-token",
         functionName: "get-total-supply",

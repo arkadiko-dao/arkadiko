@@ -7,7 +7,7 @@ import {
 
 export const getPriceInfo = async (symbol: string) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const fetchedPrice = await callReadOnlyFunction({
+  const fetchedPrice = await fetchCallReadOnlyFunction({
     contractAddress,
     contractName: 'arkadiko-oracle-v2-3',
     functionName: 'get-price',

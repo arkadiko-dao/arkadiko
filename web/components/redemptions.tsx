@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
 import {
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON,
   contractPrincipalCV
 } from '@stacks/transactions';
@@ -78,7 +78,7 @@ export const Redemptions: React.FC = () => {
     }
 
     const fetchInfo = async (address, tokenName) => {
-      const types = await callReadOnlyFunction({
+      const types = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-vaults-tokens-v1-1',
         functionName: 'get-token',
