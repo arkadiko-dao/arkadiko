@@ -8,8 +8,8 @@ import {
   Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { request } from '@stacks/connect';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { Alert } from './ui/alert';
 
 export const StakeLpModal = ({
@@ -95,53 +95,56 @@ export const StakeLpModal = ({
     ];
 
     if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
-      await request('stx_callContract' ,{
-        network,
-        contractAddress,
-        stxAddress,
-        contractName: contractName,
-        functionName: 'stake',
-        functionArgs: [
-          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
-          Cl.contractPrincipal(assetContractAddress, tokenContract),
-          amount,
-        ],
-        postConditions,
-        onFinish: data => {
+      await makeContractCall(
+        {
+          stxAddress: stxAddress,
+          contractAddress: contractAddress,
+          contractName,
+          functionName: "stake",
+          functionArgs: [
+            Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+            Cl.contractPrincipal(assetContractAddress, tokenContract),
+            amount,
+          ],
+          postConditions,
+          network,
+        },
+        async (error?, txId?) => {
           console.log('finished broadcasting staking tx!', data);
           setState(prevState => ({
             ...prevState,
-            currentTxId: data.txId,
+            currentTxId: txId,
             currentTxStatus: 'pending',
           }));
           setShowStakeModal(false);
         }
-      }, resolveProvider() || window.StacksProvider);
+      );
     } else {
-      await request('stx_callContract', {
-        network,
-        contractAddress,
-        stxAddress,
-        contractName: 'arkadiko-stake-registry-v2-1',
-        functionName: 'stake',
-        functionArgs: [
-          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
-          Cl.contractPrincipal(contractAddress, contractName),
-          Cl.contractPrincipal(assetContractAddress, tokenContract),
-          amount,
-        ],
-        postConditions,
-        onFinish: data => {
+      await makeContractCall(
+        {
+          stxAddress: stxAddress,
+          contractAddress: contractAddress,
+          contractName: "arkadiko-stake-registry-v2-1",
+          functionName: "stake",
+          functionArgs: [
+            Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+            Cl.contractPrincipal(contractAddress, contractName),
+            Cl.contractPrincipal(assetContractAddress, tokenContract),
+            amount,
+          ],
+          postConditions,
+          network,
+        },
+        async (error?, txId?) => {
           console.log('finished broadcasting staking tx!', data);
           setState(prevState => ({
             ...prevState,
-            currentTxId: data.txId,
+            currentTxId: txId,
             currentTxStatus: 'pending',
           }));
           setShowStakeModal(false);
-        },
-        anchorMode: AnchorMode.Any,
-      }, resolveProvider() || window.StacksProvider);
+        }
+      );
     }
   };
 
