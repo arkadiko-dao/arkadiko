@@ -3,7 +3,6 @@ import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
 import {
   callReadOnlyFunction,
@@ -25,7 +24,6 @@ import { RedeemVault } from '@components/redeem-vault';
 import { getPrice } from '@common/get-price';
 
 export const Redemptions: React.FC = () => {
-  const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';

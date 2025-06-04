@@ -3,7 +3,6 @@ import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network } from '@common/utils';
 import {
   AnchorMode,
@@ -33,7 +32,6 @@ import { Alert } from './ui/alert';
 import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV';
 
 export const LegacyLiquidations: React.FC = () => {
-  const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 

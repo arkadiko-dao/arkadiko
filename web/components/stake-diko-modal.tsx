@@ -14,7 +14,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { Alert } from './ui/alert';
 
 interface Props {
@@ -30,7 +30,6 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
   const [isStakeButtonDisabled, setIsStakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const stakeMaxAmount = () => {
@@ -64,7 +63,7 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
         createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
       ),
     ];
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

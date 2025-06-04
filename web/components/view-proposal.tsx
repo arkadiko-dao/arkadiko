@@ -14,7 +14,7 @@ import {
 } from '@stacks/transactions';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { AppContext } from '@common/context';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
@@ -32,7 +32,6 @@ export const ViewProposal = ({ match }) => {
   const [amountOfDikoVotes, setAmountOfDikoVotes] = useState('');
   const [amountOfStdikoVotes, setAmountOfStdikoVotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stacksTipHeight, setStacksTipHeight] = useState(0);
   const [dikoVoted, setDikoVoted] = useState('');
@@ -155,7 +154,7 @@ export const ViewProposal = ({ match }) => {
         createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
       ),
     ];
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -192,7 +191,7 @@ export const ViewProposal = ({ match }) => {
         createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
       ),
     ];
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -221,7 +220,7 @@ export const ViewProposal = ({ match }) => {
   };
 
   const returnDiko = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -245,7 +244,7 @@ export const ViewProposal = ({ match }) => {
   };
 
   const returnStDiko = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -282,7 +281,7 @@ export const ViewProposal = ({ match }) => {
         createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
       ),
     ];
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -319,7 +318,7 @@ export const ViewProposal = ({ match }) => {
         createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
       ),
     ];
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

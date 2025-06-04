@@ -17,7 +17,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { Alert } from './ui/alert';
 
 interface Props {
@@ -32,7 +32,6 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
   const [isRedeemButtonDisabled, setIsRedeemButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const redeemMaxAmount = () => {
@@ -77,7 +76,7 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
     const hint = await response.json();
     console.log('got hint:', hint);
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

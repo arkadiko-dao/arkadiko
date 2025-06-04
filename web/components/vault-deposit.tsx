@@ -15,7 +15,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import BN from 'bn.js';
 import { VaultProps } from './vault';
 import { tokenTraits, tokenNameToTicker } from '@common/vault-utils';
@@ -46,7 +46,6 @@ export const VaultDeposit: React.FC<Props> = ({
   const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const senderAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
@@ -171,7 +170,7 @@ export const VaultDeposit: React.FC<Props> = ({
       uintCV(100)
     ];
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress: senderAddress,

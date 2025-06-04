@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from 'react';
-import { useConnect } from '@stacks/connect-react';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   contractPrincipalCV,
@@ -21,10 +20,10 @@ import { ExplorerLink } from './explorer-link';
 import { atAlexContractAddress, stStxContractAddress, resolveReserveName, tokenTraits, calculateMintFee } from '@common/vault-utils';
 import { AppContext } from '@common/context';
 import { Alert } from './ui/alert';
+import { request } from '@stacks/connect';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
   const [state, setState] = useContext(AppContext);
-  const { doContractCall } = useConnect();
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
@@ -148,7 +147,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       ];
     }
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress: address,

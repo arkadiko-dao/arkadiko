@@ -15,7 +15,6 @@ import {
 export const Admin = () => {
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
 
   const exec = async () => {
     await request('stx_callContract', {

@@ -7,7 +7,7 @@ import { microToReadable } from '@common/vault-utils';
 import { AnchorMode, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { Alert } from './ui/alert';
 
 export const UnstakeLpModal = ({
@@ -24,7 +24,6 @@ export const UnstakeLpModal = ({
   const [isUnstakeButtonDisabled, setIsUnstakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const unstake = async () => {
@@ -62,7 +61,7 @@ export const UnstakeLpModal = ({
     }
 
     if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
-      await doContractCall({
+      await request('stx_callContract', {
         network,
         contractAddress,
         stxAddress,
@@ -86,7 +85,7 @@ export const UnstakeLpModal = ({
         anchorMode: AnchorMode.Any,
       }, resolveProvider() || window.StacksProvider);
     } else {
-      await doContractCall({
+      await request('stx_callContract', {
         network,
         contractAddress,
         stxAddress,

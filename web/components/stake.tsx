@@ -17,7 +17,7 @@ import { UnstakeDikoModal } from './unstake-diko-modal';
 import { StakeLpModal } from './stake-lp-modal';
 import { UnstakeLpModal } from './unstake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { StakeLpRow } from './stake-lp-row';
 import { Alert } from './ui/alert';
 import axios from 'axios';
@@ -98,7 +98,6 @@ export const Stake = () => {
   const [pooledUsdaDikoApr, setPooledUsdaDikoApr] = useState(0);
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
 
   useEffect(() => {
     if (state.currentTxStatus === 'success') {
@@ -645,7 +644,7 @@ export const Stake = () => {
   }, [state.balance, stxPrice, dikoPrice, usdaPrice]);
 
   const claimDikoUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -667,7 +666,7 @@ export const Stake = () => {
   };
 
   const claimStxUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -689,7 +688,7 @@ export const Stake = () => {
   };
 
   const claimStxDikoLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -711,7 +710,7 @@ export const Stake = () => {
   };
 
   const stakeDikoUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -736,7 +735,7 @@ export const Stake = () => {
   };
 
   const claimStxXbtcLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -758,7 +757,7 @@ export const Stake = () => {
   };
 
   const stakeStxXbtcLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -783,7 +782,7 @@ export const Stake = () => {
   };
 
   const claimXbtcUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -805,7 +804,7 @@ export const Stake = () => {
   };
 
   const claimXusdUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -826,7 +825,7 @@ export const Stake = () => {
   };
 
   const claimXusdUsda2LpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -847,7 +846,7 @@ export const Stake = () => {
   };
 
   const stakeXbtcUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -872,7 +871,7 @@ export const Stake = () => {
   };
 
   const stakeXusdUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -896,7 +895,7 @@ export const Stake = () => {
   };
 
   const stakeXusdUsda2LpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -920,7 +919,7 @@ export const Stake = () => {
   };
 
   const stakeStxUsdaLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -945,7 +944,7 @@ export const Stake = () => {
   };
 
   const stakeStxDikoLpPendingRewards = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

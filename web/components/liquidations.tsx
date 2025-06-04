@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import {
   AnchorMode,
@@ -36,7 +36,6 @@ import { principalCV } from '@stacks/transactions/dist/clarity/types/principalCV
 import { NavLink as RouterLink } from 'react-router-dom';
 
 export const Liquidations: React.FC = () => {
-  const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
@@ -78,7 +77,7 @@ export const Liquidations: React.FC = () => {
   };
 
   const redeemStx = async () => {
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -114,7 +113,7 @@ export const Liquidations: React.FC = () => {
       ),
     ];
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -188,7 +187,7 @@ export const Liquidations: React.FC = () => {
       ),
     ];
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

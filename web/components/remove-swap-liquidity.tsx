@@ -15,7 +15,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { tokenTraits } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
@@ -51,7 +51,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [isLoading, setIsLoading] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
 
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
@@ -195,7 +194,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         createAssetInfo(contractAddress, tokenYParam, tokenYName)
       ),
     ];
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

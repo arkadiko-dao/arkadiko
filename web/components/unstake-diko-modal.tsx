@@ -14,7 +14,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { Alert } from './ui/alert';
 
 export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, stakedAmount }) => {
@@ -24,7 +24,6 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
   const [isUnstakeButtonDisabled, setIsUnstakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const unstakeDiko = async () => {
@@ -38,7 +37,7 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       ),
     ];
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

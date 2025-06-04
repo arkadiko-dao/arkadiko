@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { ThemeProvider, theme } from '@blockstack/ui';
-import { UserSession, AppConfig } from '@stacks/auth';
 import { defaultState, AppContext, AppState } from '@common/context';
 import { Header } from '@components/header';
 import { SubHeader } from '@components/sub-header';
 import { Routes } from '@components/routes';
-import { getRPCClient } from '@common/utils';
-import { stacksNetwork as network } from '@common/utils';
-import { fetchCallReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { getRPCClient, stacksNetwork as network } from '@common/utils';
+import { fetchCallReadOnlyFunction, cvToJSON, Cl } from '@stacks/transactions';
 import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
@@ -17,6 +15,7 @@ import { initiateConnection } from '@common/websocket-tx-updater';
 import ScrollToTop from '@components/scroll-to-top';
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { clearSelectedProviderId, getLocalStorage, isConnected, disconnect } from '@stacks/connect';
 
 export const getBalance = async (address: string) => {
   const client = getRPCClient();
@@ -41,8 +40,8 @@ export const getBalance = async (address: string) => {
       contractName: 'token-amm-swap-pool',
       functionName: 'get-balance',
       functionArgs: [
-        uintCV(1),
-        standardPrincipalCV(address),
+        Cl.uint(1),
+        Cl.standardPrincipal(address),
       ],
       senderAddress: address || '',
       network: network,
@@ -53,8 +52,8 @@ export const getBalance = async (address: string) => {
       contractName: 'token-amm-swap-pool',
       functionName: 'get-balance',
       functionArgs: [
-        uintCV(4),
-        standardPrincipalCV(address),
+        Cl.uint(4),
+        Cl.standardPrincipal(address),
       ],
       senderAddress: address || '',
       network: network,
@@ -187,7 +186,7 @@ export const App: React.FC = () => {
         contractAddress,
         contractName: 'arkadiko-vaults-tokens-v1-1',
         functionName: 'get-token',
-        functionArgs: [contractPrincipalCV(tokenParts[0], tokenParts[1])],
+        functionArgs: [Cl.contractPrincipal(tokenParts[0], tokenParts[1])],
         senderAddress: address,
         network: network,
       });
@@ -290,47 +289,36 @@ export const App: React.FC = () => {
     void handleRedirectAuth();
   }, []);
 
-  const authOptions: AuthOptions = {
-    manifestPath: '/static/manifest.json',
-    redirectTo: '/',
-    userSession,
-    onFinish: ({ userSession }) => {
-      const userData = userSession.loadUserData();
-      const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
-      setFinishedOnboarding(doneOnboarding === 'true');
+  const onFinishLogin = () => {
+    const userData = userSession.loadUserData();
+    const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
+    setFinishedOnboarding(doneOnboarding === 'true');
 
-      fetchBalance(resolveSTXAddress(userData));
-      fetchCollateralTypes(resolveSTXAddress(userData));
-      fetchStackingCycle();
-      setState(prevState => ({ ...prevState, userData }));
-    },
-    appDetails: {
-      name: 'Arkadiko',
-      icon,
-    },
-  };
+    fetchBalance(resolveSTXAddress(userData));
+    fetchCollateralTypes(resolveSTXAddress(userData));
+    fetchStackingCycle();
+    setState(prevState => ({ ...prevState, userData }));
+  }
 
   return (
-    <Connect authOptions={authOptions}>
-      <ThemeProvider theme={theme}>
-        <AppContext.Provider value={[state, setState]}>
-          <Helmet titleTemplate="Arkadiko Finance App - %s" defaultTitle="Arkadiko Finance App" />
-          <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
-            {location.pathname.indexOf('/onboarding') != 0 ? (
-              <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-            ) : null}
-            {state.userData && location.pathname.indexOf('/onboarding') != 0 ? <SubHeader /> : null}
-            <TxStatus />
+    <div>
+      <AppContext.Provider value={[state, setState]}>
+        <Helmet titleTemplate="Arkadiko Finance App - %s" defaultTitle="Arkadiko Finance App" />
+        <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
+          {location.pathname.indexOf('/onboarding') != 0 ? (
+            <Header signOut={signOut} setShowSidebar={setShowSidebar} />
+          ) : null}
+          {state.userData && location.pathname.indexOf('/onboarding') != 0 ? <SubHeader /> : null}
+          <TxStatus />
 
-            <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+          <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
 
-            {!finishedOnboarding ? <Redirect to={{ pathname: '/onboarding' }} /> : null}
-            <Routes />
-            <Footer />
-          </div>
-        </AppContext.Provider>
-      </ThemeProvider>
+          {!finishedOnboarding ? <Redirect to={{ pathname: '/onboarding' }} /> : null}
+          <Routes />
+          <Footer />
+        </div>
+      </AppContext.Provider>
       <ScrollToTop />
-    </Connect>
+    </div>
   );
 };

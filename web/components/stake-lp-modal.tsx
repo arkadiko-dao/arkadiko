@@ -14,7 +14,7 @@ import {
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { Alert } from './ui/alert';
 
 export const StakeLpModal = ({
@@ -31,7 +31,6 @@ export const StakeLpModal = ({
   const [isStakeButtonDisabled, setIsStakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const stakeMaxAmount = () => {
@@ -100,7 +99,7 @@ export const StakeLpModal = ({
     ];
 
     if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
-      await doContractCall({
+      await request('stx_callContract' ,{
         network,
         contractAddress,
         stxAddress,
@@ -124,7 +123,7 @@ export const StakeLpModal = ({
         anchorMode: AnchorMode.Any,
       }, resolveProvider() || window.StacksProvider);
     } else {
-      await doContractCall({
+      await request('stx_callContract', {
         network,
         contractAddress,
         stxAddress,

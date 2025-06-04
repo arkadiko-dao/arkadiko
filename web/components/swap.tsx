@@ -7,7 +7,7 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
@@ -55,13 +55,13 @@ export const Swap: React.FC = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall, doOpenAuth } = useConnect();
   const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
     if (provider) {
-      await doOpenAuth(true, undefined, provider);
+      // TODO
+      // await doOpenAuth(true, undefined, provider);
     } else {
       setShowChooseWalletModal(true);
     }
@@ -72,7 +72,7 @@ export const Swap: React.FC = () => {
     setShowChooseWalletModal(false);
 
     const provider = resolveProvider();
-    await doOpenAuth(true, undefined, provider);
+    // await doOpenAuth(true, undefined, provider);
   };
 
   useEffect(() => {
@@ -408,7 +408,7 @@ export const Swap: React.FC = () => {
     let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -464,7 +464,7 @@ export const Swap: React.FC = () => {
     }
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

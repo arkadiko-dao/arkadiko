@@ -2,7 +2,7 @@ import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { Menu, Transition, Disclosure } from '@headlessui/react';
 import { AppContext } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { bnsName } from '@common/use-stx-address';
 import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
@@ -34,7 +34,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const env = process.env.REACT_APP_NETWORK_ENV;
   const [state, _] = useContext(AppContext);
   const showWallet = process.env.REACT_APP_SHOW_CONNECT_WALLET === 'true';
-  const { doOpenAuth } = useConnect();
   const name = bnsName();
   const address = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
@@ -45,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
     if (provider) {
-      await doOpenAuth(true, undefined, provider);
+      // await doOpenAuth(true, undefined, provider);
     } else {
       setShowChooseWalletModal(true);
     }
@@ -56,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     setShowChooseWalletModal(false);
 
     const provider = resolveProvider();
-    await doOpenAuth(true, undefined, provider);
+    // await doOpenAuth(true, undefined, provider);
   };
 
   const onSignOut = () => {

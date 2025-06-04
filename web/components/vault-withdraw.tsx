@@ -4,7 +4,7 @@ import { InputAmount } from './input-amount';
 import { AnchorMode, contractPrincipalCV, uintCV, someCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { VaultProps } from './vault';
 import { tokenTraits, tokenNameToTicker } from '@common/vault-utils';
 
@@ -29,7 +29,6 @@ export const VaultWithdraw: React.FC<Props> = ({
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
@@ -83,7 +82,7 @@ export const VaultWithdraw: React.FC<Props> = ({
       someCV(standardPrincipalCV(hint['prevOwner'])),
       uintCV(100)
     ];
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress: senderAddress,

@@ -34,14 +34,13 @@ import { PoxTimeline } from '@components/pox-timeline';
 import { StyledIcon } from './ui/styled-icon';
 import { Status } from './ui/health-status';
 import { collExtraInfo } from './collateral-card';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { Popover, Transition } from '@headlessui/react';
 
 export const ManageVault = ({ match }) => {
   const senderAddress = useSTXAddress();
   const [state, setState] = useContext(AppContext);
   const [{ collateralTypes }, _x] = useContext(AppContext);
-  const { doContractCall } = useConnect();
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const vaultOwner = match.params.owner;
@@ -263,7 +262,7 @@ export const ManageVault = ({ match }) => {
       contractPrincipalCV(tokenAddress, token)
     ];
 
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress: senderAddress,

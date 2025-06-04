@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { stacksNetwork as network, blocksToTime, resolveProvider } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
@@ -36,7 +36,6 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
   unlockBlock,
   currentBlock
 }) => {
-  const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [state, setState] = useContext(AppContext);
@@ -85,7 +84,7 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
     }
 
     // Call
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
@@ -142,7 +141,7 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
     }
 
     // Call
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,

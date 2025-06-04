@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { useConnect } from '@stacks/connect-react';
+import { request } from '@stacks/connect';
 import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
@@ -30,7 +30,6 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   claimable,
   tokenIsStx,
 }) => {
-  const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const xbtcContractAddress = process.env.XBTC_CONTRACT_ADDRESS || '';
@@ -81,7 +80,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
     ];
 
     // Call
-    await doContractCall({
+    await request('stx_callContract', {
       network,
       contractAddress,
       stxAddress,
