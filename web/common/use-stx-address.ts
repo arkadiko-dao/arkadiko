@@ -2,9 +2,13 @@ import { useContext } from 'react';
 import { AppContext } from '@common/context';
 import { UserData } from '@stacks/auth';
 
-export const useSTXAddress = (altUserData: any): string | undefined => {
+export const useSTXAddress = (): string | undefined => {
   const [{ userData }, _] = useContext(AppContext);
 
+  return resolveSTXAddress(userData);
+};
+
+export const resolveSTXAddress = (userData: UserData | null): string | undefined => {
   let addr;
   if (userData?.addresses && userData.addresses['stx']) addr = userData.addresses['stx'][0]?.address
   if (userData?.addresses && userData.addresses.length > 0) {

@@ -6,7 +6,7 @@ import { SubHeader } from '@components/sub-header';
 import { Routes } from '@components/routes';
 import { getRPCClient, stacksNetwork as network } from '@common/utils';
 import { fetchCallReadOnlyFunction, cvToJSON, Cl } from '@stacks/transactions';
-import { useSTXAddress } from '@common/use-stx-address';
+import { resolveSTXAddress } from '@common/use-stx-address';
 import { TxStatus } from '@components/tx-status';
 import { TxSidebar } from '@components/tx-sidebar';
 import { Footer } from '@components/footer';
@@ -254,7 +254,7 @@ export const App: React.FC = () => {
 
       const getData = async () => {
         try {
-          const address = useSTXAddress(userData);
+          const address = resolveSTXAddress(userData);
           if (!address) return;
 
           initiateConnection(address, setState);
@@ -277,8 +277,8 @@ export const App: React.FC = () => {
     const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
     setFinishedOnboarding(doneOnboarding === 'true');
 
-    fetchBalance(useSTXAddress(userData));
-    fetchCollateralTypes(useSTXAddress(userData));
+    fetchBalance(resolveSTXAddress(userData));
+    fetchCollateralTypes(resolveSTXAddress(userData));
     fetchStackingCycle();
     setState(prevState => ({ ...prevState, userData }));
   }
