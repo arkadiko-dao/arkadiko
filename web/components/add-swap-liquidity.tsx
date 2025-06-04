@@ -6,12 +6,6 @@ import { microToReadable } from '@common/vault-utils';
 import {
   fetchCallReadOnlyFunction,
   cvToJSON,
-  contractPrincipalCV,
-  uintCV,
-  makeStandardSTXPostCondition,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  createAssetInfo,
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
@@ -112,8 +106,8 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(tokenXAddress, tokenXContract),
-          contractPrincipalCV(tokenYAddress, tokenYContract),
+          Cl.contractPrincipal(tokenXAddress, tokenXContract),
+          Cl.contractPrincipal(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -340,11 +334,11 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       contractName: 'arkadiko-swap-v2-1',
       functionName: 'add-to-position',
       functionArgs: [
-        contractPrincipalCV(tokenX['address'], tokenXParam),
-        contractPrincipalCV(tokenY['address'], tokenYParam),
-        contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(parseInt(tokenXInput * Math.pow(10, tokenX['decimals']), 10)),
-        uintCV(parseInt(tokenYInput * Math.pow(10, tokenY['decimals']), 10)),
+        Cl.contractPrincipal(tokenX['address'], tokenXParam),
+        Cl.contractPrincipal(tokenY['address'], tokenYParam),
+        Cl.contractPrincipal(contractAddress, swapTrait),
+        Cl.uint(parseInt(tokenXInput * Math.pow(10, tokenX['decimals']), 10)),
+        Cl.uint(parseInt(tokenYInput * Math.pow(10, tokenY['decimals']), 10)),
       ],
       postConditionMode: 0x01,
       onFinish: data => {

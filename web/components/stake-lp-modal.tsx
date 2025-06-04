@@ -85,12 +85,13 @@ export const StakeLpModal = ({
     
     console.log(assetContractAddress, tokenContract, ftContract);
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        amount.value,
-        createAssetInfo(assetContractAddress, tokenContract, ftContract)
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: amount.value,
+        asset: `${assetContractAddress}.${tokenContract}::${ftContract}`,
+      }
     ];
 
     if (balanceName === 'xusdusda' || balanceName === 'xusdusda2') {
