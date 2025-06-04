@@ -280,58 +280,59 @@ export const AddSwapLiquidity: React.FC = ({ match }) => {
       tokenYInput = tokenXAmount;
     }
     const postConditions = [];
-    if (tokenXParam == 'wrapped-stx-token') {
-      postConditions.push(
-        makeStandardSTXPostCondition(
-          stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenXInput * 1000000, 10)).value
-        )
-      );
-      postConditions.push(
-        makeStandardFungiblePostCondition(
-          stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenXInput * 1000000, 10)).value,
-          createAssetInfo(contractAddress, tokenXParam, 'wstx')
-        )
-      );
-    } else {
-      postConditions.push(
-        makeStandardFungiblePostCondition(
-          stxAddress || '',
-          FungibleConditionCode.LessEqual,
-          uintCV(parseInt(tokenXInput * 1000000, 10)).value,
-          createAssetInfo(contractAddress, tokenXParam, tokenXName)
-        )
-      );
-    }
-    if (tokenYParam == 'wrapped-stx-token') {
-      postConditions.push(
-        makeStandardSTXPostCondition(
-          stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenYInput * 1000000, 10)).value
-        )
-      );
-      postConditions.push(
-        makeStandardFungiblePostCondition(
-          stxAddress || '',
-          FungibleConditionCode.Equal,
-          uintCV(parseInt(tokenYInput * 1000000, 10)).value,
-          createAssetInfo(contractAddress, tokenYParam, 'wstx')
-        )
-      );
-    } else {
-      postConditions.push(
-        makeStandardFungiblePostCondition(
-          stxAddress || '',
-          FungibleConditionCode.LessEqual,
-          uintCV(parseInt(tokenYInput * 1000000, 10)).value,
-          createAssetInfo(contractAddress, tokenYParam, tokenYName)
-        )
-      );
-    }
+    // TODO: add PCs
+    // if (tokenXParam == 'wrapped-stx-token') {
+    //   postConditions.push(
+    //     makeStandardSTXPostCondition(
+    //       stxAddress || '',
+    //       FungibleConditionCode.Equal,
+    //       uintCV(parseInt(tokenXInput * 1000000, 10)).value
+    //     )
+    //   );
+    //   postConditions.push(
+    //     makeStandardFungiblePostCondition(
+    //       stxAddress || '',
+    //       FungibleConditionCode.Equal,
+    //       uintCV(parseInt(tokenXInput * 1000000, 10)).value,
+    //       createAssetInfo(contractAddress, tokenXParam, 'wstx')
+    //     )
+    //   );
+    // } else {
+    //   postConditions.push(
+    //     makeStandardFungiblePostCondition(
+    //       stxAddress || '',
+    //       FungibleConditionCode.LessEqual,
+    //       uintCV(parseInt(tokenXInput * 1000000, 10)).value,
+    //       createAssetInfo(contractAddress, tokenXParam, tokenXName)
+    //     )
+    //   );
+    // }
+    // if (tokenYParam == 'wrapped-stx-token') {
+    //   postConditions.push(
+    //     makeStandardSTXPostCondition(
+    //       stxAddress || '',
+    //       FungibleConditionCode.Equal,
+    //       uintCV(parseInt(tokenYInput * 1000000, 10)).value
+    //     )
+    //   );
+    //   postConditions.push(
+    //     makeStandardFungiblePostCondition(
+    //       stxAddress || '',
+    //       FungibleConditionCode.Equal,
+    //       uintCV(parseInt(tokenYInput * 1000000, 10)).value,
+    //       createAssetInfo(contractAddress, tokenYParam, 'wstx')
+    //     )
+    //   );
+    // } else {
+    //   postConditions.push(
+    //     makeStandardFungiblePostCondition(
+    //       stxAddress || '',
+    //       FungibleConditionCode.LessEqual,
+    //       uintCV(parseInt(tokenYInput * 1000000, 10)).value,
+    //       createAssetInfo(contractAddress, tokenYParam, tokenYName)
+    //     )
+    //   );
+    // }
     await request('stx_callContract', {
       network,
       contractAddress,

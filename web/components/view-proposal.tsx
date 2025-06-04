@@ -234,7 +234,7 @@ export const ViewProposal = ({ match }) => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      }
+      },
       postConditionMode: 0x01,
     }, resolveProvider() || window.StacksProvider);
   };
@@ -257,7 +257,7 @@ export const ViewProposal = ({ match }) => {
           currentTxId: data.txId,
           currentTxStatus: 'pending',
         }));
-      }
+      },
       postConditionMode: 0x01,
     }, resolveProvider() || window.StacksProvider);
   };
