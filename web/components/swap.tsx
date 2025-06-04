@@ -464,11 +464,10 @@ export const Swap: React.FC = () => {
     }
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-swap-v2-1',
+    console.log('BUILDING TX');
+    console.log(postConditions);
+    const response = await request('stx_callContract', {
+      contract: `${contractAddress}.arkadiko-swap-v2-1`,
       functionName: contractName,
       functionArgs: [
         principalX,
@@ -477,18 +476,20 @@ export const Swap: React.FC = () => {
         uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
       ],
       postConditions,
-      onFinish: data => {
-        console.log('finished swap!', data);
-        setState(prevState => ({
-          ...prevState,
-          showTxModal: true,
-          currentTxMessage: '',
-          currentTxId: data.txId,
-          currentTxStatus: 'pending',
-        }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      network: process.env.REACT_APP_NETWORK_ENV,
+    });
+    console.log('got response', response);
+
+    // onFinish: data => {
+    //   console.log('finished swap!', data);
+    //   setState(prevState => ({
+    //     ...prevState,
+    //     showTxModal: true,
+    //     currentTxMessage: '',
+    //     currentTxId: data.txId,
+    //     currentTxStatus: 'pending',
+    //   }));
+    // }
   };
 
   let tabs = [];
