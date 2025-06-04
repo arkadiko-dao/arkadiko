@@ -8,17 +8,9 @@ import { VaultBurn } from '@components/vault-burn';
 import { stacksNetwork as network, resolveProvider } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import {
-  AnchorMode,
-  uintCV,
-  stringAsciiCV,
-  standardPrincipalCV,
-  contractPrincipalCV,
+  Cl,
   cvToJSON,
   fetchCallReadOnlyFunction,
-  falseCV,
-  makeStandardFungiblePostCondition,
-  FungibleConditionCode,
-  createAssetInfo
 } from '@stacks/transactions';
 import { AppContext, CollateralTypeProps } from '@common/context';
 import { debtClass, VaultProps } from './collateral-card';
@@ -89,7 +81,7 @@ export const ManageVault = ({ match }) => {
       contractAddress,
       contractName: 'arkadiko-vaults-data-v1-1',
       functionName: 'get-total-debt',
-      functionArgs: [contractPrincipalCV(tokenInfo['address'], tokenInfo['name'])],
+      functionArgs: [Cl.contractPrincipal(tokenInfo['address'], tokenInfo['name'])],
       senderAddress: senderAddress || contractAddress,
       network: network,
     });
@@ -119,8 +111,8 @@ export const ManageVault = ({ match }) => {
         contractName: 'arkadiko-vaults-data-v1-1',
         functionName: 'get-vault',
         functionArgs: [
-          standardPrincipalCV(vaultOwner),
-          contractPrincipalCV(tokenInfo['address'], tokenInfo['name'])
+          Cl.standardPrincipal(vaultOwner),
+          Cl.contractPrincipal(tokenInfo['address'], tokenInfo['name'])
         ],
         senderAddress: senderAddress || contractAddress,
         network: network,
@@ -181,16 +173,16 @@ export const ManageVault = ({ match }) => {
         contractName: 'arkadiko-vaults-helpers-v1-1',
         functionName: 'get-stability-fee',
         functionArgs: [
-          contractPrincipalCV(
+          Cl.contractPrincipal(
             process.env.REACT_APP_CONTRACT_ADDRESS || '',
             'arkadiko-vaults-tokens-v1-1'
           ),
-          contractPrincipalCV(
+          Cl.contractPrincipal(
             process.env.REACT_APP_CONTRACT_ADDRESS || '',
             'arkadiko-vaults-data-v1-1'
           ),
-          standardPrincipalCV(vaultOwner),
-          contractPrincipalCV(tokenInfo['address'], tokenInfo['name'])
+          Cl.standardPrincipal(vaultOwner),
+          Cl.contractPrincipal(tokenInfo['address'], tokenInfo['name'])
         ],
         senderAddress: contractAddress || '',
         network: network,
@@ -227,39 +219,40 @@ export const ManageVault = ({ match }) => {
     const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
     const totalToBurn = Number(totalDebt * 1.1) * 1000000;
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt(totalToBurn, 10)).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
+      {
+        type: "ft-postcondition",
+        address: senderAddress!,
+        condition: "lte",
+        amount: parseInt(totalToBurn, 10),
+        asset: `${contractAddress}.usda-token::usda`,
+      },
     ];
 
     const tokenAddress = tokenInfo['address'];
     const token = tokenInfo['name'];
 
     const args = [
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-tokens-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-data-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-sorted-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-pool-active-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-helpers-v1-1'
       ),
-      contractPrincipalCV(tokenAddress, token)
+      Cl.contractPrincipal(tokenAddress, token)
     ];
 
     await request('stx_callContract', {
