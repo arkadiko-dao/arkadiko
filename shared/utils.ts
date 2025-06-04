@@ -6,7 +6,7 @@ import {
   TxBroadcastResultRejected,
   makeContractCall
 } from "@stacks/transactions";
-import { StacksTestnet, StacksMainnet } from "@stacks/network";
+import { STACKS_MAINNET, STACKS_TESTNET } from "@stacks/network";
 require('dotenv').config();
 
 import * as fs from "fs";
@@ -22,8 +22,8 @@ const STACKS_CORE_API_URL =
   (env === 'testnet') ? "https://api.testnet.hiro.so" :
   (env === 'regtest') ? "https://stacks-node-api.regtest.stacks.co" :
   "https://api.hiro.so";
-export const network = (env === 'mainnet') ? new StacksMainnet() : new StacksTestnet();
-network.coreApiUrl = STACKS_CORE_API_URL;
+export const network = env === "mainnet" ? STACKS_MAINNET : STACKS_TESTNET;
+stacksNetwork.client.baseUrl = STACKS_CORE_API_URL;
 
 const keys =
   (env === 'mocknet') ? testnetKeyMap[ADDR1] :
