@@ -33,29 +33,29 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       },
     ];
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'unstake',
-      functionArgs: [
-        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
-        amount,
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished broadcasting unstaking tx!', data);
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'unstake',
+        functionArgs: [
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
+          amount,
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-        setShowUnstakeModal(false);
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   const unstakeMaxAmount = () => {

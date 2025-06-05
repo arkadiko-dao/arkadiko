@@ -43,7 +43,7 @@ export const VaultBurn: React.FC<Props> = ({
     const postConditions = [
       {
         type: "ft-postcondition",
-        address: stxAddress!,
+        address: senderAddress!,
         condition: "lte",
         amount: parseInt(totalToBurn * 1000000 * 1.1, 10),
         asset: `${contractAddress}.usda-token::usda`,
@@ -94,24 +94,24 @@ export const VaultBurn: React.FC<Props> = ({
       Cl.uint(100)
     ];
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-3',
-      functionName: 'update-vault',
-      functionArgs: args,
-      postConditions,
-      onFinish: data => {
-        console.log('finished burn!', data);
+    await makeContractCall(
+      {
+        stxAddress: senderAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-operations-v1-3',
+        functionName: 'update-vault',
+        functionArgs: args,
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const burnMaxAmount = () => {

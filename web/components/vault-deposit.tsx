@@ -162,24 +162,24 @@ export const VaultDeposit: React.FC<Props> = ({
       Cl.uint(100)
     ];
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-3',
-      functionName: 'update-vault',
-      functionArgs: args,
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished deposit!', data);
+    await makeContractCall(
+      {
+        stxAddress: senderAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-operations-v1-3',
+        functionName: 'update-vault',
+        functionArgs: args,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const depositMaxAmount = () => {
