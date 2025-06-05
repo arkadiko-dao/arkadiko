@@ -3,7 +3,7 @@ import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import {
   AnchorMode,
   fetchCallReadOnlyFunction,
@@ -17,7 +17,7 @@ import { UnstakeDikoModal } from './unstake-diko-modal';
 import { StakeLpModal } from './stake-lp-modal';
 import { UnstakeLpModal } from './unstake-lp-modal';
 import { useSTXAddress } from '@common/use-stx-address';
-import { request } from '@stacks/connect';
+import { makeContractCall } from '@common/contract-call';
 import { StakeLpRow } from './stake-lp-row';
 import { Alert } from './ui/alert';
 import axios from 'axios';

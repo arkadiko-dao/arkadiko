@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { request } from '@stacks/connect';
+import { makeContractCall } from '@common/contract-call';
 import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
@@ -71,25 +71,27 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
     ];
 
     // Call
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: contract,
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        Cl.contractPrincipal(token.split('.')[0], token.split('.')[1])
-      ],
-      postConditions,
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: contract,
+        functionName: "claim-pending-rewards",
+        functionArgs: [
+          Cl.contractPrincipal(token.split('.')[0], token.split('.')[1])
+        ],
+        postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    });
+    );
   }
 
   return (

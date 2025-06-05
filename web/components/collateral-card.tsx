@@ -5,13 +5,14 @@ import { StyledIcon } from './ui/styled-icon';
 import { AppContext } from '@common/context';
 import { microToReadable, getCollateralToDebtRatio } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
-import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
+import { stacksNetwork as network, asyncForEach } from '@common/utils';
 import { fetchCallReadOnlyFunction, cvToJSON, Cl } from '@stacks/transactions';
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Placeholder } from './ui/placeholder';
 import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
 import { Popover, Transition } from '@headlessui/react';
+import { makeContractCall } from '@common/contract-call';
 
 export interface VaultProps {
   key: string;
@@ -152,25 +153,41 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       amount = 100000000;
       contractName = 'Wrapped-Bitcoin';
     }
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName,
-      functionName: 'mint-for-protocol',
-      functionArgs: [
-        Cl.uint(amount),
-        Cl.standardPrincipal(stxAddress)
-      ],
-      onFinish: data => {
-        console.log('finished mint!', data, data.txId);
+
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName,
+        functionName: 'mint-for-protocol',
+        functionArgs: [
+          Cl.uint(amount),
+          Cl.standardPrincipal(stxAddress)
+        ],
+        functionArgs: [
+          contractPrincipalCV('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4', 'sbtc-token'),
+          stringAsciiCV('sBTC'),
+          uintCV(0 * 1000000),
+          uintCV(500000000),
+          uintCV(900),
+          uintCV(14000),
+          uintCV(1000),
+          uintCV(3000),
+          uintCV(6000),
+          uintCV(144),
+          uintCV(500000000)
+        ],
+        postConditions: postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   useEffect(() => {

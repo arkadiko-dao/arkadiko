@@ -5,8 +5,8 @@ import {
   Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { request } from '@stacks/connect';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { VaultProps } from './vault';
 import { tokenTraits } from '@common/vault-utils';
 

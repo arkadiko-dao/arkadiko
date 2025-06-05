@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import {
   Cl,
   Pc,
@@ -9,7 +9,7 @@ import { ExplorerLink } from './explorer-link';
 import { atAlexContractAddress, stStxContractAddress, resolveReserveName, tokenTraits, calculateMintFee } from '@common/vault-utils';
 import { AppContext } from '@common/context';
 import { Alert } from './ui/alert';
-import { request } from '@stacks/connect';
+import { makeContractCall } from '@common/contract-call';
 
 export const CreateVaultTransact = ({ coinAmounts }) => {
   const [state, setState] = useContext(AppContext);
@@ -99,27 +99,24 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       ];
     }
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress: address,
-      contractName: 'arkadiko-vaults-operations-v1-3',
-      functionName: 'open-vault',
-      functionArgs: args,
-      postConditions,
-      onFinish: data => {
-        console.log('finished collateralizing!', data);
+    await makeContractCall(
+      {
+        stxAddress: address,
+        contractName: 'arkadiko-vaults-operations-v1-3',
+        contractAddress: contractAddress,
+        functionName: 'open-vault',
+        functionArgs: args,
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'creating vault...',
         }));
-      },
-      onCancel: () => {
-        window.location.href = '/';
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   useEffect(() => {

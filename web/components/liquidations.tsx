@@ -3,8 +3,8 @@ import { AppContext } from '@common/context';
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
-import { request } from '@stacks/connect';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
+import { stacksNetwork as network } from '@common/utils';
 import {
   Cl,
   Pc,

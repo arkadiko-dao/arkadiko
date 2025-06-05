@@ -3,8 +3,8 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { Cl } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { request } from '@stacks/connect';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { VaultProps } from './vault';
 import { availableCoinsToMint, tokenTraits, calculateMintFee } from '@common/vault-utils';
 

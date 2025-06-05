@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { request } from '@stacks/connect';
-import { stacksNetwork as network, blocksToTime, resolveProvider } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
+import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
   Cl
@@ -71,24 +71,26 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
     }
 
     // Call
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: claimContract,
-      functionName: functionName,
-      functionArgs: [
-        listCV(rewardIds.map((id) =>  uintCV(id))),
-      ],
-      postConditions,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: claimContract,
+        functionName,
+        functionArgs: [
+          listCV(rewardIds.map((id) =>  uintCV(id))),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   }
 
   const claimV2 = async () => {
@@ -122,26 +124,28 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
     }
 
     // Call
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: claimContract,
-      functionName: rewardIds.length <= 25 ? "claim-25-rewards-of" : "claim-50-rewards-of",
-      functionArgs: [
-        Cl.list(rewardIds.map((id) =>  Cl.uint(id))),
-        Cl.contractPrincipal(token.split('.')[0], token.split('.')[1]),
-        Cl.bool(true)
-      ],
-      postConditions,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: claimContract,
+        functionName: rewardIds.length <= 25 ? "claim-25-rewards-of" : "claim-50-rewards-of",
+        functionArgs: [
+          Cl.list(rewardIds.map((id) =>  Cl.uint(id))),
+          Cl.contractPrincipal(token.split('.')[0], token.split('.')[1]),
+          Cl.bool(true)
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    });
+    );
   }
 
   const claim = async () => {

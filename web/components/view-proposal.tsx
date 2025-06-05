@@ -5,9 +5,9 @@ import {
   fetchCallReadOnlyFunction,
   Cl
 } from '@stacks/transactions';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
-import { request } from '@stacks/connect';
+import { makeContractCall } from '@common/contract-call';
 import { AppContext } from '@common/context';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';

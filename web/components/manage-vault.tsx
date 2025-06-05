@@ -5,7 +5,7 @@ import { VaultDeposit } from '@components/vault-deposit';
 import { VaultWithdraw } from '@components/vault-withdraw';
 import { VaultMint } from '@components/vault-mint';
 import { VaultBurn } from '@components/vault-burn';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
 import {
   Cl,
@@ -26,7 +26,7 @@ import { PoxTimeline } from '@components/pox-timeline';
 import { StyledIcon } from './ui/styled-icon';
 import { Status } from './ui/health-status';
 import { collExtraInfo } from './collateral-card';
-import { request } from '@stacks/connect';
+import { makeContractCall } from '@common/contract-call';
 import { Popover, Transition } from '@headlessui/react';
 
 export const ManageVault = ({ match }) => {
