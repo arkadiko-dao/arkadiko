@@ -189,27 +189,31 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         asset: `${contractAddress}.${tokenXYaram}::${tokenYName}`,
       },
     ];
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-swap-v2-1',
-      functionName: 'reduce-position',
-      functionArgs: [
-        Cl.contractPrincipal(tokenX['address'], tokenXParam),
-        Cl.contractPrincipal(tokenY['address'], tokenYParam),
-        Cl.contractPrincipal(contractAddress, swapTrait),
-        Cl.uint(percentageToRemove),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'reduce-position',
+        functionArgs: [
+          Cl.contractPrincipal(tokenX['address'], tokenXParam),
+          Cl.contractPrincipal(tokenY['address'], tokenYParam),
+          Cl.contractPrincipal(contractAddress, swapTrait),
+          Cl.uint(percentageToRemove),
+        ],
+        postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   return (

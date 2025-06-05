@@ -69,35 +69,35 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
     const hint = await response.json();
     console.log('got hint:', hint);
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-vaults-manager-v1-2',
-      functionName: 'redeem-vault',
-      functionArgs: [
-        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-data-v1-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-sorted-v1-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-oracle-v2-3'),
-        Cl.standardPrincipal(vault['owner']),
-        Cl.contractPrincipal(vault['token'].split('.')[0], vault['token'].split('.')[1]),
-        amount,
-        Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished broadcasting staking tx!', data);
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-manager-v1-2',
+        functionName: 'redeem-vault',
+        functionArgs: [
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-data-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-sorted-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-oracle-v2-3'),
+          Cl.standardPrincipal(vault['owner']),
+          Cl.contractPrincipal(vault['token'].split('.')[0], vault['token'].split('.')[1]),
+          amount,
+          Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-        setShowRedeemModal(false);
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   return (

@@ -255,24 +255,25 @@ export const ManageVault = ({ match }) => {
       Cl.contractPrincipal(tokenAddress, token)
     ];
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-3',
-      functionName: 'close-vault',
-      functionArgs: args,
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished burn!', data);
+    await makeContractCall(
+      {
+        stxAddress: senderAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-operations-v1-3',
+        functionName: 'close-vault',
+        functionArgs: args,
+        postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const collateralLocked = () => {

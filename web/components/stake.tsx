@@ -644,328 +644,343 @@ export const Stake = () => {
   }, [state.balance, stxPrice, dikoPrice, usdaPrice]);
 
   const claimDikoUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const claimStxUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
+        ],
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const claimStxDikoLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
+        ],
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const stakeDikoUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'stake-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const claimStxXbtcLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
+        ],
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const stakeStxXbtcLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'stake-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-xbtc-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const claimXbtcUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
+        ],
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const claimXusdUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1')
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1')
+        ],
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const claimXusdUsda2LpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
-      functionName: 'claim-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1')
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
+        functionName: 'claim-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1')
+        ],
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const stakeXbtcUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'stake-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-xbtc-usda-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const stakeXusdUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
-      functionName: 'stake-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-4',
+        functionName: 'stake-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const stakeXusdUsda2LpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
-      functionName: 'stake-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-pool-xusd-usda-v1-5',
+        functionName: 'stake-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const stakeStxUsdaLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'stake-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-usda-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const stakeStxDikoLpPendingRewards = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake-pending-rewards',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'stake-pending-rewards',
+        functionArgs: [
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-wstx-diko-v1-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          contractPrincipalCV(contractAddress, 'arkadiko-token'),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const getTotalPooled = async () => {

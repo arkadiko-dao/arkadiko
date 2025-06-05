@@ -59,29 +59,30 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
         asset: `${contractAddress}.arkadiko-token::diko`,
       },
     ];
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake',
-      functionArgs: [
-        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
-        amount,
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished broadcasting staking tx!', data);
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'stake',
+        functionArgs: [
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
+          amount,
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-        setShowStakeModal(false);
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   return (

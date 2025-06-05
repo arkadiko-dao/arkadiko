@@ -69,22 +69,25 @@ export const Liquidations: React.FC = () => {
   };
 
   const redeemStx = async () => {
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stacker-payer-v3-8',
-      functionName: 'redeem-stx',
-      functionArgs: [Cl.uint(state.balance['xstx'])],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stacker-payer-v3-8',
+        functionName: 'redeem-stx',
+        functionArgs: [Cl.uint(state.balance['xstx'])],
+        postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   const stake = async () => {
@@ -105,32 +108,34 @@ export const Liquidations: React.FC = () => {
       },
     ];
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-2',
-      functionName: 'stake',
-      functionArgs: [
-        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        Cl.uint(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))),
-        Cl.list([
-          Cl.contractPrincipal(contractAddress, 'wstx-token'),
-          Cl.contractPrincipal(stStxContractAddress, 'ststx-token'),
-          Cl.contractPrincipal(xbtcContractAddress, 'Wrapped-Bitcoin'),
-          Cl.contractPrincipal(sbtcContractAddress, 'sbtc-token')
-        ])
-      ],
-      postConditions,
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-pool-liq-v1-2',
+        functionName: 'stake',
+        functionArgs: [
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+          Cl.uint(Number((parseFloat(stakeAmount) * 1000000).toFixed(0))),
+          Cl.list([
+            Cl.contractPrincipal(contractAddress, 'wstx-token'),
+            Cl.contractPrincipal(stStxContractAddress, 'ststx-token'),
+            Cl.contractPrincipal(xbtcContractAddress, 'Wrapped-Bitcoin'),
+            Cl.contractPrincipal(sbtcContractAddress, 'sbtc-token')
+          ])
+        ],
+        postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   const unstake = async () => {
@@ -173,32 +178,34 @@ export const Liquidations: React.FC = () => {
       Pc.principal(`${contractAddress}.arkadiko-vaults-pool-liq-v1-2`).willSendGte(0).ustx(),
     ];
 
-    await request('stx_callContract', {
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-2',
-      functionName: 'unstake',
-      functionArgs: [
-        Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        Cl.uint(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))),
-        Cl.list([
-          Cl.contractPrincipal(contractAddress, 'wstx-token'),
-          Cl.contractPrincipal(stStxContractAddress, 'ststx-token'),
-          Cl.contractPrincipal(xbtcContractAddress, 'Wrapped-Bitcoin'),
-          Cl.contractPrincipal(sbtcContractAddress, 'sbtc-token')
-        ])
-      ],
-      postConditions: [],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-pool-liq-v1-2',
+        functionName: 'unstake',
+        functionArgs: [
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+          Cl.uint(Number((parseFloat(unstakeAmount) * 1000000).toFixed(0))),
+          Cl.list([
+            Cl.contractPrincipal(contractAddress, 'wstx-token'),
+            Cl.contractPrincipal(stStxContractAddress, 'ststx-token'),
+            Cl.contractPrincipal(xbtcContractAddress, 'Wrapped-Bitcoin'),
+            Cl.contractPrincipal(sbtcContractAddress, 'sbtc-token')
+          ])
+        ],
+        postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
       }
-    }, resolveProvider() || window.StacksProvider);
+    );
   };
 
   const getPendingRewards = async (tokenAddress: string, tokenName: string) => {
