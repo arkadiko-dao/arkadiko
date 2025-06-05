@@ -81,3 +81,11 @@ export const resolveProvider = () => {
     return window.StacksProvider;
   }
 };
+
+export const STACKS_PROVIDERS = {
+  xverse: 'XverseProviders.BitcoinProvider',
+  leather: 'LeatherProvider',
+  asigna: 'AsignaProvider',
+  fordefi: 'FordefiProviders.UtxoProvider',
+  //orange: 'OrangeStacksProvider',
+};

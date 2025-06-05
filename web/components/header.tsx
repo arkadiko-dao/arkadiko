@@ -7,7 +7,7 @@ import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
 import { Tooltip } from '@blockstack/ui';
 import { fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network, resolveProvider, STACKS_PROVIDERS } from '@common/utils';
 import { getPendingTransactions } from '@common/transactions';
 import { MempoolContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
 import { useSTXAddress } from '@common/use-stx-address';
@@ -30,14 +30,6 @@ const shortAddress = (address: string | null) => {
   return '';
 };
 
-export const STACKS_PROVIDERS = {
-  xverse: 'XverseProviders.BitcoinProvider',
-  leather: 'LeatherProvider',
-  asigna: 'AsignaProvider',
-  fordefi: 'FordefiProviders.UtxoProvider',
-  //orange: 'OrangeStacksProvider',
-};
-
 export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
   const env = process.env.REACT_APP_NETWORK_ENV;
   const [state, setState] = useContext(AppContext);
@@ -51,7 +43,6 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
-    console.log('got provider', provider);
     if (provider) {
       try {
         const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });

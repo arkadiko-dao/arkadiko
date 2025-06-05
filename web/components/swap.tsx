@@ -5,7 +5,7 @@ import { Container } from './home';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network, resolveProvider, STACKS_PROVIDERS } from '@common/utils';
 import { makeContractCall } from '@common/contract-call';
 import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
@@ -19,6 +19,7 @@ import { StyledIcon } from './ui/styled-icon';
 import { ChooseWalletModal } from './choose-wallet-modal';
 import { Redirect } from 'react-router-dom';
 import { Cl } from '@stacks/transactions';
+import { clearSelectedProviderId, request, setSelectedProviderId } from '@stacks/connect';
 
 export const Swap: React.FC = () => {
   const env = process.env.REACT_APP_NETWORK_ENV;
@@ -60,19 +61,30 @@ export const Swap: React.FC = () => {
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
     if (provider) {
-      // TODO
-      // await doOpenAuth(true, undefined, provider);
+      try {
+        const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+        setState(prevState => ({ ...prevState, userData }));
+      } catch (e) {
+        localStorage.removeItem("sign-provider");
+        clearSelectedProviderId();
+      }
     } else {
       setShowChooseWalletModal(true);
     }
   };
 
   const onProviderChosen = async (providerString: string) => {
-    localStorage.setItem('sign-provider', providerString);
+    localStorage.setItem("sign-provider", providerString);
     setShowChooseWalletModal(false);
 
-    const provider = resolveProvider();
-    // await doOpenAuth(true, undefined, provider);
+    try {
+      setSelectedProviderId(STACKS_PROVIDERS[providerString]);
+      const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+      setState(prevState => ({ ...prevState, userData }));
+    } catch (e) {
+      localStorage.removeItem("sign-provider");
+      clearSelectedProviderId();
+    }
   };
 
   useEffect(() => {
