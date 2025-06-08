@@ -198,8 +198,8 @@
     (stx-price (try! (get-price-pyth 0xec7a775f46379b5e943c3526b1c8d54cd49749176b0b98e02dde68d1bd335c17)))
     (ststx-reserve 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.reserve-v1)
     ;; TODO: Update for mainnet
-    ;; (ratio (try! (contract-call? 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.data-core-v2 get-stx-per-ststx ststx-reserve)))
-    (ratio (try! (contract-call? .data-core-v2 get-stx-per-ststx ststx-reserve)))
+    ;; (ratio (try! (contract-call? 'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.data-core-v3 get-stx-per-ststx ststx-reserve)))
+    (ratio (try! (contract-call? .data-core-v3 get-stx-per-ststx ststx-reserve)))
   )
     (ok (/ (* stx-price (* ratio u100)) u100000000))
   )

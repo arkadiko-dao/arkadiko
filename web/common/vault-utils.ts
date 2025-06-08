@@ -374,7 +374,7 @@ export const resolveReserveName = (collateralToken: string) => {
 export const contractsMap = {
   'vault-manager': 'arkadiko-freddie-v1-1',
   'auction-engine': 'arkadiko-auction-engine-v3-1',
-  oracle: 'arkadiko-oracle-v2-4',
+  oracle: 'arkadiko-oracle-v3-0',
   governance: 'arkadiko-governance-v2-1',
 };
 

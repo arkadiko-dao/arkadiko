@@ -25,7 +25,7 @@ export const getCollateralToDebtRatio = (vaultId: string) => {
         functionArgs: [
           uintCV(vaultId),
           contractPrincipalCV(contractAddress || '', 'arkadiko-collateral-types-v3-1'),
-          contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v2-4'),
+          contractPrincipalCV(contractAddress || '', 'arkadiko-oracle-v3-0'),
           falseCV(),
         ],
         senderAddress: stxAddress || '',

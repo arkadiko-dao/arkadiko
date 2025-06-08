@@ -86,7 +86,7 @@ export const AuctionGroup: React.FC<AuctionProps[]> = ({ auctions, stacksTipHeig
       functionName: 'bid',
       functionArgs: [
         contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-freddie-v1-1'),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v2-4'),
+        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-oracle-v3-0'),
         contractPrincipalCV(
           process.env.REACT_APP_CONTRACT_ADDRESS || '',
           'arkadiko-collateral-types-v3-1'

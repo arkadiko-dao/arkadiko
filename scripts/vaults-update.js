@@ -19,7 +19,7 @@ async function updateVault(token, collateral, debt, prevHint) {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-sorted-v1-1"),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-pool-active-v1-1"),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-helpers-v1-1"),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-oracle-v2-4"),
+      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-oracle-v3-0"),
       tx.contractPrincipalCV(CONTRACT_ADDRESS, token),
       tx.uintCV(collateral),
       tx.uintCV(debt),

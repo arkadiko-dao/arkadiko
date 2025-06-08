@@ -29,7 +29,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get STX price directly from Pyth
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-pyth-info", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-pyth-info", [
       types.ascii("STX")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -54,7 +54,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get DIKO price directly from DIA
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-dia-info", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-dia-info", [
       types.ascii("DIKO")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -79,7 +79,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get stSTX price directly from custom oracle
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-custom-info", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-custom-info", [
       types.ascii("stSTX")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -96,7 +96,7 @@ Clarinet.test({
 
     // Set manual price
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "update-price-manual", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "update-price-manual", [
         types.ascii("STX"),
         types.uint(DECIMAL_MULTIPLIER),
         types.uint(1.5 * DECIMAL_MULTIPLIER),
@@ -105,7 +105,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectUint(1.5 * DECIMAL_MULTIPLIER);
 
     // Get price directly from manual oracle
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-manual-info", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-manual-info", [
       types.ascii("STX")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -127,7 +127,7 @@ Clarinet.test({
 
     // Set manual price
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "update-price-manual", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "update-price-manual", [
         types.ascii("STX"),
         types.uint(DECIMAL_MULTIPLIER),
         types.uint(1.5 * DECIMAL_MULTIPLIER),
@@ -136,7 +136,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectUint(1.5 * DECIMAL_MULTIPLIER);
 
     // Get price
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("STX")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -168,7 +168,7 @@ Clarinet.test({
     block.receipts[1].result.expectOk().expectBool(true);
 
     // Get STX price from Pyth
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("STX")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -177,7 +177,7 @@ Clarinet.test({
     priceData["last-block"].expectUint(block.height-1);
 
     // Get BTC price from Pyth
-    let btcPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let btcPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("BTC")
     ], deployer.address);
     let btcPriceData = btcPrice.result.expectOk().expectTuple();
@@ -202,7 +202,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get DIKO price from DIA
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("DIKO")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -227,7 +227,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get stSTX price from custom oracle
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("stSTX")
     ], deployer.address);
     let priceData = price.result.expectOk().expectTuple();
@@ -257,7 +257,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get STX price - should be normalized by dividing by 100000000
-    let stxPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let stxPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("STX")
     ], deployer.address);
     let stxPriceData = stxPrice.result.expectOk().expectTuple();
@@ -265,7 +265,7 @@ Clarinet.test({
     stxPriceData["decimals"].expectUint(DECIMAL_MULTIPLIER);
 
     // Get xSTX price - should be same as STX
-    let xstxPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let xstxPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("xSTX")
     ], deployer.address);
     let xstxPriceData = xstxPrice.result.expectOk().expectTuple();
@@ -282,7 +282,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get BTC price - should be normalized by dividing by 100000000 and an additional 100
-    let btcPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let btcPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("BTC")
     ], deployer.address);
     let btcPriceData = btcPrice.result.expectOk().expectTuple();
@@ -290,7 +290,7 @@ Clarinet.test({
     btcPriceData["decimals"].expectUint(DECIMAL_MULTIPLIER * 100); // 100000000 * 100
 
     // Get xBTC price - should be same as BTC
-    let xbtcPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let xbtcPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("xBTC")
     ], deployer.address);
     let xbtcPriceData = xbtcPrice.result.expectOk().expectTuple();
@@ -298,7 +298,7 @@ Clarinet.test({
     xbtcPriceData["decimals"].expectUint(DECIMAL_MULTIPLIER * 100);
 
     // Get sBTC price - should be same as BTC
-    let sbtcPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let sbtcPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("sBTC")
     ], deployer.address);
     let sbtcPriceData = sbtcPrice.result.expectOk().expectTuple();
@@ -315,7 +315,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get stSTX price - should be normalized by dividing by 100000000
-    let ststxPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let ststxPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("stSTX")
     ], deployer.address);
     let ststxPriceData = ststxPrice.result.expectOk().expectTuple();
@@ -323,7 +323,7 @@ Clarinet.test({
     ststxPriceData["decimals"].expectUint(DECIMAL_MULTIPLIER);
 
     // Get ststx-token price - should be same as stSTX
-    let ststxTokenPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let ststxTokenPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("ststx-token")
     ], deployer.address);
     let ststxTokenPriceData = ststxTokenPrice.result.expectOk().expectTuple();
@@ -340,7 +340,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get DIKO price - should be normalized by dividing by 100000000
-    let dikoPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let dikoPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("DIKO")
     ], deployer.address);
     let dikoPriceData = dikoPrice.result.expectOk().expectTuple();
@@ -357,7 +357,7 @@ Clarinet.test({
     block.receipts[0].result.expectOk().expectBool(true);
 
     // Get WELSH price - should be normalized by dividing by 100000000
-    let welshPrice = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let welshPrice = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("WELSH")
     ], deployer.address);
     let welshPriceData = welshPrice.result.expectOk().expectTuple();
@@ -379,7 +379,7 @@ Clarinet.test({
 
     // Update manager
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "set-manual-manager", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "set-manual-manager", [
         types.principal(wallet_1.address)
       ], deployer.address)
     ]);
@@ -387,7 +387,7 @@ Clarinet.test({
 
     // New manager can update prices
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "update-price-manual", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "update-price-manual", [
         types.ascii("STX"),
         types.uint(DECIMAL_MULTIPLIER),
         types.uint(1500000)
@@ -409,7 +409,7 @@ Clarinet.test({
 
     // Try to update price as non-manager
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "update-price-manual", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "update-price-manual", [
         types.ascii("STX"),
         types.uint(DECIMAL_MULTIPLIER),
         types.uint(1500000)
@@ -428,7 +428,7 @@ Clarinet.test({
 
     // First update manager to wallet_1
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "set-manual-manager", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "set-manual-manager", [
         types.principal(wallet_1.address)
       ], deployer.address)
     ]);
@@ -436,7 +436,7 @@ Clarinet.test({
 
     // Try to update manager as non-manager (wallet_2)
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "set-manual-manager", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "set-manual-manager", [
         types.principal(wallet_2.address)
       ], wallet_2.address)
     ]);
@@ -444,7 +444,7 @@ Clarinet.test({
 
     // Verify manager is still wallet_1 by trying to update price
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-oracle-v2-4", "update-price-manual", [
+      Tx.contractCall("arkadiko-oracle-v3-0", "update-price-manual", [
         types.ascii("STX"),
         types.uint(DECIMAL_MULTIPLIER),
         types.uint(1.5 * DECIMAL_MULTIPLIER)
@@ -460,31 +460,31 @@ Clarinet.test({
     let deployer = accounts.get("deployer")!;
 
     // Try to get price for unknown token from main method
-    let price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-price", [
+    let price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-price", [
       types.ascii("UNKNOWN")
     ], deployer.address);
     price.result.expectErr().expectUint(8502);
 
     // Try to get price for unknown token from Pyth oracle
-    price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-pyth-info", [
+    price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-pyth-info", [
       types.ascii("UNKNOWN")
     ], deployer.address);
     price.result.expectErr().expectUint(8502);
 
     // Try to get price for unknown token from DIA oracle
-    price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-dia-info", [
+    price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-dia-info", [
       types.ascii("UNKNOWN")
     ], deployer.address);
     price.result.expectErr().expectUint(8502);
 
     // Try to get price for unknown token from custom oracle
-    price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-custom-info", [
+    price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-custom-info", [
       types.ascii("UNKNOWN")
     ], deployer.address);
     price.result.expectErr().expectUint(8502);
 
     // Try to get price for unknown token from manual oracle
-    price = chain.callReadOnlyFn("arkadiko-oracle-v2-4", "get-manual-info", [
+    price = chain.callReadOnlyFn("arkadiko-oracle-v3-0", "get-manual-info", [
       types.ascii("UNKNOWN")
     ], deployer.address);
     price.result.expectErr().expectUint(8502);

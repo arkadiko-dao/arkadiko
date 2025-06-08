@@ -40,7 +40,7 @@ const contracts: Contract[] = [
   { name: 'restricted-token-trait', file: 'xbtc/restricted-token-trait' },
 
   // Contracts
-  { name: 'arkadiko-oracle-v2-4' },
+  { name: 'arkadiko-oracle-v3-0' },
   { name: 'arkadiko-token' },
   { name: 'arkadiko-collateral-types-v3-1' },
   { name: 'arkadiko-dao' },

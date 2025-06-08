@@ -34,7 +34,7 @@ async function transact() {
         tx.tupleCV({
           'name': tx.stringAsciiCV("oracle"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-oracle-v2-4"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-oracle-v3-0"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),

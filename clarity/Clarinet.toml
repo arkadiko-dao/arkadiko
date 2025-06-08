@@ -62,8 +62,8 @@ path = "contracts/arkadiko-oracle-v2-3.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.arkadiko-oracle-v2-4]
-path = "contracts/arkadiko-oracle-v2-4.clar"
+[contracts.arkadiko-oracle-v3-0]
+path = "contracts/arkadiko-oracle-v3-0.clar"
 clarity_version = 2
 epoch = 2.4
 
@@ -589,8 +589,8 @@ path = "contracts/tests/oracles/pyth-oracle-v3.clar"
 clarity_version = 2
 epoch = 2.4
 
-[contracts.data-core-v2]
-path = "contracts/tests/oracles/data-core-v2.clar"
+[contracts.data-core-v3]
+path = "contracts/tests/oracles/data-core-v3.clar"
 clarity_version = 2
 epoch = 2.4
 
