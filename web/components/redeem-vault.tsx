@@ -81,7 +81,7 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
       network,
       contractAddress,
       stxAddress,
-      contractName: 'arkadiko-vaults-manager-v1-1',
+      contractName: 'arkadiko-vaults-manager-v1-2',
       functionName: 'redeem-vault',
       functionArgs: [
         contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),

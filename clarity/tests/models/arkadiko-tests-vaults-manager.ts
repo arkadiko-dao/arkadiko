@@ -6,7 +6,7 @@ import {
   types,
 } from "https://deno.land/x/clarinet/index.ts";
 
-import * as Utils from './arkadiko-tests-utils.ts';
+import * as Utils from "./arkadiko-tests-utils.ts";
 
 // ---------------------------------------------------------
 // Vaults Manager
@@ -22,22 +22,26 @@ class VaultsManager {
   }
 
   getShutdownActivated() {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-manager-v1-1", "get-shutdown-activated", [
-    ], this.deployer.address);
+    return this.chain.callReadOnlyFn(
+      "arkadiko-vaults-manager-v1-2",
+      "get-shutdown-activated",
+      [],
+      this.deployer.address
+    );
   }
 
   getRedemptionBlockLast(token: string) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-manager-v1-1", "get-redemption-block-last", [
-      types.principal(Utils.qualifiedName(token)),
-    ], this.deployer.address);
+    return this.chain.callReadOnlyFn(
+      "arkadiko-vaults-manager-v1-2",
+      "get-redemption-block-last",
+      [types.principal(Utils.qualifiedName(token))],
+      this.deployer.address
+    );
   }
 
-  liquidateVault(
-    owner: string,
-    token: string,
-  ) {
+  liquidateVault(owner: string, token: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-manager-v1-1", "liquidate-vault", [
+      Tx.contractCall("arkadiko-vaults-manager-v1-2", "liquidate-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -52,13 +56,9 @@ class VaultsManager {
     return block.receipts[0].result;
   }
 
-  getCollateralForLiquidation(
-    token: string,
-    collateral: number,
-    debt: number
-  ) {
+  getCollateralForLiquidation(token: string, collateral: number, debt: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-manager-v1-1", "get-collateral-for-liquidation", [
+      Tx.contractCall("arkadiko-vaults-manager-v1-2", "get-collateral-for-liquidation", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-oracle-v2-4')),
         types.principal(Utils.qualifiedName(token)),
@@ -74,10 +74,10 @@ class VaultsManager {
     owner: string,
     token: string,
     debtPayoff: number,
-    prevHint: string,
+    prevHint: string
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-manager-v1-1", "redeem-vault", [
+      Tx.contractCall("arkadiko-vaults-manager-v1-2", "redeem-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -94,20 +94,27 @@ class VaultsManager {
   }
 
   getRedemptionFee(token: string) {
-    return this.chain.callReadOnlyFn("arkadiko-vaults-manager-v1-1", "get-redemption-fee", [
-      types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
-      types.principal(Utils.qualifiedName(token)),
-    ], this.deployer.address);
+    return this.chain.callReadOnlyFn(
+      "arkadiko-vaults-manager-v1-2",
+      "get-redemption-fee",
+      [
+        types.principal(Utils.qualifiedName("arkadiko-vaults-tokens-v1-1")),
+        types.principal(Utils.qualifiedName(token)),
+      ],
+      this.deployer.address
+    );
   }
 
-  setShutdownActivated(caller: Account, activated: boolean ) {
+  setShutdownActivated(caller: Account, activated: boolean) {
     let block = this.chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-manager-v1-1", "set-shutdown-activated", [
-        types.bool(activated),
-      ], caller.address)
+      Tx.contractCall(
+        "arkadiko-vaults-manager-v1-2",
+        "set-shutdown-activated",
+        [types.bool(activated)],
+        caller.address
+      ),
     ]);
     return block.receipts[0].result;
   }
-
 }
 export { VaultsManager };

@@ -6,15 +6,12 @@ import {
   types,
 } from "https://deno.land/x/clarinet/index.ts";
 
-import { 
-  VaultsPoolFees
-} from './models/arkadiko-tests-vaults-pool-fees.ts';
+import { VaultsPoolFees } from "./models/arkadiko-tests-vaults-pool-fees.ts";
 
-import { 
-  WstxToken,
-} from './models/arkadiko-tests-tokens.ts';
+import { WstxToken } from "./models/arkadiko-tests-tokens.ts";
 
-import * as Utils from './models/arkadiko-tests-utils.ts'; Utils;
+import * as Utils from "./models/arkadiko-tests-utils.ts";
+Utils;
 
 // ---------------------------------------------------------
 // Wrap / Unwrap
@@ -44,16 +41,18 @@ Clarinet.test({
 
     call = wstxToken.getStxBalance(deployer.address);
     call.result.expectUintWithDecimals(100000000);
-    
-    call = wstxToken.isProtocolAddress(Utils.qualifiedName("arkadiko-vaults-manager-v1-1"));
+
+    call = wstxToken.isProtocolAddress(
+      Utils.qualifiedName("arkadiko-vaults-manager-v1-2")
+    );
     call.result.expectBool(true);
 
     call = wstxToken.isProtocolAddress(Utils.qualifiedName("usda-token"));
     call.result.expectBool(false);
 
     call = wstxToken.getProtocolAddresses();
-    call.result.expectList()[0].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-manager-v1-1"));
-    call.result.expectList()[1].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-operations-v1-1"));
+    call.result.expectList()[0].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-manager-v1-2"));
+    call.result.expectList()[1].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-operations-v1-3"));
     call.result.expectList()[2].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1"));
     call.result.expectList()[3].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"));
     call.result.expectList()[4].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
@@ -87,7 +86,11 @@ Clarinet.test({
     // Transfer to protocol
     //
 
-    let result = wstxToken.transfer(wallet_1, 300, Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"))
+    let result = wstxToken.transfer(
+      wallet_1,
+      300,
+      Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1")
+    );
     result.expectOk().expectBool(true);
 
     call = wstxToken.getTotalSupply();
@@ -112,7 +115,7 @@ Clarinet.test({
     call = wstxToken.balanceOf(wallet_2.address);
     call.result.expectOk().expectUintWithDecimals(0);
 
-    result = wstxToken.transfer(wallet_1, 200, wallet_2.address)
+    result = wstxToken.transfer(wallet_1, 200, wallet_2.address);
     result.expectOk().expectBool(true);
 
     call = wstxToken.balanceOf(wallet_1.address);
@@ -145,7 +148,6 @@ Clarinet.test({
 
     call = wstxToken.getStxBalance(Utils.qualifiedName("wstx-token"));
     call.result.expectUintWithDecimals(200);
-
   },
 });
 
@@ -191,7 +193,11 @@ Clarinet.test({
     // Transfer to protocol
     //
 
-    result = wstxToken.transfer(wallet_1, 500, Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1"))
+    result = wstxToken.transfer(
+      wallet_1,
+      500,
+      Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1")
+    );
     result.expectOk().expectBool(true);
 
     call = wstxToken.getTotalSupply();
@@ -293,13 +299,17 @@ Clarinet.test({
 
     let result = wstxToken.setProtocolAddresses(deployer, [
       Utils.qualifiedName("arkadiko-vaults-helpers-v1-1"),
-      Utils.qualifiedName("arkadiko-vaults-data-v1-1")
-    ])
+      Utils.qualifiedName("arkadiko-vaults-data-v1-1"),
+    ]);
     result.expectOk().expectBool(true);
 
     let call = wstxToken.getProtocolAddresses();
-    call.result.expectList()[0].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-helpers-v1-1"));
-    call.result.expectList()[1].expectPrincipal(Utils.qualifiedName("arkadiko-vaults-data-v1-1"));
+    call.result
+      .expectList()[0]
+      .expectPrincipal(Utils.qualifiedName("arkadiko-vaults-helpers-v1-1"));
+    call.result
+      .expectList()[1]
+      .expectPrincipal(Utils.qualifiedName("arkadiko-vaults-data-v1-1"));
   },
 });
 
@@ -330,8 +340,8 @@ Clarinet.test({
 
     let result = wstxToken.setProtocolAddresses(wallet_1, [
       Utils.qualifiedName("arkadiko-vaults-helpers-v1-1"),
-      Utils.qualifiedName("arkadiko-vaults-data-v1-1")
-    ])
+      Utils.qualifiedName("arkadiko-vaults-data-v1-1"),
+    ]);
     result.expectErr().expectUint(990401);
   },
 });

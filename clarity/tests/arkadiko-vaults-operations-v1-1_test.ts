@@ -457,7 +457,7 @@ Clarinet.test({
     result.expectOk().expectBool(true)
 
     let block = chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "update-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -470,7 +470,7 @@ Clarinet.test({
         types.some(types.principal(deployer.address)),
         types.uint(1000),
       ], deployer.address),
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "update-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -488,7 +488,7 @@ Clarinet.test({
     block.receipts[1].result.expectOk().expectBool(true);
 
     block = chain.mineBlock([
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "update-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
@@ -501,7 +501,7 @@ Clarinet.test({
         types.some(types.principal(deployer.address)),
         types.uint(1000),
       ], deployer.address),
-      Tx.contractCall("arkadiko-vaults-operations-v1-1", "update-vault", [
+      Tx.contractCall("arkadiko-vaults-operations-v1-3", "update-vault", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),

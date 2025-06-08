@@ -152,7 +152,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       network,
       contractAddress,
       stxAddress: address,
-      contractName: 'arkadiko-vaults-operations-v1-2',
+      contractName: 'arkadiko-vaults-operations-v1-3',
       functionName: 'open-vault',
       functionArgs: args,
       postConditions,
