@@ -272,17 +272,6 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const onFinishLogin = () => {
-    const userData = getLocalStorage();
-    const doneOnboarding = localStorage.getItem('arkadiko-onboarding');
-    setFinishedOnboarding(doneOnboarding === 'true');
-
-    fetchBalance(resolveSTXAddress(userData));
-    fetchCollateralTypes(resolveSTXAddress(userData));
-    fetchStackingCycle();
-    setState(prevState => ({ ...prevState, userData }));
-  }
-
   return (
     <div>
       <AppContext.Provider value={[state, setState]}>
