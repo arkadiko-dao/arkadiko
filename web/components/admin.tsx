@@ -1,52 +1,51 @@
 import React from 'react';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { useSTXAddress } from '@common/use-stx-address';
 import {
-  AnchorMode,
   uintCV,
   contractPrincipalCV,
   stringAsciiCV,
   standardPrincipalCV,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON
 } from '@stacks/transactions';
 
 export const Admin = () => {
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
 
   const exec = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: "arkadiko-vaults-tokens-v1-1",
-      functionName: "set-token",
-      functionArgs: [
-        contractPrincipalCV('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4', 'sbtc-token'),
-        stringAsciiCV('sBTC'),
-        uintCV(0 * 1000000),
-        uintCV(500000000),
-        uintCV(900),
-        uintCV(14000),
-        uintCV(1000),
-        uintCV(3000),
-        uintCV(6000),
-        uintCV(144),
-        uintCV(500000000)
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName: "arkadiko-vaults-tokens-v1-1",
+        functionName: "set-token",
+        functionArgs: [
+          contractPrincipalCV('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4', 'sbtc-token'),
+          stringAsciiCV('sBTC'),
+          uintCV(0 * 1000000),
+          uintCV(500000000),
+          uintCV(900),
+          uintCV(14000),
+          uintCV(1000),
+          uintCV(3000),
+          uintCV(6000),
+          uintCV(144),
+          uintCV(500000000)
+        ],
+        postConditions: postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
 

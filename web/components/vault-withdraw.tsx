@@ -3,8 +3,8 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { AnchorMode, contractPrincipalCV, uintCV, someCV, standardPrincipalCV } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { VaultProps } from './vault';
 import { tokenTraits, tokenNameToTicker } from '@common/vault-utils';
 
@@ -29,7 +29,6 @@ export const VaultWithdraw: React.FC<Props> = ({
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
@@ -83,24 +82,25 @@ export const VaultWithdraw: React.FC<Props> = ({
       someCV(standardPrincipalCV(hint['prevOwner'])),
       uintCV(100)
     ];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-3',
-      functionName: 'update-vault',
-      functionArgs: args,
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished withdraw!', data);
+
+    await makeContractCall(
+      {
+        stxAddress: senderAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-operations-v1-3',
+        functionName: 'update-vault',
+        functionArgs: args,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const withdrawMaxAmount = () => {

@@ -1,18 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '@common/context';
-import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network, blocksToTime, resolveProvider } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
+import { stacksNetwork as network, blocksToTime } from '@common/utils';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
-  uintCV,
-  listCV,
-  makeContractFungiblePostCondition,
-  makeContractSTXPostCondition,
-  FungibleConditionCode,
-  createAssetInfo,
-  contractPrincipalCV,
-  trueCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { tokenTraits } from '@common/vault-utils';
@@ -36,7 +28,6 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
   unlockBlock,
   currentBlock
 }) => {
-  const { doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [state, setState] = useContext(AppContext);
@@ -50,12 +41,7 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
     if (tokenIsStx) {
       // PC
       postConditions.push(
-        makeContractSTXPostCondition(
-          contractAddress,
-          rewardsContract,
-          FungibleConditionCode.Equal,
-          uintCV(claimable).value,
-        )
+        Pc.principal(`${contractAddress}.${rewardsContract}`).willSendEq(claimable).ustx(),
       )
     } else {
       // FT name
@@ -66,13 +52,13 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
 
       // PC
       postConditions.push(
-        makeContractFungiblePostCondition(
-          contractAddress,
-          rewardsContract,
-          FungibleConditionCode.Equal,
-          uintCV(claimable).value,
-          createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
-        )
+        {
+          type: "ft-postcondition",
+          address: `${contractAddress}.${rewardsContract}`,
+          condition: "eq",
+          amount: claimable,
+          asset: `${token.split('.')[0]}.${token.split('.')[1]}::${tokenName}`,
+        },
       )
     }
 
@@ -85,25 +71,26 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
     }
 
     // Call
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: claimContract,
-      functionName: functionName,
-      functionArgs: [
-        listCV(rewardIds.map((id) =>  uintCV(id))),
-      ],
-      postConditions,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: claimContract,
+        functionName,
+        functionArgs: [
+          listCV(rewardIds.map((id) =>  uintCV(id))),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   }
 
   const claimV2 = async () => {
@@ -115,12 +102,7 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
     if (tokenIsStx) {
       // PC
       postConditions.push(
-        makeContractSTXPostCondition(
-          contractAddress,
-          rewardsContract,
-          FungibleConditionCode.Equal,
-          uintCV(claimable).value,
-        )
+        Pc.principal(`${contractAddress}.${rewardsContract}`).willSendEq(claimable).ustx(),
       )
     } else {
       // FT name
@@ -131,38 +113,39 @@ export const LegacyLiquidationReward: React.FC<LiquidationRewardProps> = ({
 
       // PC
       postConditions.push(
-        makeContractFungiblePostCondition(
-          contractAddress,
-          rewardsContract,
-          FungibleConditionCode.Equal,
-          uintCV(claimable).value,
-          createAssetInfo(token.split('.')[0], token.split('.')[1], tokenName)
-        )
+        {
+          type: "ft-postcondition",
+          address: `${contractAddress}.${rewardsContract}`,
+          condition: "eq",
+          amount: claimable,
+          asset: `${token.split('.')[0]}.${token.split('.')[1]}::${tokenName}`,
+        }
       )
     }
 
     // Call
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: claimContract,
-      functionName: rewardIds.length <= 25 ? "claim-25-rewards-of" : "claim-50-rewards-of",
-      functionArgs: [
-        listCV(rewardIds.map((id) =>  uintCV(id))),
-        contractPrincipalCV(token.split('.')[0], token.split('.')[1]),
-        trueCV()
-      ],
-      postConditions,
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: claimContract,
+        functionName: rewardIds.length <= 25 ? "claim-25-rewards-of" : "claim-50-rewards-of",
+        functionArgs: [
+          Cl.list(rewardIds.map((id) =>  Cl.uint(id))),
+          Cl.contractPrincipal(token.split('.')[0], token.split('.')[1]),
+          Cl.bool(true)
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    });
+      }
+    );
   }
 
   const claim = async () => {

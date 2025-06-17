@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { UserSession, AppConfig, UserData } from '@stacks/auth';
+import { clearSelectedProviderId, getLocalStorage, isConnected, disconnect } from '@stacks/connect';
 import { VaultProps } from '@components/vault';
 
 interface UserBalance {
@@ -44,7 +44,7 @@ export interface CollateralTypeProps {
 }
 
 export interface AppState {
-  userData: UserData | null;
+  userData: any;
   balance: UserBalance;
   vaults: VaultProps[];
   definedCollateralTypes: [string, string, string];
@@ -92,12 +92,9 @@ export const defaultBalance = () => {
 };
 
 export const defaultState = (): AppState => {
-  const appConfig = new AppConfig(['store_write'], document.location.href);
-  const userSession = new UserSession({ appConfig });
-
-  if (userSession.isUserSignedIn()) {
+  if (isConnected()) {
     return {
-      userData: userSession.loadUserData(),
+      userData: getLocalStorage(),
       balance: defaultBalance(),
       vaults: [],
       definedCollateralTypes: [

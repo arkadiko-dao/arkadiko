@@ -5,14 +5,14 @@ import { StyledIcon } from './ui/styled-icon';
 import { AppContext } from '@common/context';
 import { microToReadable, getCollateralToDebtRatio } from '@common/vault-utils';
 import { getPrice } from '@common/get-price';
-import { useConnect } from '@stacks/connect-react';
-import { stacksNetwork as network, asyncForEach, resolveProvider } from '@common/utils';
-import { AnchorMode, callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { stacksNetwork as network, asyncForEach } from '@common/utils';
+import { fetchCallReadOnlyFunction, cvToJSON, Cl } from '@stacks/transactions';
 import { Tooltip } from '@blockstack/ui';
 import { useSTXAddress } from '@common/use-stx-address';
 import { Placeholder } from './ui/placeholder';
 import { Status, debtClassToType, debtClassToLabel } from './ui/health-status';
 import { Popover, Transition } from '@headlessui/react';
+import { makeContractCall } from '@common/contract-call';
 
 export interface VaultProps {
   key: string;
@@ -137,7 +137,6 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
   const [state, setState] = useContext(AppContext);
   const [startedLoading, setStartedLoading] = useState(false);
   const [{ collateralTypes }, _x] = useContext(AppContext);
-  const { doOpenAuth, doContractCall } = useConnect();
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
 
@@ -154,26 +153,41 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       amount = 100000000;
       contractName = 'Wrapped-Bitcoin';
     }
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName,
-      functionName: 'mint-for-protocol',
-      functionArgs: [
-        uintCV(amount),
-        standardPrincipalCV(stxAddress)
-      ],
-      onFinish: data => {
-        console.log('finished mint!', data, data.txId);
+
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName,
+        functionName: 'mint-for-protocol',
+        functionArgs: [
+          Cl.uint(amount),
+          Cl.standardPrincipal(stxAddress)
+        ],
+        functionArgs: [
+          contractPrincipalCV('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4', 'sbtc-token'),
+          stringAsciiCV('sBTC'),
+          uintCV(0 * 1000000),
+          uintCV(500000000),
+          uintCV(900),
+          uintCV(14000),
+          uintCV(1000),
+          uintCV(3000),
+          uintCV(6000),
+          uintCV(144),
+          uintCV(500000000)
+        ],
+        postConditions: postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   useEffect(() => {
@@ -208,11 +222,11 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
       const items = [];
       await asyncForEach(Object.keys(collateralTypes), async (tokenSymbol: string) => {
         const tokenParts = state.vaults[tokenSymbol]['key'].split('.');
-        const debtCall = await callReadOnlyFunction({
+        const debtCall = await fetchCallReadOnlyFunction({
           contractAddress,
           contractName: 'arkadiko-vaults-data-v1-1',
           functionName: 'get-total-debt',
-          functionArgs: [contractPrincipalCV(tokenParts[0], tokenParts[1])],
+          functionArgs: [Cl.contractPrincipal(tokenParts[0], tokenParts[1])],
           senderAddress: stxAddress || contractAddress,
           network: network,
         });

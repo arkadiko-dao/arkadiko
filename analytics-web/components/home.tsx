@@ -8,7 +8,7 @@ import { Vaults } from './vaults';
 import { Tvl } from './tvl';
 import { MarketCap } from './market-cap';
 import { TokenPriceSelect } from './token-price-select';
-import { callReadOnlyFunction, stringAsciiCV, cvToJSON } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, Cl, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { DefiLlama } from './defillama';
 import { BuyBackBurn } from './buyback-burn';
@@ -27,11 +27,11 @@ const getPrice = async (symbol: string) => {
   }
 
   const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
-  const fetchedPrice = await callReadOnlyFunction({
+  const fetchedPrice = await fetchCallReadOnlyFunction({
     contractAddress,
     contractName: 'arkadiko-oracle-v2-3',
     functionName: 'get-price',
-    functionArgs: [stringAsciiCV(symbol || 'stx')],
+    functionArgs: [Cl.stringAscii(symbol || 'stx')],
     senderAddress: contractAddress,
     network: network,
   });

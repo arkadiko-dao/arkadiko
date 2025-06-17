@@ -1,5 +1,5 @@
 import { RPCClient } from '@stacks/rpc-client';
-import { StacksMainnet, StacksTestnet } from '@stacks/network';
+import { STACKS_MAINNET, STACKS_TESTNET } from "@stacks/network";
 
 const env = process.env.REACT_APP_NETWORK_ENV || 'testnet';
 
@@ -28,8 +28,8 @@ export const getRPCClient = () => {
   return new RPCClient(coreApiUrl);
 };
 
-export const stacksNetwork = env === 'mainnet' ? new StacksMainnet() : new StacksTestnet();
-stacksNetwork.coreApiUrl = coreApiUrl;
+export const stacksNetwork = env === "mainnet" ? STACKS_MAINNET : STACKS_TESTNET;
+stacksNetwork.client.baseUrl = coreApiUrl;
 
 export const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
@@ -80,4 +80,12 @@ export const resolveProvider = () => {
   } else {
     return window.StacksProvider;
   }
+};
+
+export const STACKS_PROVIDERS = {
+  xverse: 'XverseProviders.BitcoinProvider',
+  leather: 'LeatherProvider',
+  asigna: 'AsignaProvider',
+  fordefi: 'FordefiProviders.UtxoProvider',
+  //orange: 'OrangeStacksProvider',
 };

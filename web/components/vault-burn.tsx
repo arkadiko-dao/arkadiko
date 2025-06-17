@@ -2,18 +2,11 @@ import React, { useContext, useState, useRef } from 'react';
 import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  someCV,
-  standardPrincipalCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { VaultProps } from './vault';
 import { tokenTraits } from '@common/vault-utils';
 
@@ -38,7 +31,6 @@ export const VaultBurn: React.FC<Props> = ({
 
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const senderAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
@@ -49,12 +41,13 @@ export const VaultBurn: React.FC<Props> = ({
       totalToBurn = Number(state.balance['usda'] / 1000000);
     }
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt(totalToBurn * 1000000 * 1.1, 10)).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
+      {
+        type: "ft-postcondition",
+        address: senderAddress!,
+        condition: "lte",
+        amount: parseInt(totalToBurn * 1000000 * 1.1, 10),
+        asset: `${contractAddress}.usda-token::usda`,
+      },
     ];
 
     const tokenAddress = tokenInfo['address'];
@@ -70,55 +63,55 @@ export const VaultBurn: React.FC<Props> = ({
     console.log('got hint:', hint);
 
     const args = [
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-tokens-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-data-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-sorted-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-pool-active-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-helpers-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-oracle-v2-3'
       ),
-      contractPrincipalCV(tokenAddress, token),
-      uintCV(collateralAmount),
-      uintCV(Math.max(0, parseInt(debtAmount, 10))),
-      someCV(standardPrincipalCV(hint['prevOwner'])),
-      uintCV(100)
+      Cl.contractPrincipal(tokenAddress, token),
+      Cl.uint(collateralAmount),
+      Cl.uint(Math.max(0, parseInt(debtAmount, 10))),
+      Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
+      Cl.uint(100)
     ];
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-3',
-      functionName: 'update-vault',
-      functionArgs: args,
-      postConditions,
-      onFinish: data => {
-        console.log('finished burn!', data);
+    await makeContractCall(
+      {
+        stxAddress: senderAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-operations-v1-3',
+        functionName: 'update-vault',
+        functionArgs: args,
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const burnMaxAmount = () => {

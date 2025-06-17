@@ -1,11 +1,8 @@
 import {
-  makeStandardSTXPostCondition,
-  makeStandardFungiblePostCondition,
+  Pc,
+  Cl,
   FungibleConditionCode,
-  makeContractFungiblePostCondition,
-  makeContractSTXPostCondition,
-  createAssetInfo,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON
 } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
@@ -72,7 +69,7 @@ export const availableCoinsToMint = (
 
 export const calculateMintFee = async (debtAmount: number) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const fetchedPrice = await callReadOnlyFunction({
+  const fetchedPrice = await fetchCallReadOnlyFunction({
     contractAddress,
     contractName: "arkadiko-vaults-operations-v1-3",
     functionName: "get-mint-fee",
@@ -387,73 +384,71 @@ export const buildSwapPostConditions = (sender: string, amountSent: bigint, amou
 
   if (tokenX['nameInPair'] === 'wstx') {
     postConditions.push(
-      makeStandardSTXPostCondition(sender, FungibleConditionCode.Equal, amountSent)
+      Pc.principal(sender).willSendEq(amountSent).ustx()
     );
   }
   postConditions.push(
-    makeStandardFungiblePostCondition(
-      sender,
-      FungibleConditionCode.Equal,
-      amountSent,
-      createAssetInfo(tokenX['address'], tokenX['fullName'], tokenTraits[tokenX.nameInPair].ft)
-    )
+    {
+      type: "ft-postcondition",
+      address: sender,
+      condition: "eq",
+      amount: amountSent,
+      asset: `${tokenX['address']}.${tokenX['fullName']}::${tokenTraits[tokenX.nameInPair].ft}`,
+    }
   )
 
   if (tokenZ != undefined) {
     postConditions.push(
-      makeStandardFungiblePostCondition(
-        sender,
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenTraits[tokenZ.nameInPair].ft)
-      )
+      {
+        type: "ft-postcondition",
+        address: sender,
+        condition: "gte",
+        amount: 0,
+        asset: `${tokenZ['address']}.${tokenZ['fullName']}::${tokenTraits[tokenZ.nameInPair].ft}`,
+      }
     )
     postConditions.push(
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.GreaterEqual,
-        0,
-        createAssetInfo(tokenZ['address'], tokenZ['fullName'], tokenTraits[tokenZ.nameInPair].ft)
-      )
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-swap-v2-1`,
+        condition: "gte",
+        amount: 0,
+        asset: `${tokenZ['address']}.${tokenZ['fullName']}::${tokenTraits[tokenZ.nameInPair].ft}`,
+      }
     )
   }
 
   if (tokenY['nameInPair'] === 'wstx') {
     postConditions.push(
-      makeContractSTXPostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.GreaterEqual,
-        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)
-      )
+      Pc.principal(`${contractAddress}.arkadiko-swap-v2-1`).willSendGte((parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)).ustx()
     )
     postConditions.push(
-      makeStandardFungiblePostCondition(
-        sender,
-        FungibleConditionCode.GreaterEqual,
-        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
-        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
-      )
+      {
+        type: "ft-postcondition",
+        address: sender,
+        condition: "gte",
+        amount: (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        asset: `${tokenY['address']}.${tokenY['fullName']}::${tokenTraits[tokenY.nameInPair].ft}`,
+      }
     )
     postConditions.push(
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.GreaterEqual,
-        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
-        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
-      )
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-swap-v2-1`,
+        condition: "gte",
+        amount: (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        asset: `${tokenY['address']}.${tokenY['fullName']}::${tokenTraits[tokenY.nameInPair].ft}`,
+      }
     )
   } else {
     postConditions.push(
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.GreaterEqual,
-        (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
-        createAssetInfo(tokenY['address'], tokenY['fullName'], tokenTraits[tokenY.nameInPair].ft)
-      )
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-swap-v2-1`,
+        condition: "gte",
+        amount: (parseFloat(amountReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0),
+        asset: `${tokenY['address']}.${tokenY['fullName']}::${tokenTraits[tokenY.nameInPair].ft}`,
+      }
     )
   }
 

@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import { stacksNetwork as network } from '@common/utils';
-import { callReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ProposalGroup } from '@components/proposal-group';
 import { DocumentTextIcon } from '@heroicons/react/outline';
@@ -22,7 +22,7 @@ export const Governance = () => {
     let mounted = true;
 
     const getData = async () => {
-      const proposalsV2 = await callReadOnlyFunction({
+      const proposalsV2 = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v2-1',
         functionName: 'get-proposals',
@@ -33,7 +33,7 @@ export const Governance = () => {
       const jsonV2 = cvToJSON(proposalsV2);
       const dataV2 = jsonV2.value.value;
 
-      const proposalsV3 = await callReadOnlyFunction({
+      const proposalsV3 = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v3-1',
         functionName: 'get-proposals',
@@ -44,7 +44,7 @@ export const Governance = () => {
       const jsonV3 = cvToJSON(proposalsV3);
       const dataV3 = jsonV3.value.value;
 
-      const proposalsV4 = await callReadOnlyFunction({
+      const proposalsV4 = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v4-1',
         functionName: 'get-proposals',
@@ -55,7 +55,7 @@ export const Governance = () => {
       const jsonV4 = cvToJSON(proposalsV4);
       const dataV4 = jsonV4.value.value;
 
-      const proposalsV1 = await callReadOnlyFunction({
+      const proposalsV1 = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v1-1',
         functionName: 'get-proposals',
@@ -66,7 +66,7 @@ export const Governance = () => {
       const jsonV1 = cvToJSON(proposalsV1);
       const dataV1 = jsonV1.value.value;
 
-      const proposalsV42 = await callReadOnlyFunction({
+      const proposalsV42 = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v4-2',
         functionName: 'get-proposals',
@@ -77,7 +77,7 @@ export const Governance = () => {
       const jsonV42 = cvToJSON(proposalsV42);
       const dataV42 = jsonV42.value.value;
 
-      const proposalsV43 = await callReadOnlyFunction({
+      const proposalsV43 = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-governance-v4-3',
         functionName: 'get-proposals',

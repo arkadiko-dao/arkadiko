@@ -3,19 +3,11 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { Alert } from './ui/alert';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  FungibleConditionCode,
-  makeStandardSTXPostCondition,
-  makeStandardFungiblePostCondition,
-  createAssetInfo,
-  someCV,
-  standardPrincipalCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import BN from 'bn.js';
 import { VaultProps } from './vault';
 import { tokenTraits, tokenNameToTicker } from '@common/vault-utils';
@@ -46,7 +38,6 @@ export const VaultDeposit: React.FC<Props> = ({
   const sbtcContractAddress = process.env.SBTC_CONTRACT_ADDRESS || '';
 
   const senderAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
   const collateralSymbol = match.params.collateral;
   const tokenInfo = tokenTraits[collateralSymbol.toLowerCase()];
@@ -140,55 +131,55 @@ export const VaultDeposit: React.FC<Props> = ({
     console.log('got hint:', hint);
 
     const args = [
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-tokens-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-data-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-sorted-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-pool-active-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-vaults-helpers-v1-1'
       ),
-      contractPrincipalCV(
+      Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
         'arkadiko-oracle-v2-3'
       ),
-      contractPrincipalCV(tokenAddress, token),
-      uintCV(collateralAmount),
-      uintCV(debtAmount),
-      someCV(standardPrincipalCV(hint['prevOwner'])),
-      uintCV(100)
+      Cl.contractPrincipal(tokenAddress, token),
+      Cl.uint(collateralAmount),
+      Cl.uint(debtAmount),
+      Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
+      Cl.uint(100)
     ];
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress: senderAddress,
-      contractName: 'arkadiko-vaults-operations-v1-3',
-      functionName: 'update-vault',
-      functionArgs: args,
-      postConditionMode: 0x01,
-      onFinish: data => {
-        console.log('finished deposit!', data);
+    await makeContractCall(
+      {
+        stxAddress: senderAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-operations-v1-3',
+        functionName: 'update-vault',
+        functionArgs: args,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const depositMaxAmount = () => {
