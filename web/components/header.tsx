@@ -2,17 +2,18 @@ import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { Menu, Transition, Disclosure } from '@headlessui/react';
 import { AppContext } from '@common/context';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { bnsName } from '@common/use-stx-address';
+import { bnsName, resolveSTXAddress } from '@common/use-stx-address';
 import { ColorThemeToggle } from './color-theme-toggle';
 import { StyledIcon } from './ui/styled-icon';
 import { Tooltip } from '@blockstack/ui';
-import { fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { Cl, fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
 import { stacksNetwork as network, resolveProvider, STACKS_PROVIDERS } from '@common/utils';
 import { getPendingTransactions } from '@common/transactions';
 import { MempoolContractCallTransaction } from '@blockstack/stacks-blockchain-api-types';
 import { useSTXAddress } from '@common/use-stx-address';
 import { ChooseWalletModal } from './choose-wallet-modal';
 import { clearSelectedProviderId, request, setSelectedProviderId } from '@stacks/connect';
+import { getBalance } from '@components/app';
 
 interface HeaderProps {
   signOut: () => void;
@@ -74,6 +75,78 @@ export const Header: React.FC<HeaderProps> = ({ signOut, setShowSidebar }) => {
     localStorage.removeItem('sign-provider');
     signOut();
   }
+
+  const fetchCollateralTypes = async (address: string) => {
+    const collTypes = {};
+    state.definedCollateralTypes.forEach(async tokenAddress => {
+      const tokenParts = tokenAddress.split('.');
+      const types = await fetchCallReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-vaults-tokens-v1-1',
+        functionName: 'get-token',
+        functionArgs: [Cl.contractPrincipal(tokenParts[0], tokenParts[1])],
+        senderAddress: address,
+        network: network,
+      });
+      const json = cvToJSON(types.value);
+      console.log('Got collateral type with:', json);
+      if (json.value['token-name']) {
+        collTypes[json.value['token-name'].value] = {
+          name: json.value['token-name'].value,
+          collateralToDebtRatio: json.value['liquidation-ratio'].value,
+          liquidationPenalty: json.value['liquidation-penalty'].value / 100,
+          liquidationRatio: json.value['liquidation-ratio'].value,
+          maximumDebt: json.value['max-debt'].value,
+          stabilityFee: json.value['stability-fee'].value,
+          stabilityFeeApy: json.value['stability-fee'].value
+        };
+      }
+      setState(prevState => ({
+        ...prevState,
+        collateralTypes: { ...collTypes },
+      }));
+    });
+  };
+
+  const fetchBalance = async (address: string) => {
+    const account = await getBalance(address);
+    setState(prevState => ({
+      ...prevState,
+      balance: {
+        usda: account.usda.toString(),
+        xbtc: account.xbtc.toString(),
+        diko: account.diko.toString(),
+        stx: account.stx.toString(),
+        xstx: account.xstx.toString(),
+        stdiko: account.stdiko.toString(),
+        wldn: account.wldn.toString(),
+        ldn: account.ldn.toString(),
+        welsh: account.welsh.toString(),
+        ststx: account.ststx.toString(),
+        sbtc: account.sbtc.toString(),
+        'auto-alex': account['auto-alex'].toString(),
+        dikousda: account.dikousda.toString(),
+        wstxusda: account.wstxusda.toString(),
+        wstxdiko: account.wstxdiko.toString(),
+        wstxxbtc: account.wstxxbtc.toString(),
+        xbtcusda: account.xbtcusda.toString(),
+        xusdusda: account.xusdusda.toString(),
+        xusdusda2: account.xusdusda2.toString(),
+        wldnusda: account.wldnusda.toString(),
+        ldnusda: account.ldnusda.toString(),
+        wstxwelsh: account.wstxwelsh.toString(),
+      },
+    }));
+  };
+
+  const onFinishLogin = (userData: any) => {
+    fetchBalance(resolveSTXAddress(userData));
+    fetchCollateralTypes(resolveSTXAddress(userData));
+  }
+
+  useEffect(() => {
+    if (state.userData) onFinishLogin(state.userData);
+  }, [state.userData]);
 
   useEffect(() => {
     let mounted = true;
