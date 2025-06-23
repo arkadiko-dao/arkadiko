@@ -53,75 +53,75 @@ export const VaultDeposit: React.FC<Props> = ({
     const debtAmount = Number(vault.debt);
 
     let postConditions: any[] = [];
-    if (vault['collateralToken'].toLowerCase() === 'stx') {
-      postConditions = [
-        makeStandardSTXPostCondition(
-          senderAddress || '',
-          FungibleConditionCode.Equal,
-          new BN(parseFloat(extraCollateralDeposit) * decimals)
-        ),
-      ];
-    } else if (vault['collateralToken'].toLowerCase() === 'xbtc') {
-      postConditions = [
-        makeStandardFungiblePostCondition(
-          senderAddress || '',
-          FungibleConditionCode.LessEqual,
-          new BN(parseFloat(extraCollateralDeposit) * decimals),
-          createAssetInfo(
-            xbtcContractAddress,
-            'Wrapped-Bitcoin',
-            'wrapped-bitcoin'
-          )
-        ),
-      ];
-    } else if (vault['collateralToken'].toLowerCase() === 'ststx') {
-      postConditions = [
-        makeStandardFungiblePostCondition(
-          senderAddress || '',
-          FungibleConditionCode.LessEqual,
-          new BN(parseFloat(extraCollateralDeposit) * decimals),
-          createAssetInfo(
-            stStxContractAddress,
-            'ststx-token',
-            'ststx'
-          )
-        ),
-      ];
-    } else if (vault['collateralToken'].toLowerCase() === 'sbtc') {
-      postConditions = [
-        makeStandardFungiblePostCondition(
-          senderAddress || '',
-          FungibleConditionCode.LessEqual,
-          new BN(parseFloat(extraCollateralDeposit) * decimals),
-          createAssetInfo(
-            sbtcContractAddress,
-            'sbtc-token',
-            'sbtc-token'
-          )
-        ),
-      ];
-    }  else {
-      postConditions = [
-        makeStandardFungiblePostCondition(
-          senderAddress || '',
-          FungibleConditionCode.LessEqual,
-          new BN(parseFloat(extraCollateralDeposit) * decimals),
-          createAssetInfo(
-            atAlexContractAddress,
-            'auto-alex',
-            'auto-alex'
-          )
-        ),
-      ];
-    }
-    postConditions.push(
-      makeStandardFungiblePostCondition(
-        senderAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt(stabilityFee * 1.3, 10)).value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      )
-    );
+    // if (vault['collateralToken'].toLowerCase() === 'stx') {
+    //   postConditions = [
+    //     makeStandardSTXPostCondition(
+    //       senderAddress || '',
+    //       FungibleConditionCode.Equal,
+    //       new BN(parseFloat(extraCollateralDeposit) * decimals)
+    //     ),
+    //   ];
+    // } else if (vault['collateralToken'].toLowerCase() === 'xbtc') {
+    //   postConditions = [
+    //     makeStandardFungiblePostCondition(
+    //       senderAddress || '',
+    //       FungibleConditionCode.LessEqual,
+    //       new BN(parseFloat(extraCollateralDeposit) * decimals),
+    //       createAssetInfo(
+    //         xbtcContractAddress,
+    //         'Wrapped-Bitcoin',
+    //         'wrapped-bitcoin'
+    //       )
+    //     ),
+    //   ];
+    // } else if (vault['collateralToken'].toLowerCase() === 'ststx') {
+    //   postConditions = [
+    //     makeStandardFungiblePostCondition(
+    //       senderAddress || '',
+    //       FungibleConditionCode.LessEqual,
+    //       new BN(parseFloat(extraCollateralDeposit) * decimals),
+    //       createAssetInfo(
+    //         stStxContractAddress,
+    //         'ststx-token',
+    //         'ststx'
+    //       )
+    //     ),
+    //   ];
+    // } else if (vault['collateralToken'].toLowerCase() === 'sbtc') {
+    //   postConditions = [
+    //     makeStandardFungiblePostCondition(
+    //       senderAddress || '',
+    //       FungibleConditionCode.LessEqual,
+    //       new BN(parseFloat(extraCollateralDeposit) * decimals),
+    //       createAssetInfo(
+    //         sbtcContractAddress,
+    //         'sbtc-token',
+    //         'sbtc-token'
+    //       )
+    //     ),
+    //   ];
+    // }  else {
+    //   postConditions = [
+    //     makeStandardFungiblePostCondition(
+    //       senderAddress || '',
+    //       FungibleConditionCode.LessEqual,
+    //       new BN(parseFloat(extraCollateralDeposit) * decimals),
+    //       createAssetInfo(
+    //         atAlexContractAddress,
+    //         'auto-alex',
+    //         'auto-alex'
+    //       )
+    //     ),
+    //   ];
+    // }
+    // postConditions.push(
+    //   makeStandardFungiblePostCondition(
+    //     senderAddress || '',
+    //     FungibleConditionCode.LessEqual,
+    //     uintCV(parseInt(stabilityFee * 1.3, 10)).value,
+    //     createAssetInfo(contractAddress, 'usda-token', 'usda')
+    //   )
+    // );
 
     const BASE_URL = process.env.HINT_API_URL;
     const totalDebt = debtAmount + Number(stabilityFee);
