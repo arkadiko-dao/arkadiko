@@ -186,7 +186,7 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
         address: `${contractAddress}.arkadiko-swap-v2-1`,
         condition: "lte",
         amount: parseInt(tokenYToReceive, 10),
-        asset: `${contractAddress}.${tokenXYaram}::${tokenYName}`,
+        asset: `${contractAddress}.${tokenYParam}::${tokenYName}`,
       },
     ];
 
