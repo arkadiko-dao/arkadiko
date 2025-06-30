@@ -654,7 +654,6 @@ export const Stake = () => {
           contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
           contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-usda-v1-1'),
         ],
-        postConditions,
         network,
       },
       async (error?, txId?) => {
