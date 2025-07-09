@@ -11,7 +11,7 @@ async function sendDiko(address, amount, nonce) {
     contractName: "arkadiko-token",
     functionName: "transfer",
     functionArgs: [
-      tx.uintCV(3 * amount),
+      tx.uintCV(amount),
       tx.standardPrincipalCV(CONTRACT_ADDRESS),
       tx.standardPrincipalCV(address),
       tx.someCV(tx.bufferCVFromString("DIKO Vest 1/48"))
@@ -27,7 +27,7 @@ async function sendDiko(address, amount, nonce) {
   console.log(result);
 }
 
-let nonce = 4528;
+let nonce = 4582;
 const tokens = {
   'SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT': 44270833333,
   'SPF6GBC7XRM16XE7GSNF87GSYS703XZHFHRM1XYR': 3750000000,
@@ -52,8 +52,8 @@ const tokens = {
   'SP33E9NRZQ3YCJM0A3Z6WA91JQKW62T5SPYHYTJHC': 937500000,
   'SP3DVRHY4JSHEHQFRBCDDE3M30QGHW4BJMPF331H9': 937500000,
   'SPMQAMQP7SD25HRENNHHRK38PY5M2AE6SWVZVY56': 2300000000,
-  'SPQ91KHXB3F7K6VGW4ZVQST0G824SDBGZWE9PVGD': 2300000000,
-  'SP16ESG0STV1YE553GK3C9FZ0YRBA5YVBYDAXC6X5': 5208333000,
+  'SPQ91KHXB3F7K6VGW4ZVQST0G824SDBGZWE9PVGD': 0, // 2300000000, commented out since sent too many (10x instead of 5x)
+  'SP16ESG0STV1YE553GK3C9FZ0YRBA5YVBYDAXC6X5': 0,// 5208333000, commented out since sent too many (10x instead of 5x)
 }
 
 async function asyncForEach(array, callback) {
