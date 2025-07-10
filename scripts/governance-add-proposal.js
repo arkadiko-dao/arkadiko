@@ -15,13 +15,13 @@ async function transact() {
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
       tx.uintCV(867270),
       tx.uintCV(1008),
-      tx.stringUtf8CV('AIP 25 - Update DIKO Emissions'),
+      tx.stringUtf8CV('AIP 29 - Excess USDA burn'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/599'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("aip-25-diko-emissions"),
+          'name': tx.stringAsciiCV("aip-29-usda-burn"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-25-arkadiko-governance-emissions"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-29-usda-burn"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
