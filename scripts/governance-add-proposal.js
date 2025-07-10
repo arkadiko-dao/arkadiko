@@ -13,7 +13,7 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
-      tx.uintCV(867270),
+      tx.uintCV(904919),
       tx.uintCV(1008),
       tx.stringUtf8CV('AIP 29 - Excess USDA burn'),
       tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/599'),
@@ -28,7 +28,7 @@ async function transact() {
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(100000, 10),
+    fee: new BN(10000, 10),
     postConditionMode: 1,
     network
   };
