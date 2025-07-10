@@ -16,7 +16,7 @@ async function transact() {
       tx.uintCV(904919),
       tx.uintCV(1008),
       tx.stringUtf8CV('AIP 29 - Excess USDA burn'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/599'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/610'),
       tx.listCV([
         tx.tupleCV({
           'name': tx.stringAsciiCV("aip-29-usda-burn"),
