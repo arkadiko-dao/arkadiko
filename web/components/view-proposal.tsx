@@ -3,7 +3,8 @@ import { Modal } from '@blockstack/ui';
 import { Container } from './home';
 import {
   fetchCallReadOnlyFunction,
-  Cl
+  Cl,
+  cvToJSON
 } from '@stacks/transactions';
 import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
