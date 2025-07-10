@@ -4,7 +4,6 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-const BN = require('bn.js');
 
 async function transact() {
   const txOptions = {
@@ -28,7 +27,7 @@ async function transact() {
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(10000, 10),
+    fee: 10000,
     postConditionMode: 1,
     network
   };
