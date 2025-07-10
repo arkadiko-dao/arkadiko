@@ -29,11 +29,11 @@ async function transact() {
     senderKey: process.env.STACKS_PRIVATE_KEY,
     fee: 10000,
     postConditionMode: 1,
-    network
+    network: 'mainnet'
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
+  const result = tx.broadcastTransaction({ transaction: transaction });
   await utils.processing(result, transaction.txid(), 0);
 };
 
