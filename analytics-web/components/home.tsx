@@ -29,7 +29,7 @@ const getPrice = async (symbol: string) => {
   const contractAddress = 'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR';
   const fetchedPrice = await fetchCallReadOnlyFunction({
     contractAddress,
-    contractName: 'arkadiko-oracle-v2-3',
+    contractName: 'arkadiko-oracle-v3-1',
     functionName: 'get-price',
     functionArgs: [Cl.stringAscii(symbol || 'stx')],
     senderAddress: contractAddress,
@@ -37,7 +37,7 @@ const getPrice = async (symbol: string) => {
   });
   const json = cvToJSON(fetchedPrice);
 
-  return json.value['last-price'].value;
+  return json.value.value['last-price'].value;
 };
 
 // create utils + oracle price fetch

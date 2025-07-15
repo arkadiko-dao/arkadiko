@@ -56,7 +56,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
       ),
       Cl.contractPrincipal(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
-        'arkadiko-oracle-v2-3'
+        'arkadiko-oracle-v3-1'
       ),
       Cl.contractPrincipal(tokenAddress, token),
       amount,
