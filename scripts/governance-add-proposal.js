@@ -4,7 +4,6 @@ const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
 const tx = require('@stacks/transactions');
 const utils = require('./utils');
 const network = utils.resolveNetwork();
-const BN = require('bn.js');
 
 async function transact() {
   const txOptions = {
@@ -13,28 +12,28 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
-      tx.uintCV(867270),
+      tx.uintCV(904919),
       tx.uintCV(1008),
-      tx.stringUtf8CV('AIP 25 - Update DIKO Emissions'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/599'),
+      tx.stringUtf8CV('AIP 29 - Excess USDA burn'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/610'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("aip-25-diko-emissions"),
+          'name': tx.stringAsciiCV("aip-29-usda-burn"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-25-arkadiko-governance-emissions"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-29-usda-burn"),
           'can-mint': tx.falseCV(),
           'can-burn': tx.falseCV()
         }),
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
-    fee: new BN(100000, 10),
+    fee: 10000,
     postConditionMode: 1,
-    network
+    network: 'mainnet'
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction(transaction, network);
+  const result = tx.broadcastTransaction({ transaction: transaction });
   await utils.processing(result, transaction.txid(), 0);
 };
 
