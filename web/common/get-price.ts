@@ -10,7 +10,7 @@ export const getPriceInfo = async (symbol: string) => {
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const fetchedPrice = await callReadOnlyFunction({
     contractAddress,
-    contractName: 'arkadiko-oracle-v3-0',
+    contractName: 'arkadiko-oracle-v3-1',
     functionName: 'get-price',
     functionArgs: [stringAsciiCV(symbol || 'STX')],
     senderAddress: contractAddress,

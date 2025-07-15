@@ -45,7 +45,7 @@ const contracts: Contract[] = [
   { name: 'xstx-token', file: 'vaults/xstx-token' },
   { name: 'stdiko-token' },
   { name: 'arkadiko-governance-v4-3' },
-  { name: 'arkadiko-oracle-v3-0' },
+  { name: 'arkadiko-oracle-v3-1' },
   { name: 'wrapped-stx-token' },
   { name: 'Wrapped-Bitcoin', file: 'tests/xbtc/Wrapped-Bitcoin' },
 

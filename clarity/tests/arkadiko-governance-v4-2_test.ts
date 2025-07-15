@@ -501,7 +501,7 @@ Clarinet.test({
     call = dao.getContractAddressByName("oracle");
     call.result.expectSome().expectPrincipal(deployer.address);
     call = dao.getQualifiedNameByName("oracle");
-    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-0'));
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-1'));
   }
 });
 
@@ -760,7 +760,7 @@ Clarinet.test({
     call = dao.getContractAddressByName("oracle");
     call.result.expectSome().expectPrincipal(deployer.address);
     call = dao.getQualifiedNameByName("oracle");
-    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-0'));
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-1'));
   }
 });
 
@@ -1175,7 +1175,7 @@ Clarinet.test({
     let call:any = dao.getContractAddressByName("oracle");
     call.result.expectSome().expectPrincipal(deployer.address);
     call = dao.getQualifiedNameByName("oracle");
-    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-0'));
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-1'));
 
     let contractChange = Governance.contractChange("oracle", Utils.qualifiedName('new-oracle'), true, true);
     let result = governance.createProposal(
@@ -1198,6 +1198,6 @@ Clarinet.test({
     call.result.expectTuple()["is-open"].expectBool(false);
 
     call = dao.getQualifiedNameByName("oracle");
-    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-0'));
+    call.result.expectSome().expectPrincipal(Utils.qualifiedName('arkadiko-oracle-v3-1'));
   }
 });

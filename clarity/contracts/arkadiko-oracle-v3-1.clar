@@ -62,21 +62,21 @@
 
 (define-public (fetch-price (token (string-ascii 12)))
   (let (
-    (pyth-result (get-pyth-info token))
+    (manual-result (get-manual-info token))
   )
-    (if (is-ok pyth-result)
-      pyth-result
+    (if (is-ok manual-result)
+      manual-result
       (let (
-        (dia-result (get-dia-info token))
+        (pyth-result (get-pyth-info token))
       )
-        (if (is-ok dia-result)
-          dia-result
+        (if (is-ok pyth-result)
+          pyth-result
           (let (
-            (custom-result (get-custom-info token))
+            (dia-result (get-dia-info token))
           )
-            (if (is-ok custom-result)
-              custom-result
-              (get-manual-info token)
+            (if (is-ok dia-result)
+              dia-result
+              (get-custom-info token)
             )
           )
         )
@@ -219,12 +219,79 @@
 
 (define-public (set-manual-manager (new-manager principal))
   (begin
-    (asserts! (is-eq tx-sender (var-get manual-manager)) (err ERR-NOT-AUTHORIZED))
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
     (var-set manual-manager new-manager)
     (ok new-manager)
   )
 )
 
+;; ---------------------------------------------------------
+;; Admin
+;; ---------------------------------------------------------
+
+(define-public (set-pyth-price (token (string-ascii 12)) (decimals uint) (feed-id (buff 32)))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-set prices-pyth { token: token } { decimals: decimals, feed-id: feed-id })
+    (ok feed-id)
+  )
+)
+
+(define-public (remove-pyth-price (token (string-ascii 12)))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-delete prices-pyth { token: token })
+    (ok token)
+  )
+)
+
+(define-public (set-dia-price (token (string-ascii 12)) (decimals uint) (key (string-ascii 32)))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-set prices-dia { token: token } { decimals: decimals, key: key })
+    (ok key)
+  )
+)
+
+(define-public (remove-dia-price (token (string-ascii 12)))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-delete prices-dia { token: token })
+    (ok token)
+  )
+)
+
+(define-public (set-custom-price (token (string-ascii 12)) (decimals uint) (key (string-ascii 32)))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-set prices-custom { token: token } { decimals: decimals, key: key })
+    (ok key)
+  )
+)
+
+(define-public (remove-custom-price (token (string-ascii 12)))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-delete prices-custom { token: token })
+    (ok token)
+  )
+)
+
+(define-public (set-manual-price (token (string-ascii 12)) (decimals uint) (price uint))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-set prices-manual { token: token } { decimals: decimals, price: price })
+    (ok price)
+  )
+)
+
+(define-public (remove-manual-price (token (string-ascii 12)))
+  (begin
+    (asserts! (is-eq contract-caller (contract-call? .arkadiko-dao get-dao-owner)) (err ERR-NOT-AUTHORIZED))
+    (map-delete prices-manual { token: token })
+    (ok token)
+  )
+)
 
 ;; ---------------------------------------------------------
 ;; Init

@@ -75,7 +75,7 @@ export const VaultWithdraw: React.FC<Props> = ({
       ),
       contractPrincipalCV(
         process.env.REACT_APP_CONTRACT_ADDRESS || '',
-        'arkadiko-oracle-v3-0'
+        'arkadiko-oracle-v3-1'
       ),
       contractPrincipalCV(tokenAddress, token),
       uintCV(collateralAmount),
