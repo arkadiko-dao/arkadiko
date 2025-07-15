@@ -9,7 +9,7 @@ import {
   standardPrincipalCV,
   makeSTXTokenTransfer,
   privateKeyToString,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   stringAsciiCV,
   cvToJSON
 } from '@stacks/transactions';
@@ -43,7 +43,7 @@ export const PricesTestnet = () => {
 
   const getPrice = async (symbol: string) => {
     const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-    const fetchedPrice = await callReadOnlyFunction({
+    const fetchedPrice = await fetchCallReadOnlyFunction({
       contractAddress,
       contractName: 'arkadiko-oracle-v3-1',
       functionName: 'get-price',

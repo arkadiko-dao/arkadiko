@@ -5,16 +5,11 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { Alert } from './ui/alert';
 
 interface Props {
@@ -30,7 +25,6 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
   const [isStakeButtonDisabled, setIsStakeButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const stakeMaxAmount = () => {
@@ -55,39 +49,40 @@ export const StakeDikoModal: React.FC<Props> = ({ showStakeModal, setShowStakeMo
   };
 
   const stakeDiko = async () => {
-    const amount = uintCV(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
+    const amount = Cl.uint(Number((parseFloat(stakeAmount) * 1000000).toFixed(0)));
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        amount.value,
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: amount.value,
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
     ];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-stake-registry-v2-1',
-      functionName: 'stake',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-token'),
-        amount,
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished broadcasting staking tx!', data);
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-stake-registry-v2-1',
+        functionName: 'stake',
+        functionArgs: [
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
+          amount,
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-        setShowStakeModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   return (

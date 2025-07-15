@@ -4,10 +4,9 @@ import { AppContext } from '@common/context';
 import { Container } from './home';
 import { Tooltip } from '@blockstack/ui';
 import { NavLink as RouterLink } from 'react-router-dom';
-import { AnchorMode, contractPrincipalCV, uintCV, trueCV, falseCV } from '@stacks/transactions';
-import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { resolveSTXAddress, useSTXAddress } from '@common/use-stx-address';
+import { stacksNetwork as network, resolveProvider, STACKS_PROVIDERS } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { microToReadable, tokenTraits, buildSwapPostConditions } from '@common/vault-utils';
 import { TokenSwapList, tokenList } from '@components/token-swap-list';
 import { SwapSettings } from '@components/swap-settings';
@@ -19,6 +18,8 @@ import axios from 'axios';
 import { StyledIcon } from './ui/styled-icon';
 import { ChooseWalletModal } from './choose-wallet-modal';
 import { Redirect } from 'react-router-dom';
+import { Cl, fetchCallReadOnlyFunction, cvToJSON } from '@stacks/transactions';
+import { clearSelectedProviderId, request, setSelectedProviderId } from '@stacks/connect';
 
 export const Swap: React.FC = () => {
   const env = process.env.REACT_APP_NETWORK_ENV;
@@ -55,24 +56,35 @@ export const Swap: React.FC = () => {
   const apiUrl = 'https://arkadiko-api.herokuapp.com';
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall, doOpenAuth } = useConnect();
   const [showChooseWalletModal, setShowChooseWalletModal] = useState(false);
 
   const showModalOrConnectWallet = async () => {
     const provider = resolveProvider();
     if (provider) {
-      await doOpenAuth(true, undefined, provider);
+      try {
+        const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+        setState(prevState => ({ ...prevState, userData }));
+      } catch (e) {
+        localStorage.removeItem("sign-provider");
+        clearSelectedProviderId();
+      }
     } else {
       setShowChooseWalletModal(true);
     }
   };
 
   const onProviderChosen = async (providerString: string) => {
-    localStorage.setItem('sign-provider', providerString);
+    localStorage.setItem("sign-provider", providerString);
     setShowChooseWalletModal(false);
 
-    const provider = resolveProvider();
-    await doOpenAuth(true, undefined, provider);
+    try {
+      setSelectedProviderId(STACKS_PROVIDERS[providerString]);
+      const userData = await request('getAddresses', { forceWalletSelect: true, enableOverrides: true, persistWalletSelect: true, enableLocalStorage: true });
+      setState(prevState => ({ ...prevState, userData }));
+    } catch (e) {
+      localStorage.removeItem("sign-provider");
+      clearSelectedProviderId();
+    }
   };
 
   useEffect(() => {
@@ -84,6 +96,78 @@ export const Swap: React.FC = () => {
 
     fetchPairs();
   }, []);
+
+  const fetchCollateralTypes = async (address: string) => {
+    const collTypes = {};
+    state.definedCollateralTypes.forEach(async tokenAddress => {
+      const tokenParts = tokenAddress.split('.');
+      const types = await fetchCallReadOnlyFunction({
+        contractAddress,
+        contractName: 'arkadiko-vaults-tokens-v1-1',
+        functionName: 'get-token',
+        functionArgs: [Cl.contractPrincipal(tokenParts[0], tokenParts[1])],
+        senderAddress: address,
+        network: network,
+      });
+      const json = cvToJSON(types.value);
+      console.log('Got collateral type with:', json);
+      if (json.value['token-name']) {
+        collTypes[json.value['token-name'].value] = {
+          name: json.value['token-name'].value,
+          collateralToDebtRatio: json.value['liquidation-ratio'].value,
+          liquidationPenalty: json.value['liquidation-penalty'].value / 100,
+          liquidationRatio: json.value['liquidation-ratio'].value,
+          maximumDebt: json.value['max-debt'].value,
+          stabilityFee: json.value['stability-fee'].value,
+          stabilityFeeApy: json.value['stability-fee'].value
+        };
+      }
+      setState(prevState => ({
+        ...prevState,
+        collateralTypes: { ...collTypes },
+      }));
+    });
+  };
+
+  const fetchBalance = async (address: string) => {
+    const account = await getBalance(address);
+    setState(prevState => ({
+      ...prevState,
+      balance: {
+        usda: account.usda.toString(),
+        xbtc: account.xbtc.toString(),
+        diko: account.diko.toString(),
+        stx: account.stx.toString(),
+        xstx: account.xstx.toString(),
+        stdiko: account.stdiko.toString(),
+        wldn: account.wldn.toString(),
+        ldn: account.ldn.toString(),
+        welsh: account.welsh.toString(),
+        ststx: account.ststx.toString(),
+        sbtc: account.sbtc.toString(),
+        'auto-alex': account['auto-alex'].toString(),
+        dikousda: account.dikousda.toString(),
+        wstxusda: account.wstxusda.toString(),
+        wstxdiko: account.wstxdiko.toString(),
+        wstxxbtc: account.wstxxbtc.toString(),
+        xbtcusda: account.xbtcusda.toString(),
+        xusdusda: account.xusdusda.toString(),
+        xusdusda2: account.xusdusda2.toString(),
+        wldnusda: account.wldnusda.toString(),
+        ldnusda: account.ldnusda.toString(),
+        wstxwelsh: account.wstxwelsh.toString(),
+      },
+    }));
+  };
+
+  const onFinishLogin = (userData: any) => {
+    fetchBalance(resolveSTXAddress(userData));
+    fetchCollateralTypes(resolveSTXAddress(userData));
+  }
+
+  useEffect(() => {
+    if (state.userData) onFinishLogin(state.userData);
+  }, [state.userData]);
 
   const setTokenBalances = () => {
     const tokenXBalance = state.balance[tokenX['name'].toLowerCase()];
@@ -401,41 +485,41 @@ export const Swap: React.FC = () => {
       return;
     }
 
-    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
-    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    let principalZ = contractPrincipalCV(tokenY['address'], tokenZTrait); // TODO: token Z address
-    const amount = uintCV((parseFloat(tokenXAmount) * Math.pow(10, tokenX['decimals'])).toFixed(0));
+    let principalX = Cl.contractPrincipal(tokenX['address'], tokenXTrait);
+    let principalY = Cl.contractPrincipal(tokenY['address'], tokenYTrait);
+    let principalZ = Cl.contractPrincipal(tokenY['address'], tokenZTrait); // TODO: token Z address
+    const amount = Cl.uint((parseFloat(tokenXAmount) * Math.pow(10, tokenX['decimals'])).toFixed(0));
     let tokenZ = tokenList.filter((tokenInfo) => (tokenInfo.fullName == tokenYTrait))[0];
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY, tokenZ);
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-multi-hop-swap-v1-1',
-      functionName: 'swap-x-for-z',
-      functionArgs: [
-        principalX,
-        principalY,
-        principalZ,
-        amount,
-        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-        inverseDirectionX ? trueCV() : falseCV(),
-        inverseDirectionY ? trueCV() : falseCV()
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished multihop swap!', data);
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName: "arkadiko-multi-hop-swap-v1-1",
+        functionName: "swap-x-for-z",
+        functionArgs: [
+          principalX,
+          principalY,
+          principalZ,
+          amount,
+          Cl.uint((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+          inverseDirectionX ? Cl.bool(true) : Cl.bool(false),
+          inverseDirectionY ? Cl.bool(true) : Cl.bool(false)
+        ],
+        postConditions: postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
           showTxModal: true,
           currentTxMessage: '',
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const swapTokens = async () => {
@@ -449,9 +533,9 @@ export const Swap: React.FC = () => {
     let tokenNameY = tokenY['name'];
     const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
     const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
-    let principalX = contractPrincipalCV(tokenX['address'], tokenXTrait);
-    let principalY = contractPrincipalCV(tokenY['address'], tokenYTrait);
-    const amount = uintCV(tokenXAmount * Math.pow(10, tokenX['decimals']));
+    let principalX = Cl.contractPrincipal(tokenX['address'], tokenXTrait);
+    let principalY = Cl.contractPrincipal(tokenY['address'], tokenYTrait);
+    const amount = Cl.uint(tokenXAmount * Math.pow(10, tokenX['decimals']));
 
     if (inverseDirection) {
       contractName = 'swap-y-for-x';
@@ -464,31 +548,31 @@ export const Swap: React.FC = () => {
     }
     let postConditions = buildSwapPostConditions(stxAddress || '', amount.value, minimumReceived, tokenX, tokenY);
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-swap-v2-1',
-      functionName: contractName,
-      functionArgs: [
-        principalX,
-        principalY,
-        amount,
-        uintCV((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished swap!', data);
+    await makeContractCall(
+      {
+        stxAddress: stxAddress,
+        contractAddress: contractAddress,
+        contractName: "arkadiko-swap-v2-1",
+        functionName: contractName,
+        functionArgs: [
+          principalX,
+          principalY,
+          amount,
+          Cl.uint((parseFloat(minimumReceived) * Math.pow(10, tokenY['decimals'])).toFixed(0)),
+        ],
+        postConditions: postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
           showTxModal: true,
           currentTxMessage: '',
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   let tabs = [];

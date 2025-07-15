@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { stacksNetwork as network, asyncForEach } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
-import { callReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, cvToJSON, standardPrincipalCV, contractPrincipalCV, uintCV } from '@stacks/transactions';
 import { VaultGroup } from './vault-group';
 import { AppContext } from '@common/context';
 import { useEffect } from 'react';
@@ -58,7 +58,7 @@ export const Mint = () => {
 
         let vault;
         if (address) {
-          const vaultCall = await callReadOnlyFunction({
+          const vaultCall = await fetchCallReadOnlyFunction({
             contractAddress,
             contractName: 'arkadiko-vaults-data-v1-1',
             functionName: 'get-vault',

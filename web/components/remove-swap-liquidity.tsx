@@ -3,19 +3,13 @@ import { AppContext } from '@common/context';
 import { Redirect } from 'react-router-dom';
 import { Container } from './home';
 import {
-  AnchorMode,
-  callReadOnlyFunction,
+  fetchCallReadOnlyFunction,
   cvToJSON,
-  contractPrincipalCV,
-  uintCV,
-  makeStandardFungiblePostCondition,
-  FungibleConditionCode,
-  createAssetInfo,
-  makeContractFungiblePostCondition,
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { tokenTraits } from '@common/vault-utils';
 import { tokenList } from '@components/token-swap-list';
 import { Tooltip } from '@blockstack/ui';
@@ -51,7 +45,6 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
   const [isLoading, setIsLoading] = useState(true);
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const stxAddress = useSTXAddress();
-  const { doContractCall } = useConnect();
 
   const tokenXTrait = tokenTraits[tokenX['name'].toLowerCase()]['swap'];
   const tokenYTrait = tokenTraits[tokenY['name'].toLowerCase()]['swap'];
@@ -69,13 +62,13 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
       tokenYAddress: string,
       tokenYContract: string
     ) => {
-      const details = await callReadOnlyFunction({
+      const details = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(tokenXAddress, tokenXContract),
-          contractPrincipalCV(tokenYAddress, tokenYContract),
+          Cl.contractPrincipal(tokenXAddress, tokenXContract),
+          Cl.contractPrincipal(tokenYAddress, tokenYContract),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -174,49 +167,53 @@ export const RemoveSwapLiquidity: React.FC = ({ match }) => {
     }
 
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.LessEqual,
-        uintCV(parseInt((balance / 100) * (percentageToRemove + 5), 10)).value,
-        createAssetInfo(contractAddress, swapTrait, tokenTraits[pairName]['swap'].toLowerCase())
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.LessEqual,
-        new BN(tokenXToReceive, 10),
-        createAssetInfo(contractAddress, tokenXParam, tokenXName)
-      ),
-      makeContractFungiblePostCondition(
-        contractAddress,
-        'arkadiko-swap-v2-1',
-        FungibleConditionCode.LessEqual,
-        new BN(tokenYToReceive, 10),
-        createAssetInfo(contractAddress, tokenYParam, tokenYName)
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "lte",
+        amount: parseInt((balance / 100) * (percentageToRemove + 5), 10),
+        asset: `${contractAddress}.${swapTrait}::${tokenTraits[pairName]['swap'].toLowerCase()}`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-swap-v2-1`,
+        condition: "lte",
+        amount: parseInt(tokenXToReceive, 10),
+        asset: `${contractAddress}.${tokenXParam}::${tokenXName}`,
+      },
+      {
+        type: "ft-postcondition",
+        address: `${contractAddress}.arkadiko-swap-v2-1`,
+        condition: "lte",
+        amount: parseInt(tokenYToReceive, 10),
+        asset: `${contractAddress}.${tokenYParam}::${tokenYName}`,
+      },
     ];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-swap-v2-1',
-      functionName: 'reduce-position',
-      functionArgs: [
-        contractPrincipalCV(tokenX['address'], tokenXParam),
-        contractPrincipalCV(tokenY['address'], tokenYParam),
-        contractPrincipalCV(contractAddress, swapTrait),
-        uintCV(percentageToRemove),
-      ],
-      postConditionMode: 0x01,
-      onFinish: data => {
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-swap-v2-1',
+        functionName: 'reduce-position',
+        functionArgs: [
+          Cl.contractPrincipal(tokenX['address'], tokenXParam),
+          Cl.contractPrincipal(tokenY['address'], tokenYParam),
+          Cl.contractPrincipal(contractAddress, swapTrait),
+          Cl.uint(percentageToRemove),
+        ],
+        postConditions,
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   return (

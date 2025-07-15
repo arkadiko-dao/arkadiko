@@ -5,7 +5,7 @@ import { getPriceInfo, getDikoAmmPrice } from '../../web/common/get-price';
 import { Placeholder } from '../../web/components/ui/placeholder';
 import { Tooltip } from '@blockstack/ui';
 import { StyledIcon } from '../../web/components/ui/styled-icon';
-import { callReadOnlyFunction, contractPrincipalCV, cvToJSON } from '@stacks/transactions';
+import { fetchCallReadOnlyFunction, Cl, cvToJSON } from '@stacks/transactions';
 
 export const Prices: React.FC = () => {
   const [stxPrice, setStxPrice] = useState(0.0);
@@ -26,13 +26,13 @@ export const Prices: React.FC = () => {
   const getStxUsdaAmmPrice = async () => {
     const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
     const fetchPair = async () => {
-      const details = await callReadOnlyFunction({
+      const details = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: 'arkadiko-swap-v2-1',
         functionName: 'get-pair-details',
         functionArgs: [
-          contractPrincipalCV(contractAddress, 'wrapped-stx-token'),
-          contractPrincipalCV(contractAddress, 'usda-token'),
+          Cl.contractPrincipal(contractAddress, 'wrapped-stx-token'),
+          Cl.contractPrincipal(contractAddress, 'usda-token'),
         ],
         senderAddress: contractAddress,
         network: network,

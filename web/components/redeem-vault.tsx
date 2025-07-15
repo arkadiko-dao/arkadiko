@@ -5,19 +5,11 @@ import { AppContext } from '@common/context';
 import { InputAmount } from './input-amount';
 import { microToReadable } from '@common/vault-utils';
 import {
-  AnchorMode,
-  contractPrincipalCV,
-  standardPrincipalCV,
-  uintCV,
-  createAssetInfo,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  noneCV,
-  someCV
+  Cl
 } from '@stacks/transactions';
 import { useSTXAddress } from '@common/use-stx-address';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
-import { useConnect } from '@stacks/connect-react';
+import { stacksNetwork as network } from '@common/utils';
+import { makeContractCall } from '@common/contract-call';
 import { Alert } from './ui/alert';
 
 interface Props {
@@ -32,7 +24,6 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
   const [isRedeemButtonDisabled, setIsRedeemButtonDisabled] = useState(false);
   const stxAddress = useSTXAddress();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
-  const { doContractCall } = useConnect();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const redeemMaxAmount = () => {
@@ -57,14 +48,15 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
   };
 
   const redeemVaultTransact = async () => {
-    const amount = uintCV(Number((parseFloat(redeemAmount) * 1000000).toFixed(0)));
+    const amount = Cl.uint(Number((parseFloat(redeemAmount) * 1000000).toFixed(0)));
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        amount.value,
-        createAssetInfo(contractAddress, 'usda-token', 'usda')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: amount.value,
+        asset: `${contractAddress}.usda-token::usda`,
+      },
     ];
 
     const vault = collateralToRedeem === 'stSTX' ? stStxVault : collateralToRedeem === 'xBTC' ? xBtcVault : stxVault;
@@ -77,36 +69,35 @@ export const RedeemVault: React.FC<Props> = ({ showRedeemModal, setShowRedeemMod
     const hint = await response.json();
     console.log('got hint:', hint);
 
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: 'arkadiko-vaults-manager-v1-2',
-      functionName: 'redeem-vault',
-      functionArgs: [
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-data-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-sorted-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
-        contractPrincipalCV(contractAddress, 'arkadiko-oracle-v3-1'),
-        standardPrincipalCV(vault['owner']),
-        contractPrincipalCV(vault['token'].split('.')[0], vault['token'].split('.')[1]),
-        amount,
-        someCV(standardPrincipalCV(hint['prevOwner'])),
-      ],
-      postConditions,
-      onFinish: data => {
-        console.log('finished broadcasting staking tx!', data);
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: 'arkadiko-vaults-manager-v1-2',
+        functionName: 'redeem-vault',
+        functionArgs: [
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-data-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-sorted-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-pool-active-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-helpers-v1-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-oracle-v3-1'),
+          Cl.standardPrincipal(vault['owner']),
+          Cl.contractPrincipal(vault['token'].split('.')[0], vault['token'].split('.')[1]),
+          amount,
+          Cl.some(Cl.standardPrincipal(hint['prevOwner'])),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-        setShowRedeemModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   return (

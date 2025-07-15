@@ -2,23 +2,15 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Modal } from '@blockstack/ui';
 import { Container } from './home';
 import {
-  AnchorMode,
-  callReadOnlyFunction,
-  contractPrincipalCV,
-  createAssetInfo,
-  uintCV,
-  cvToJSON,
-  FungibleConditionCode,
-  makeStandardFungiblePostCondition,
-  standardPrincipalCV,
+  fetchCallReadOnlyFunction,
+  Cl
 } from '@stacks/transactions';
-import { stacksNetwork as network, resolveProvider } from '@common/utils';
+import { stacksNetwork as network } from '@common/utils';
 import { useSTXAddress } from '@common/use-stx-address';
-import { useConnect } from '@stacks/connect-react';
+import { makeContractCall } from '@common/contract-call';
 import { AppContext } from '@common/context';
 import { getRPCClient } from '@common/utils';
 import { ProposalProps } from './proposal-group';
-import BN from 'bn.js';
 import { Placeholder } from './ui/placeholder';
 import { classNames } from '@common/class-names';
 import { StyledIcon } from './ui/styled-icon';
@@ -32,7 +24,6 @@ export const ViewProposal = ({ match }) => {
   const [amountOfDikoVotes, setAmountOfDikoVotes] = useState('');
   const [amountOfStdikoVotes, setAmountOfStdikoVotes] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const { doContractCall } = useConnect();
   const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS || '';
   const [stacksTipHeight, setStacksTipHeight] = useState(0);
   const [dikoVoted, setDikoVoted] = useState('');
@@ -55,11 +46,11 @@ export const ViewProposal = ({ match }) => {
       let data = await response.json();
       setStacksTipHeight(data['burn_block_height']);
 
-      const proposal = await callReadOnlyFunction({
+      const proposal = await fetchCallReadOnlyFunction({
         contractAddress,
         contractName: CONTRACT_NAME,
         functionName: 'get-proposal-by-id',
-        functionArgs: [uintCV(match.params.id)],
+        functionArgs: [Cl.uint(match.params.id)],
         senderAddress: stxAddress || contractAddress,
         network: network,
       });
@@ -100,14 +91,14 @@ export const ViewProposal = ({ match }) => {
 
       if (data['is-open'].value == false && stxAddress) {
         // Get DIKO votes for user
-        const votedDiko = await callReadOnlyFunction({
+        const votedDiko = await fetchCallReadOnlyFunction({
           contractAddress,
           contractName: CONTRACT_NAME,
           functionName: 'get-tokens-by-member-by-id',
           functionArgs: [
-            uintCV(match.params.id),
-            standardPrincipalCV(stxAddress || ''),
-            contractPrincipalCV(contractAddress, 'arkadiko-token'),
+            Cl.uint(match.params.id),
+            Cl.standardPrincipal(stxAddress || ''),
+            Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
           ],
           senderAddress: stxAddress || '',
           network: network,
@@ -116,14 +107,14 @@ export const ViewProposal = ({ match }) => {
         setDikoVoted(votedDikoResult / 1000000);
 
         // Get stDIKO votes for user
-        const votedStdiko = await callReadOnlyFunction({
+        const votedStdiko = await fetchCallReadOnlyFunction({
           contractAddress,
           contractName: CONTRACT_NAME,
           functionName: 'get-tokens-by-member-by-id',
           functionArgs: [
-            uintCV(match.params.id),
-            standardPrincipalCV(stxAddress || ''),
-            contractPrincipalCV(contractAddress, 'stdiko-token'),
+            Cl.uint(match.params.id),
+            Cl.standardPrincipal(stxAddress || ''),
+            Cl.contractPrincipal(contractAddress, 'stdiko-token'),
           ],
           senderAddress: stxAddress || '',
           network: network,
@@ -148,124 +139,132 @@ export const ViewProposal = ({ match }) => {
 
   const addVoteDikoFor = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfDikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfDikoVotes * 1000000, 10),
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
     ];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: CONTRACT_NAME,
-      functionName: 'vote-for',
-      functionArgs: [
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v2-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfDikoVotes * 1000000),
-      ],
-      postConditions,
-      onFinish: data => {
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: CONTRACT_NAME,
+        functionName: 'vote-for',
+        functionArgs: [
+          Cl.contractPrincipal(
+            process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            'arkadiko-stake-pool-diko-v2-1'
+          ),
+          Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+          Cl.uint(match.params.id),
+          Cl.uint(amountOfDikoVotes * 1000000),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
         setShowVoteDikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const addVoteDikoAgainst = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfDikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'arkadiko-token', 'diko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfDikoVotes * 1000000, 10),
+        asset: `${contractAddress}.arkadiko-token::diko`,
+      },
     ];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: CONTRACT_NAME,
-      functionName: 'vote-against',
-      functionArgs: [
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v2-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfDikoVotes * 1000000),
-      ],
-      postConditions,
-      onFinish: data => {
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: CONTRACT_NAME,
+        functionName: 'vote-against',
+        functionArgs: [
+          Cl.contractPrincipal(
+            process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            'arkadiko-stake-pool-diko-v2-1'
+          ),
+          Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+          Cl.uint(match.params.id),
+          Cl.uint(amountOfDikoVotes * 1000000),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
         setShowVoteDikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const returnDiko = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: CONTRACT_NAME,
-      functionName: 'return-votes-to-member',
-      functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
-        uintCV(match.params.id),
-        standardPrincipalCV(stxAddress),
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: CONTRACT_NAME,
+        functionName: 'return-votes-to-member',
+        functionArgs: [
+          Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'arkadiko-token'),
+          Cl.uint(match.params.id),
+          Cl.standardPrincipal(stxAddress),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-      postConditionMode: 0x01,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const returnStDiko = async () => {
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: CONTRACT_NAME,
-      functionName: 'return-votes-to-member',
-      functionArgs: [
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
-        uintCV(match.params.id),
-        standardPrincipalCV(stxAddress),
-      ],
-      onFinish: data => {
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: CONTRACT_NAME,
+        functionName: 'return-votes-to-member',
+        functionArgs: [
+          Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
+          Cl.uint(match.params.id),
+          Cl.standardPrincipal(stxAddress),
+        ],
+        postConditionMode: 'allow',
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
-      },
-      anchorMode: AnchorMode.Any,
-      postConditionMode: 0x01,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const onInputDikoChange = event => {
@@ -275,76 +274,82 @@ export const ViewProposal = ({ match }) => {
 
   const addVoteStdikoFor = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfStdikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfStdikoVotes * 1000000, 10),
+        asset: `${contractAddress}.stdiko-token::stdiko`,
+      },
     ];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: CONTRACT_NAME,
-      functionName: 'vote-for',
-      functionArgs: [
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v2-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfStdikoVotes * 1000000),
-      ],
-      postConditions,
-      onFinish: data => {
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: CONTRACT_NAME,
+        functionName: 'vote-for',
+        functionArgs: [
+          Cl.contractPrincipal(
+            process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            'arkadiko-stake-pool-diko-v2-1'
+          ),
+          Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
+          Cl.uint(match.params.id),
+          Cl.uint(amountOfStdikoVotes * 1000000),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
         setShowVoteStdikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const addVoteStdikoAgainst = async () => {
     const postConditions = [
-      makeStandardFungiblePostCondition(
-        stxAddress || '',
-        FungibleConditionCode.Equal,
-        new BN(amountOfStdikoVotes * 1000000),
-        createAssetInfo(contractAddress, 'stdiko-token', 'stdiko')
-      ),
+      {
+        type: "ft-postcondition",
+        address: stxAddress!,
+        condition: "eq",
+        amount: parseInt(amountOfStdikoVotes * 1000000, 10),
+        asset: `${contractAddress}.stdiko-token::stdiko`,
+      },
     ];
-    await doContractCall({
-      network,
-      contractAddress,
-      stxAddress,
-      contractName: CONTRACT_NAME,
-      functionName: 'vote-against',
-      functionArgs: [
-        contractPrincipalCV(
-          process.env.REACT_APP_CONTRACT_ADDRESS || '',
-          'arkadiko-stake-pool-diko-v2-1'
-        ),
-        contractPrincipalCV(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
-        uintCV(match.params.id),
-        uintCV(amountOfStdikoVotes * 1000000),
-      ],
-      postConditions,
-      onFinish: data => {
+
+    await makeContractCall(
+      {
+        stxAddress,
+        contractAddress,
+        contractName: CONTRACT_NAME,
+        functionName: 'vote-against',
+        functionArgs: [
+          Cl.contractPrincipal(
+            process.env.REACT_APP_CONTRACT_ADDRESS || '',
+            'arkadiko-stake-pool-diko-v2-1'
+          ),
+          Cl.contractPrincipal(process.env.REACT_APP_CONTRACT_ADDRESS || '', 'stdiko-token'),
+          Cl.uint(match.params.id),
+          Cl.uint(amountOfStdikoVotes * 1000000),
+        ],
+        postConditions,
+        network,
+      },
+      async (error?, txId?) => {
         setState(prevState => ({
           ...prevState,
-          currentTxId: data.txId,
+          currentTxId: txId,
           currentTxStatus: 'pending',
         }));
         setShowVoteStdikoModal(false);
-      },
-      anchorMode: AnchorMode.Any,
-    }, resolveProvider() || window.StacksProvider);
+      }
+    );
   };
 
   const onInputStdikoChange = event => {
