@@ -7,20 +7,17 @@ const BN = require("bn.js");
 
 const txOptions = {
   contractAddress: CONTRACT_ADDRESS,
-  contractName: "arkadiko-vaults-manager-v1-2",
+  contractName: "arkadiko-vaults-manager-v1-3",
   functionName: "redeem-vault",
   functionArgs: [
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-tokens-v1-1"),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-data-v1-1"),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-sorted-v1-1"),
-    tx.contractPrincipalCV(
-      CONTRACT_ADDRESS,
-      "arkadiko-vaults-pool-active-v1-1"
-    ),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-helpers-v1-1"),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-oracle-v2-3"),
-    tx.standardPrincipalCV(""),
-    tx.contractPrincipalCV(CONTRACT_ADDRESS, "wstx-token"),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-tokens-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-data-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-sorted-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-pool-active-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-vaults-helpers-v1-1'),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-oracle-v3-1'),
+    tx.standardPrincipalCV(''),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, 'wstx-token'),
     tx.uintCV(100000000),
     tx.noneCV(),
   ],

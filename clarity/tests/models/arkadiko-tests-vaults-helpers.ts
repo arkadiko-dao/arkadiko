@@ -31,7 +31,7 @@ class VaultsHelpers {
       Tx.contractCall("arkadiko-vaults-helpers-v1-1", "get-collateral-to-debt", [
         types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
         types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
-        types.principal(Utils.qualifiedName('arkadiko-oracle-v2-3')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v3-1')),
         types.principal(caller.address),
         types.principal(Utils.qualifiedName(token)),
         types.uint(collateral * 1000000), 

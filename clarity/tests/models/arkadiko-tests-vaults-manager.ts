@@ -41,42 +41,30 @@ class VaultsManager {
 
   liquidateVault(owner: string, token: string) {
     let block = this.chain.mineBlock([
-      Tx.contractCall(
-        "arkadiko-vaults-manager-v1-2",
-        "liquidate-vault",
-        [
-          types.principal(Utils.qualifiedName("arkadiko-vaults-tokens-v1-1")),
-          types.principal(Utils.qualifiedName("arkadiko-vaults-data-v1-1")),
-          types.principal(Utils.qualifiedName("arkadiko-vaults-sorted-v1-1")),
-          types.principal(
-            Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1")
-          ),
-          types.principal(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2")),
-          types.principal(Utils.qualifiedName("arkadiko-vaults-helpers-v1-1")),
-          types.principal(Utils.qualifiedName("arkadiko-oracle-v2-3")),
-          types.principal(owner),
-          types.principal(Utils.qualifiedName(token)),
-        ],
-        this.deployer.address
-      ),
+      Tx.contractCall("arkadiko-vaults-manager-v1-2", "liquidate-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-liq-v1-2')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v3-1')),
+        types.principal(owner),
+        types.principal(Utils.qualifiedName(token)),
+      ], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
 
   getCollateralForLiquidation(token: string, collateral: number, debt: number) {
     let block = this.chain.mineBlock([
-      Tx.contractCall(
-        "arkadiko-vaults-manager-v1-2",
-        "get-collateral-for-liquidation",
-        [
-          types.principal(Utils.qualifiedName("arkadiko-vaults-tokens-v1-1")),
-          types.principal(Utils.qualifiedName("arkadiko-oracle-v2-3")),
-          types.principal(Utils.qualifiedName(token)),
-          types.uint(collateral * 1000000),
-          types.uint(debt * 1000000),
-        ],
-        this.deployer.address
-      ),
+      Tx.contractCall("arkadiko-vaults-manager-v1-2", "get-collateral-for-liquidation", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v3-1')),
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(collateral * 1000000),
+        types.uint(debt * 1000000),
+      ], this.deployer.address)
     ]);
     return block.receipts[0].result;
   }
@@ -89,25 +77,18 @@ class VaultsManager {
     prevHint: string
   ) {
     let block = this.chain.mineBlock([
-      Tx.contractCall(
-        "arkadiko-vaults-manager-v1-2",
-        "redeem-vault",
-        [
-          types.principal(Utils.qualifiedName("arkadiko-vaults-tokens-v1-1")),
-          types.principal(Utils.qualifiedName("arkadiko-vaults-data-v1-1")),
-          types.principal(Utils.qualifiedName("arkadiko-vaults-sorted-v1-1")),
-          types.principal(
-            Utils.qualifiedName("arkadiko-vaults-pool-active-v1-1")
-          ),
-          types.principal(Utils.qualifiedName("arkadiko-vaults-helpers-v1-1")),
-          types.principal(Utils.qualifiedName("arkadiko-oracle-v2-3")),
-          types.principal(owner),
-          types.principal(Utils.qualifiedName(token)),
-          types.uint(debtPayoff * 1000000),
-          types.some(types.principal(prevHint)),
-        ],
-        caller.address
-      ),
+      Tx.contractCall("arkadiko-vaults-manager-v1-2", "redeem-vault", [
+        types.principal(Utils.qualifiedName('arkadiko-vaults-tokens-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-data-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-sorted-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-pool-active-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-vaults-helpers-v1-1')),
+        types.principal(Utils.qualifiedName('arkadiko-oracle-v3-1')),
+        types.principal(owner),
+        types.principal(Utils.qualifiedName(token)),
+        types.uint(debtPayoff * 1000000),
+        types.some(types.principal(prevHint)),
+      ], caller.address)
     ]);
     return block.receipts[0].result;
   }
