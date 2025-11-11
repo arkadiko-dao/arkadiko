@@ -5,31 +5,39 @@ const utils = require("../utils");
 const network = utils.resolveNetwork();
 const BN = require("bn.js");
 
-async function exec(ownerAddress) {
-  const lastVaultTx = await tx.callReadOnlyFunction({
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: "arkadiko-vaults-manager-v1-2",
-    functionName: "liquidate-vault",
-    functionArgs: [
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-tokens-v1-1"),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-data-v1-1"),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-sorted-v1-1"),
-      tx.contractPrincipalCV(
-        CONTRACT_ADDRESS,
-        "arkadiko-vaults-pool-active-v1-1"
-      ),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-pool-liq-v1-2"),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-helpers-v1-1"),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-oracle-v2-3"),
-      tx.standardPrincipalCV(ownerAddress),
-      tx.contractPrincipalCV(CONTRACT_ADDRESS, "Wrapped-Bitcoin"),
-    ],
-    senderAddress: CONTRACT_ADDRESS,
-    network,
-  });
+const txOptions = {
+  contractAddress: CONTRACT_ADDRESS,
+  contractName: "arkadiko-vaults-manager-v1-2",
+  functionName: "liquidate-vault",
+  functionArgs: [
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-tokens-v1-1"),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-data-v1-1"),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-sorted-v1-1"),
+    tx.contractPrincipalCV(
+      CONTRACT_ADDRESS,
+      "arkadiko-vaults-pool-active-v1-1"
+    ),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-pool-liq-v1-2"),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-helpers-v1-1"),
+    tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-oracle-v2-3"),
+    tx.standardPrincipalCV('SP26JANC54SG8Q1JKVZK5R89Z35S60J2AF8ZJKGMR'),
+    tx.contractPrincipalCV('SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG', 'ststx-token'),
+  ],
+  senderKey: process.env.STACKS_PRIVATE_KEY,
+  postConditionMode: 1,
+  network: 'mainnet',
+  nonce: 4698,
+  fee: 10000,
+};
 
-  console.log(tx.cvToJSON(lastVaultTx).value);
-  return tx.cvToJSON(lastVaultTx).value;
+async function transact() {
+  // const transaction = await tx.makeContractCall(txOptions);
+  // const result = tx.broadcastTransaction(transaction, network);
+  // await utils.processing(result, transaction.txid(), 0);
+
+  const transaction = await tx.makeContractCall(txOptions);
+  const result = tx.broadcastTransaction({ transaction: transaction });
+  console.log(result);
 }
 
-console.log(exec("ST2C2YFP12AJZB4MABJBAJ55XECVS7E4PMN0KW98F"));
+transact();
