@@ -24,6 +24,9 @@ export const getPendingTransactions = async (address: string, contractAddress: s
   const config = new Configuration({ basePath: network.coreApiUrl });
   const api = new TransactionsApi(config);
 
+  return [];
+
+  // TODO: figure out what is going wrong here
   // Find amount of pages
   const result = await api.getMempoolTransactionList({ limit: 1 });
   const pages = Math.ceil(parseFloat(result.total) / 200.0);

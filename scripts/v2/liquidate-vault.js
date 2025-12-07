@@ -20,13 +20,12 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-pool-liq-v1-2"),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-helpers-v1-1"),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-oracle-v2-3"),
-    tx.standardPrincipalCV('SP26JANC54SG8Q1JKVZK5R89Z35S60J2AF8ZJKGMR'),
+    tx.standardPrincipalCV('SPS5RZHPGHT7QHGQKHCCBW502NZ5CFQ0920RVX32'),
     tx.contractPrincipalCV('SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG', 'ststx-token'),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,
   postConditionMode: 1,
   network: 'mainnet',
-  nonce: 4698,
   fee: 10000,
 };
 
@@ -36,7 +35,7 @@ async function transact() {
   // await utils.processing(result, transaction.txid(), 0);
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction({ transaction: transaction });
+  const result = await tx.broadcastTransaction({ transaction: transaction });
   console.log(result);
 }
 
