@@ -30,6 +30,8 @@
     "@heroicons/react": "^1.0.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@rehooks/document-title": "^1.0.1",
+    "@stacks/transactions": "7.0.5",
+    "@stacks/network": "7.0.2",
     "@tailwindcss/forms": "^0.2.1",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
@@ -76,8 +78,7 @@
     "@schemastore/web-manifest": "^0.0.4",
     "@types/chrome": "^0.0.104",
     "@types/expect-puppeteer": "^4.4.1",
-    "@types/jest": "^26.0.23",
-    "@types/jest-environment-puppeteer": "^4.3.1",
+    "@types/jest": "^27.0.0",
     "@types/node": "^13.11.1",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.6",
@@ -112,7 +113,6 @@
     "webpack": "5.89.0",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "4.15.1",
-    "webpack-extension-reloader": "1.1.4",
     "webpack-hot-middleware": "2.25.4"
   },
   "keywords": [

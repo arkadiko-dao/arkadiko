@@ -138,7 +138,7 @@ export const Home: React.FC = () => {
     const fetchDikoPrice = async () => {
       const dikoResponse = await axios.get(`${apiUrl}/api/v1/pools/2/prices`);
       const prices = dikoResponse.data.prices;
-      setLastDikoPrice(prices[prices.length - 1][1].toFixed(2));
+      setLastDikoPrice(prices[prices.length - 1][1].toFixed(5));
     };
     const fetchPoolData = async () => {
       const response = await axios.get(`${apiUrl}/api/v1/tickers`);
