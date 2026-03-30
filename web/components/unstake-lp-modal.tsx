@@ -68,7 +68,7 @@ export const UnstakeLpModal = ({
           contractName: contractName,
           functionName: 'unstake',
           functionArgs: [
-            contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+            contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v3-1'),
             contractPrincipalCV(assetContractAddress, tokenContract),
             amount,
           ],
@@ -89,10 +89,10 @@ export const UnstakeLpModal = ({
         {
           stxAddress,
           contractAddress,
-          contractName: 'arkadiko-stake-registry-v2-1',
+          contractName: 'arkadiko-stake-registry-v3-1',
           functionName: 'unstake',
           functionArgs: [
-            contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v2-1'),
+            contractPrincipalCV(contractAddress, 'arkadiko-stake-registry-v3-1'),
             contractPrincipalCV(contractAddress, contractName),
             contractPrincipalCV(contractAddress, tokenContract),
             amount,

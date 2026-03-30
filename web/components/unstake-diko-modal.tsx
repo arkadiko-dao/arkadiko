@@ -37,10 +37,10 @@ export const UnstakeDikoModal = ({ showUnstakeModal, setShowUnstakeModal, staked
       {
         stxAddress,
         contractAddress,
-        contractName: 'arkadiko-stake-registry-v2-1',
+        contractName: 'arkadiko-stake-registry-v3-1',
         functionName: 'unstake',
         functionArgs: [
-          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v3-1'),
           Cl.contractPrincipal(contractAddress, 'arkadiko-stake-pool-diko-v2-1'),
           Cl.contractPrincipal(contractAddress, 'arkadiko-token'),
           amount,
