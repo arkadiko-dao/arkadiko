@@ -20,7 +20,7 @@ const txOptions = {
     tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-pool-liq-v1-2"),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-vaults-helpers-v1-1"),
     tx.contractPrincipalCV(CONTRACT_ADDRESS, "arkadiko-oracle-v2-3"),
-    tx.standardPrincipalCV('SPS5RZHPGHT7QHGQKHCCBW502NZ5CFQ0920RVX32'),
+    tx.standardPrincipalCV('SP22TYSCADAKM5K57E949HFP5ZVQ06PRAVJ700X3'),
     tx.contractPrincipalCV('SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG', 'ststx-token'),
   ],
   senderKey: process.env.STACKS_PRIVATE_KEY,

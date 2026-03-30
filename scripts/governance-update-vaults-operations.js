@@ -13,24 +13,17 @@ async function transact() {
     functionName: 'propose-dao',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
-      tx.uintCV(896662),
-      tx.stringUtf8CV('Fix - improve UX on stability fee payments and fix redemption fee underflow'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/592'),
+      tx.uintCV(942975),
+      tx.stringUtf8CV('Fix - update Stake Registry to fix upcoming at-block removal'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/616'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("vaults-operations"),
+          'name': tx.stringAsciiCV("stake-registry"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-vaults-operations-v1-3"),
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-stake-registry-v3-1"),
           'can-mint': tx.trueCV(),
           'can-burn': tx.trueCV()
         }),
-        tx.tupleCV({
-          'name': tx.stringAsciiCV("vaults-manager"),
-          'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-vaults-manager-v1-2"),
-          'can-mint': tx.trueCV(),
-          'can-burn': tx.trueCV()
-        })
       ])
     ],
     senderKey: process.env.STACKS_PRIVATE_KEY,
