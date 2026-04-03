@@ -37,7 +37,7 @@ export const asyncForEach = async (array, callback) => {
   }
 }
 
-export const blocksToTime = (blocks:number) => {
+export const blocksToTime = (blocks: number) => {
   const minutesPerBlock = 10;
   const minutesLeft = blocks * minutesPerBlock;
   const hoursLeft = Math.floor(minutesLeft / 60);
@@ -71,6 +71,8 @@ export const resolveProvider = () => {
     return window.XverseProviders?.StacksProvider;
   } else if (providerName === 'asigna' && window.AsignaProvider) {
     return window.AsignaProvider;
+  } else if (providerName === 'okx' && window.okxwallet?.stacks) {
+    return window.okxwallet.stacks;
   } else if (providerName === 'orange' && window.OrangeStacksProvider) {
     return window.OrangeStacksProvider;
   } else if (window.LeatherProvider) {
@@ -86,6 +88,7 @@ export const STACKS_PROVIDERS = {
   xverse: 'XverseProviders.BitcoinProvider',
   leather: 'LeatherProvider',
   asigna: 'AsignaProvider',
+  okx: 'okxwallet.stacks',
   fordefi: 'FordefiProviders.UtxoProvider',
   //orange: 'OrangeStacksProvider',
 };
