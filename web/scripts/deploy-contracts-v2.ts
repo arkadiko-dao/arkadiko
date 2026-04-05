@@ -5,10 +5,11 @@ import { RPCClient } from '@stacks/rpc-client';
 import {
   getAddressFromPrivateKey,
   TransactionVersion,
-  makeContractDeploy,
-  StacksTestnet,
+  // makeContractDeploy,
+  StacksMainnet,
 } from '@blockstack/stacks-transactions';
-import BN from 'bn.js';
+import { makeContractDeploy, broadcastTransaction } from '@stacks/transactions';
+// import BN from 'bn.js';
 require('dotenv').config();
 
 const readFile = promisify(readFileFn);
@@ -19,59 +20,7 @@ interface Contract {
 }
 
 const contracts: Contract[] = [
-
-  // Traits
-  { name: 'sip-010-trait-ft-standard' },
-
-  { name: 'arkadiko-oracle-trait-v1' },
-  { name: 'arkadiko-vault-trait-v1', file: 'vaults/arkadiko-vault-trait-v1' },
-  { name: 'arkadiko-collateral-types-trait-v1', file: 'vaults/arkadiko-collateral-types-trait-v1' },
-  { name: 'arkadiko-vault-manager-trait-v1', file: 'vaults/arkadiko-vault-manager-trait-v1' },
-  { name: 'arkadiko-dao-token-trait-v1' },
-  { name: 'arkadiko-stake-pool-diko-trait-v1', file: 'stake/arkadiko-stake-pool-diko-trait-v1' },
-  { name: 'arkadiko-swap-trait-v1', file: 'swap/arkadiko-swap-trait-v1' },
-  { name: 'arkadiko-stake-registry-trait-v1', file: 'stake/arkadiko-stake-registry-trait-v1' },
-  { name: 'arkadiko-stake-pool-trait-v1', file: 'stake/arkadiko-stake-pool-trait-v1' },
-  { name: 'arkadiko-liquidation-pool-trait-v1', file: 'vaults/arkadiko-liquidation-pool-trait-v1' },
-  { name: 'arkadiko-liquidation-rewards-trait-v2', file: 'vaults/arkadiko-liquidation-rewards-trait-v2' },
-  { name: 'arkadiko-diko-guardian-v3-1', file: 'stake/arkadiko-diko-guardian-v3-1' },
-
-  { name: 'restricted-token-trait', file: 'tests/xbtc/restricted-token-trait' },
-
-  // Contracts
-  { name: 'arkadiko-token' },
-  { name: 'arkadiko-dao' },
-  { name: 'usda-token' },
-  { name: 'xstx-token', file: 'vaults/xstx-token' },
-  { name: 'stdiko-token' },
-  { name: 'arkadiko-governance-v4-3' },
-  { name: 'arkadiko-oracle-v2-3' },
-  { name: 'wrapped-stx-token' },
-  { name: 'Wrapped-Bitcoin', file: 'tests/xbtc/Wrapped-Bitcoin' },
-
-  // V2 contracts
-  { name: 'arkadiko-vaults-data-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-data-trait-v1-1' },
-  { name: 'arkadiko-vaults-pool-active-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-active-trait-v1-1' },
-  { name: 'arkadiko-vaults-tokens-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-tokens-trait-v1-1' },
-  { name: 'arkadiko-vaults-pool-liq-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-liq-trait-v1-1' },
-  { name: 'arkadiko-vaults-helpers-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-helpers-trait-v1-1' },
-  { name: 'arkadiko-vaults-sorted-trait-v1-1', file: 'vaults-v2/arkadiko-vaults-sorted-trait-v1-1' },
-
-  { name: 'arkadiko-vaults-data-v1-1', file: 'vaults-v2/arkadiko-vaults-data-v1-1' },
-  { name: 'arkadiko-vaults-helpers-v1-1', file: 'vaults-v2/arkadiko-vaults-helpers-v1-1' },
-  { name: 'arkadiko-vaults-manager-v1-2', file: 'vaults-v2/arkadiko-vaults-manager-v1-1' },
-  { name: 'arkadiko-vaults-operations-v1-3', file: 'vaults-v2/arkadiko-vaults-operations-v1-3' },
-  { name: 'arkadiko-vaults-pool-active-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-active-v1-1' },
-  { name: 'arkadiko-vaults-pool-fees-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-fees-v1-1' },
-  { name: 'arkadiko-vaults-pool-liq-v1-1', file: 'vaults-v2/arkadiko-vaults-pool-liq-v1-1' },
-  { name: 'arkadiko-vaults-sorted-v1-1', file: 'vaults-v2/arkadiko-vaults-sorted-v1-1' },
-  { name: 'arkadiko-vaults-tokens-v1-1', file: 'vaults-v2/arkadiko-vaults-tokens-v1-1' },
-
-  { name: 'arkadiko-vaults-migration-v1-1', file: 'vaults-v2/arkadiko-vaults-migration-v1-1' },
-
-  { name: 'ststx-token', file: 'tests/ststx/ststx-token' },
-  { name: 'wstx-token' },
-  { name: 'auto-alex-v2', file: 'tests/atalex/auto-alex-v2' }
+  { name: 'arkadiko-stake-registry-v3-1', file: 'stake/arkadiko-stake-registry-v3-1' },
 ];
 
 const rpcClient = new RPCClient(process.env.API_SERVER || 'http://localhost:3999');
@@ -80,9 +29,9 @@ if (!privateKey) {
   console.error('Provide a private key with `process.env.CONTRACT_PRIVATE_KEY`');
   process.exit(1);
 }
-const address = getAddressFromPrivateKey(privateKey, TransactionVersion.Testnet);
+const address = getAddressFromPrivateKey(privateKey, TransactionVersion.Mainnet);
 
-const network = new StacksTestnet();
+const network = new StacksMainnet();
 network.coreApiUrl = rpcClient.url;
 
 const run = async () => {
@@ -113,28 +62,40 @@ const run = async () => {
     console.log(`Deploying ${contractId}`);
 
     const source = await readFile(`../clarity/contracts/${contract.file || contract.name}.clar`);
+    // const tx = await makeContractDeploy({
+    //   contractName: contract.name,
+    //   codeBody: source.toString('utf8'),
+    //   senderKey: privateKey,
+    //   nonce: new BN(account.nonce + index, 10),
+    //   fee: new BN(1000000, 10),
+    //   network,
+    // });
     const tx = await makeContractDeploy({
       contractName: contract.name,
       codeBody: source.toString('utf8'),
+      clarityVersion: 3,              // <-- pin to Clarity 3
       senderKey: privateKey,
-      nonce: new BN(account.nonce + index, 10),
-      fee: new BN(1000000, 10),
-      network,
+      nonce: BigInt(account.nonce + index),  // native BigInt, not BN
+      fee: 1000000,                         // BigInt literal
+      network: 'mainnet',                    // string shorthand works now
     });
 
-    const result = await rpcClient.broadcastTX(tx.serialize());
+    const response = await broadcastTransaction({ transaction: tx, network: 'mainnet' });
+    console.log(response);
 
-    if (result.ok) {
-      index += 1;
+    // const result = await rpcClient.broadcastTX(tx.serialize());
 
-      const txId = (await result.text()).replace(/"/g, '');
-      console.log(`${rpcClient.url}/extended/v1/tx/${txId}`);
+    // if (result.ok) {
+    //   index += 1;
 
-      txResults.push(txId);
-    } else {
-      const errorMsg = await result.text();
-      throw new Error(errorMsg);
-    }
+    //   const txId = (await result.text()).replace(/"/g, '');
+    //   console.log(`${rpcClient.url}/extended/v1/tx/${txId}`);
+
+    //   txResults.push(txId);
+    // } else {
+    //   const errorMsg = await result.text();
+    //   throw new Error(errorMsg);
+    // }
   }
 
   if (txResults.length > 0) console.log('Broadcasted transactions:');

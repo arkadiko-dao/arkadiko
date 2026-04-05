@@ -102,7 +102,7 @@ export const StakeLpModal = ({
           contractName,
           functionName: "stake",
           functionArgs: [
-            Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+            Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v3-1'),
             Cl.contractPrincipal(assetContractAddress, tokenContract),
             amount,
           ],
@@ -124,10 +124,10 @@ export const StakeLpModal = ({
         {
           stxAddress: stxAddress,
           contractAddress: contractAddress,
-          contractName: "arkadiko-stake-registry-v2-1",
+          contractName: "arkadiko-stake-registry-v3-1",
           functionName: "stake",
           functionArgs: [
-            Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v2-1'),
+            Cl.contractPrincipal(contractAddress, 'arkadiko-stake-registry-v3-1'),
             Cl.contractPrincipal(contractAddress, contractName),
             Cl.contractPrincipal(assetContractAddress, tokenContract),
             amount,
