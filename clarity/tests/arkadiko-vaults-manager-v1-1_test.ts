@@ -92,7 +92,7 @@ Clarinet.test({
     oracleManager.updatePrice("STX", 0.5);
 
     // Add USDA to liquidation pool
-    let result = vaultsPoolLiq.stake(deployer, 1000);
+    let result = vaultsPoolLiq.stake(deployer, 20000);
 
     // Open vault
     result = vaultsOperations.openVault(
@@ -133,11 +133,11 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(1885.718587);
 
     // Used 600 USDA from pool + stability fees
-    // So ~400 USDA left in pool
+    // Pool now enforces a minimum USDA balance, so stake more up front.
     call = usdaToken.balanceOf(
       Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2")
     );
-    call.result.expectOk().expectUintWithDecimals(399.998631);
+    call.result.expectOk().expectUintWithDecimals(19399.998631);
 
     call = usdaToken.balanceOf(
       Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1")
@@ -210,7 +210,7 @@ Clarinet.test({
     oracleManager.updatePrice("STX", 0.5);
 
     // Add USDA to liquidation pool
-    let result = vaultsPoolLiq.stake(deployer, 1000);
+    let result = vaultsPoolLiq.stake(deployer, 20000);
 
     // Open vault
     result = vaultsOperations.openVault(
@@ -252,11 +252,11 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(2000);
 
     // Used 600 USDA from pool + stability fees
-    // So ~400 USDA left in pool
+    // Pool now enforces a minimum USDA balance, so stake more up front.
     call = usdaToken.balanceOf(
       Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2")
     );
-    call.result.expectOk().expectUintWithDecimals(399.998631);
+    call.result.expectOk().expectUintWithDecimals(19399.998631);
 
     call = usdaToken.balanceOf(
       Utils.qualifiedName("arkadiko-vaults-pool-fees-v1-1")
