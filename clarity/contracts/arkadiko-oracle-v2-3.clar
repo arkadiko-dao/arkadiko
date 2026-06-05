@@ -110,7 +110,7 @@
     (check-result (fold + (map check-price-signer block-list token-id-list price-list decimals-list signatures) u0))
   )
     (asserts! (< burn-block-height (+ block u10)) (err ERR-OLD-MESSAGE))
-    (asserts! (> block (get-token-last-block token-id)) (err ERR-STALE-MESSAGE))
+    (asserts! (>= block (get-token-last-block token-id)) (err ERR-STALE-MESSAGE))
     (asserts! (is-eq (fold and (map check-unique-signatures-iter signatures) true) true) (err ERR-SIGNATURES-NOT-UNIQUE))
 
     (if (>= check-result (var-get minimum-valid-signers))

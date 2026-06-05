@@ -270,7 +270,7 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    // Replaying the same block is rejected before signature reuse is checked
+    // Replaying the same block with a reused signature is rejected
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
@@ -282,7 +282,7 @@ Clarinet.test({
         ])
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectErr().expectUint(8404);
+    block.receipts[0].result.expectErr().expectUint(8403);
   }
 });
 
@@ -508,7 +508,7 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "oracle: can not update price if block is not newer than last update",
+  name: "oracle: can not update price if block is older than last update",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
 
@@ -609,7 +609,7 @@ Clarinet.test({
     ]);
     block.receipts[0].result.expectOk().expectBool(true);
 
-    // Replaying the same block is rejected before signature reuse is checked
+    // Replaying the same block with a reused signature is rejected
     block = chain.mineBlock([
       Tx.contractCall("arkadiko-oracle-v2-3", "update-price-multi", [
         types.uint(80100),
@@ -621,6 +621,6 @@ Clarinet.test({
         ])
       ], deployer.address)
     ]);
-    block.receipts[0].result.expectErr().expectUint(8404);
+    block.receipts[0].result.expectErr().expectUint(8403);
   }
 });
