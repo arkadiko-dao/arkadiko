@@ -12,17 +12,17 @@ async function transact() {
     functionName: 'propose',
     functionArgs: [
       tx.contractPrincipalCV(CONTRACT_ADDRESS, 'arkadiko-stake-pool-diko-v2-1'),
-      tx.uintCV(879632),
+      tx.uintCV(950360),
       tx.uintCV(720),
-      tx.stringUtf8CV('AIP 28 - Stability Fees'),
-      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/606'),
+      tx.stringUtf8CV('Fix - Upgrade Liquidation Pool'),
+      tx.stringUtf8CV('https://github.com/arkadiko-dao/arkadiko/pull/619'),
       tx.listCV([
         tx.tupleCV({
-          'name': tx.stringAsciiCV("aip-28-stability-fees"),
+          'name': tx.stringAsciiCV("vaults-pool-liq"),
           'address': tx.standardPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"),
-          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "aip-28-stability-fees"),
-          'can-mint': tx.falseCV(),
-          'can-burn': tx.falseCV()
+          'qualified-name': tx.contractPrincipalCV("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "arkadiko-vaults-pool-liq-v1-3"),
+          'can-mint': tx.trueCV(),
+          'can-burn': tx.trueCV()
         }),
       ])
     ],

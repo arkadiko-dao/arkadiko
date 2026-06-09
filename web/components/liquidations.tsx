@@ -101,7 +101,7 @@ export const Liquidations: React.FC = () => {
       },
       {
         type: "ft-postcondition",
-        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-3`,
         condition: "gte",
         amount: 0,
         asset: `${contractAddress}.arkadiko-token::diko`,
@@ -112,7 +112,7 @@ export const Liquidations: React.FC = () => {
       {
         stxAddress,
         contractAddress,
-        contractName: 'arkadiko-vaults-pool-liq-v1-2',
+        contractName: 'arkadiko-vaults-pool-liq-v1-3',
         functionName: 'stake',
         functionArgs: [
           Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
@@ -142,47 +142,47 @@ export const Liquidations: React.FC = () => {
     const postConditions = [
       {
         type: "ft-postcondition",
-        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-3`,
         condition: "eq",
         amount: Number((parseFloat(unstakeAmount) * 1000000).toFixed(0)),
         asset: `${contractAddress}.usda-token::usda`,
       },
       {
         type: "ft-postcondition",
-        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-3`,
         condition: "gte",
         amount: 0,
         asset: `${contractAddress}.arkadiko-token::diko`,
       },
       {
         type: "ft-postcondition",
-        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-3`,
         condition: "gte",
         amount: 0,
         asset: `${contractAddress}.wstx-token::wstx`,
       },
       {
         type: "ft-postcondition",
-        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-3`,
         condition: "gte",
         amount: 0,
         asset: `${stStxContractAddress}.ststx-token::ststx`,
       },
       {
         type: "ft-postcondition",
-        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-2`,
+        address: `${contractAddress}.arkadiko-vaults-pool-liq-v1-3`,
         condition: "gte",
         amount: 0,
         asset: `${xbtcContractAddress}.Wrapped-Bitcoin::wrapped-bitcoin`,
       },
-      Pc.principal(`${contractAddress}.arkadiko-vaults-pool-liq-v1-2`).willSendGte(0).ustx(),
+      Pc.principal(`${contractAddress}.arkadiko-vaults-pool-liq-v1-3`).willSendGte(0).ustx(),
     ];
 
     await makeContractCall(
       {
         stxAddress,
         contractAddress,
-        contractName: 'arkadiko-vaults-pool-liq-v1-2',
+        contractName: 'arkadiko-vaults-pool-liq-v1-3',
         functionName: 'unstake',
         functionArgs: [
           Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-tokens-v1-1'),
@@ -211,7 +211,7 @@ export const Liquidations: React.FC = () => {
   const getPendingRewards = async (tokenAddress: string, tokenName: string) => {
     const call = await fetchCallReadOnlyFunction({
       contractAddress,
-      contractName: 'arkadiko-vaults-pool-liq-v1-2',
+      contractName: 'arkadiko-vaults-pool-liq-v1-3',
       functionName: 'get-pending-rewards',
       functionArgs: [
         Cl.standardPrincipal(stxAddress),
@@ -302,7 +302,7 @@ export const Liquidations: React.FC = () => {
         contractName: 'usda-token',
         functionName: 'get-balance',
         functionArgs: [
-          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-pool-liq-v1-2'),
+          Cl.contractPrincipal(contractAddress, 'arkadiko-vaults-pool-liq-v1-3'),
         ],
         senderAddress: stxAddress || '',
         network: network,
@@ -314,7 +314,7 @@ export const Liquidations: React.FC = () => {
     const getUserPooled = async () => {
       const call = await fetchCallReadOnlyFunction({
         contractAddress,
-        contractName: 'arkadiko-vaults-pool-liq-v1-2',
+        contractName: 'arkadiko-vaults-pool-liq-v1-3',
         functionName: 'get-stake-of',
         functionArgs: [
           Cl.standardPrincipal(stxAddress || ''),
