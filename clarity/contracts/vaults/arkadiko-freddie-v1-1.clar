@@ -658,6 +658,7 @@
       (err ERR-WRONG-COLLATERAL-TOKEN)
     )
 
+    (try! (pay-stability-fee vault-id coll-type))
     (if (is-eq (get debt vault) u0)
       true
       (try! (contract-call? .arkadiko-dao burn-token .usda-token (get debt vault) (get owner vault)))
