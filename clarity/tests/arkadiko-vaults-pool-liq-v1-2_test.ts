@@ -57,17 +57,17 @@ Clarinet.test({
     //
     // Stake
     //
-    let result = vaultsPoolLiquidation.stake(wallet_1, 1000);    
+    let result = vaultsPoolLiquidation.stake(wallet_1, 20000);    
     result.expectOk().expectBool(true);
 
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 - 1000);
+    call.result.expectOk().expectUintWithDecimals(1000000 - 20000);
 
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
-    call.result.expectOk().expectUintWithDecimals(1000);
+    call.result.expectOk().expectUintWithDecimals(20000);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000);
+    call.result.expectOk().expectUintWithDecimals(20000);
 
     call = vaultsPoolLiquidation.getStakerRewards(wallet_1.address, "wstx-token")
     call.result.expectTuple()["cumm-reward-per-fragment"].expectUintWithDecimals(0);
@@ -123,19 +123,19 @@ Clarinet.test({
     //
 
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
-    call.result.expectOk().expectUintWithDecimals(1000);
+    call.result.expectOk().expectUintWithDecimals(20000);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000);
+    call.result.expectOk().expectUintWithDecimals(20000);
 
-    result = vaultsPoolLiquidation.burnUsda(deployer, 200);
-    result.expectOk().expectUintWithDecimals(200);
+    result = vaultsPoolLiquidation.burnUsda(deployer, 2000);
+    result.expectOk().expectUintWithDecimals(2000);
 
     call = usdaToken.balanceOf(Utils.qualifiedName("arkadiko-vaults-pool-liq-v1-2"));
-    call.result.expectOk().expectUintWithDecimals(800);
+    call.result.expectOk().expectUintWithDecimals(18000);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(800);
+    call.result.expectOk().expectUintWithDecimals(18000);
 
 
     //
@@ -167,14 +167,14 @@ Clarinet.test({
 
     // Small rounding error
     call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "arkadiko-token");
-    call.result.expectOk().expectUintWithDecimals(51.364723 * 3);
+    call.result.expectOk().expectUintWithDecimals(154.094168);
 
-    result = vaultsPoolLiquidation.unstake(wallet_1, 800);    
+    result = vaultsPoolLiquidation.unstake(wallet_1, 18000);    
     result.expectOk().expectBool(true);
 
-    // Lost 200 USDA due to burn
+    // Lost 2000 USDA due to burn
     call = usdaToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(1000000 - 200);
+    call.result.expectOk().expectUintWithDecimals(1000000 - 2000);
 
     call = wstxToken.getStxBalance(wallet_1.address);
     call.result.expectUintWithDecimals(100000000 + 30 + 30);
@@ -184,7 +184,7 @@ Clarinet.test({
     // Unstake triggers adding rewards (1 block)
     // Small rounding error
     call = dikoToken.balanceOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(150000 + 51.364723 * 8);
+    call.result.expectOk().expectUintWithDecimals(150410.917782);
   },
 });
 
@@ -202,10 +202,10 @@ Clarinet.test({
     // Stake
     //
 
-    let result = vaultsPoolLiquidation.stake(wallet_1, 1000);    
+    let result = vaultsPoolLiquidation.stake(wallet_1, 10000);    
     result.expectOk().expectBool(true);
 
-    result = vaultsPoolLiquidation.stake(wallet_2, 2000);    
+    result = vaultsPoolLiquidation.stake(wallet_2, 20000);    
     result.expectOk().expectBool(true);
 
   
@@ -231,8 +231,8 @@ Clarinet.test({
     // Rewards remain the same, stakeOf decreased
     //
 
-    result = vaultsPoolLiquidation.burnUsda(deployer, 300);
-    result.expectOk().expectUintWithDecimals(300);
+    result = vaultsPoolLiquidation.burnUsda(deployer, 3000);
+    result.expectOk().expectUintWithDecimals(3000);
 
     call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
     call.result.expectOk().expectUintWithDecimals(100);
@@ -244,10 +244,10 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(0);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(900);
+    call.result.expectOk().expectUintWithDecimals(9000);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(1800);
+    call.result.expectOk().expectUintWithDecimals(18000);
 
     call = vaultsPoolLiquidation.getStakeOf(deployer.address);
     call.result.expectOk().expectUintWithDecimals(0);
@@ -257,7 +257,7 @@ Clarinet.test({
     // Stake
     //
 
-    result = vaultsPoolLiquidation.stake(deployer, 2700);    
+    result = vaultsPoolLiquidation.stake(deployer, 27000);    
     result.expectOk().expectBool(true);
 
 
@@ -283,8 +283,8 @@ Clarinet.test({
     // Rewards remain the same, stakeOf decreased
     //
 
-    result = vaultsPoolLiquidation.burnUsda(deployer, 540);
-    result.expectOk().expectUintWithDecimals(540);
+    result = vaultsPoolLiquidation.burnUsda(deployer, 5400);
+    result.expectOk().expectUintWithDecimals(5400);
 
     call = vaultsPoolLiquidation.getPendingRewards(wallet_1.address, "wstx-token");
     call.result.expectOk().expectUintWithDecimals(100 + 100);
@@ -296,13 +296,13 @@ Clarinet.test({
     call.result.expectOk().expectUintWithDecimals(299.999999);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_1.address);
-    call.result.expectOk().expectUintWithDecimals(900 - 90);
+    call.result.expectOk().expectUintWithDecimals(9000 - 900);
 
     call = vaultsPoolLiquidation.getStakeOf(wallet_2.address);
-    call.result.expectOk().expectUintWithDecimals(1800 - 180);
+    call.result.expectOk().expectUintWithDecimals(18000 - 1800);
 
     call = vaultsPoolLiquidation.getStakeOf(deployer.address);
-    call.result.expectOk().expectUintWithDecimals(2700 - 270);
+    call.result.expectOk().expectUintWithDecimals(27000 - 2700);
   },
 });
 

@@ -31,7 +31,7 @@ export const LiquidationReward: React.FC<LiquidationRewardProps> = ({
   const [state, setState] = useContext(AppContext);
 
   const claim = async () => {
-    const contract = 'arkadiko-vaults-pool-liq-v1-2';
+    const contract = 'arkadiko-vaults-pool-liq-v1-3';
     const postConditions = [
       {
         type: "ft-postcondition",

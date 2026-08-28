@@ -31,7 +31,7 @@
 (define-data-var fragments-per-token uint u100000000000000)
 (define-data-var fragments-total uint u0)
 
-(define-data-var diko-rewards-percentage uint u820) ;; 8.2% in bps
+(define-data-var diko-rewards-percentage uint u0)
 (define-data-var diko-rewards-last-block uint burn-block-height)
 
 ;; ---------------------------------------------------------
