@@ -71,7 +71,7 @@ export const CreateVaultTransact = ({ coinAmounts }) => {
         Pc.principal(address!).willSendEq(amount.value).ustx(),
         {
           type: "ft-postcondition",
-          address: stxAddress,
+          address: address,
           condition: "lte", // 'eq' | 'gt' | 'gte' | 'lt' | 'lte'
           amount: amount.value,
           asset: `${process.env.REACT_APP_CONTRACT_ADDRESS}.wstx-token::wstx`,
