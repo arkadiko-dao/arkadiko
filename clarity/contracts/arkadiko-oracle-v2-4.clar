@@ -1,5 +1,5 @@
 ;; @contract Arkadiko multisig oracle
-;; @version 2.3
+;; @version 2.4
 
 (impl-trait .arkadiko-oracle-trait-v1.oracle-trait)
 
