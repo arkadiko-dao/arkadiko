@@ -273,24 +273,26 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <AppContext.Provider value={[state, setState]}>
-        <Helmet titleTemplate="Arkadiko Finance App - %s" defaultTitle="Arkadiko Finance App" />
-        <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
-          {location.pathname.indexOf('/onboarding') != 0 ? (
-            <Header signOut={signOut} setShowSidebar={setShowSidebar} />
-          ) : null}
-          {state.userData && location.pathname.indexOf('/onboarding') != 0 ? <SubHeader /> : null}
-          <TxStatus />
+    <ThemeProvider theme={theme}>
+      <div>
+        <AppContext.Provider value={[state, setState]}>
+          <Helmet titleTemplate="Arkadiko Finance App - %s" defaultTitle="Arkadiko Finance App" />
+          <div className="flex flex-col font-sans bg-white dark:bg-zinc-900 min-height-screen">
+            {location.pathname.indexOf('/onboarding') != 0 ? (
+              <Header signOut={signOut} setShowSidebar={setShowSidebar} />
+            ) : null}
+            {state.userData && location.pathname.indexOf('/onboarding') != 0 ? <SubHeader /> : null}
+            <TxStatus />
 
-          <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+            <TxSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
 
-          {!finishedOnboarding ? <Redirect to={{ pathname: '/onboarding' }} /> : null}
-          <Routes />
-          <Footer />
-        </div>
-      </AppContext.Provider>
-      <ScrollToTop />
-    </div>
+            {!finishedOnboarding ? <Redirect to={{ pathname: '/onboarding' }} /> : null}
+            <Routes />
+            <Footer />
+          </div>
+        </AppContext.Provider>
+        <ScrollToTop />
+      </div>
+    </ThemeProvider>
   );
 };
