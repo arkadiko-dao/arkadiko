@@ -6,6 +6,8 @@ const network = utils.resolveNetwork();
 const BN = require('bn.js');
 
 async function sendDiko(address, amount, nonce) {
+  if (Number(amount) <= 0) return;
+
   const txOptions = {
     contractAddress: CONTRACT_ADDRESS,
     contractName: "arkadiko-token",
@@ -23,11 +25,11 @@ async function sendDiko(address, amount, nonce) {
   };
 
   const transaction = await tx.makeContractCall(txOptions);
-  const result = tx.broadcastTransaction({ transaction: transaction });
+  const result = await tx.broadcastTransaction({ transaction: transaction });
   console.log(result);
 }
 
-let nonce = 4582;
+let nonce = 4636;
 const tokens = {
   'SP3TF26QFS3YMYHC9N3ZZTZQKCM4AFYMVW1WMFRTT': 44270833333,
   'SPF6GBC7XRM16XE7GSNF87GSYS703XZHFHRM1XYR': 3750000000,
@@ -41,7 +43,6 @@ const tokens = {
   'SP3K0R9VYW9M6W6KH7TRR1C9P9GZ6KYCEQ0N4CKV2': 7500000000,
   'SP1WHCEF60XCC1K5W0B6FDRE5305KXXSHC4D07BK7': 3750000000,
   'SP1BPVZMP3SY6D7EHJR6KNMZK4NMWKD2F0QASMD1M': 3750000000,
-  'SP1THSVCQSKRCGTNYYKYS58054N2K0MV5D5X09MBP': 18750000000,
   'SP11GRR545WY4MH6X43V2GRF253NM8R26J1D3H4RS': 7500000000,
   'SP33S9FRE8MK0EK77ZBWTJP9WF0DRQCHF8VHZRY8J': 3750000000,
   'SP1CE3NQXDKCJ2KEFFGCVFA5C196S9F0RRX93HY87': 1500000000,
