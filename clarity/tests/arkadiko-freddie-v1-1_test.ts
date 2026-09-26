@@ -414,11 +414,13 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "freddie: close vault with debt",
+  name: "freddie: close vault with debt settles stability fee and requires owner",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     let deployer = accounts.get("deployer")!;
+    let wallet_1 = accounts.get("wallet_1")!;
     
     let oracleManager = new OracleManager(chain, deployer);
+    let usdaToken = new UsdaToken(chain, deployer);
     let vaultManager = new VaultManager(chain, deployer);
 
     let result = oracleManager.updatePrice("STX", 2);
@@ -427,8 +429,19 @@ Clarinet.test({
     result = vaultManager.createVault(deployer, "STX-A", 1000, 300, false, false);
     result.expectOk().expectUintWithDecimals(300);
 
+    result = vaultManager.closeVault(wallet_1, 1);
+    result.expectErr().expectUint(4401);
+
+    chain.mineEmptyBlock(365 * 144);
+
+    let call = vaultManager.getStabilityFee(1, deployer);
+    call.result.expectOk().expectUintWithDecimals(11.983908);
+
     result = vaultManager.closeVault(deployer, 1);
     result.expectOk().expectBool(true);
+
+    call = await usdaToken.balanceOf(Utils.qualifiedName('arkadiko-freddie-v1-1'));
+    call.result.expectOk().expectUintWithDecimals(11.983908);
   }
 });
 
