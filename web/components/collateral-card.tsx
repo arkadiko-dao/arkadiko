@@ -109,28 +109,25 @@ export const collExtraInfo = {
   }
 };
 
+// Only liquidated/redeemed vaults get a status row: "No open vault" in the header covers the rest
 const vaultStatusToLabel = (status: number) => {
-  if (Number(status) === 101) {
-    return 'Active'
-  } else if (Number(status) === 201) {
+  if (Number(status) === 201) {
     return 'Liquidated'
   } else if (Number(status) === 202) {
     return 'Redeemed'
   }
 
-  return 'Closed'
+  return undefined
 }
 
 const vaultStatusToTooltip = (status: number) => {
-  if (Number(status) === 101) {
-    return 'Vault is active'
-  } else if (Number(status) === 201) {
-    return 'Vault got liquidated. You can open a new one'
+  if (Number(status) === 201) {
+    return 'Your last vault got liquidated. You can open a new one'
   } else if (Number(status) === 202) {
-    return 'Vault got remeeded. You can open a new one'
+    return 'Your last vault got redeemed. You can open a new one'
   }
 
-  return 'Vault is closed. You can open a new one'
+  return undefined
 }
 
 export const CollateralCard: React.FC<CollateralTypeProps> = () => {
@@ -563,44 +560,27 @@ export const CollateralCard: React.FC<CollateralTypeProps> = () => {
                 )}
 
                 <dl className="mt-4 mb-6 space-y-2">
-                  <div className="flex justify-between">
-                    <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Status</dt>
-                    <dd className="flex text-xs font-semibold text-right text-gray-700/70">
-                      <span className={`flex items-center flex-grow text-gray-100 px-2 py-0.5 rounded-xl ${collateral.classes?.innerBg}`}>
-                        {Number(state.vaults[collateral.name]['status']) != 100 ? (
-                          <>
-                            {vaultStatusToLabel(state.vaults[collateral.name]['status'])}
-                            <Tooltip
-                              className="ml-2"
-                              shouldWrapChildren={true}
-                              label={vaultStatusToTooltip(state.vaults[collateral.name]['status'])}
-                            >
-                              <StyledIcon
-                                as="InformationCircleIcon"
-                                size={4}
-                                className="block ml-2 text-gray-100"
-                              />
-                            </Tooltip>
-                          </>
-                        ) : (
-                          <>
-                            Closed
-                            <Tooltip
-                              className="ml-2"
-                              shouldWrapChildren={true}
-                              label={`Vault closed. Click on Borrow to open a vault.`}
-                            >
-                              <StyledIcon
-                                as="InformationCircleIcon"
-                                size={4}
-                                className="block ml-2 text-gray-100"
-                              />
-                            </Tooltip>
-                          </>
-                        )}
-                      </span>
-                    </dd>
-                  </div>
+                  {vaultStatusToLabel(state.vaults[collateral.name]['status']) && (
+                    <div className="flex justify-between">
+                      <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Last vault</dt>
+                      <dd className="flex text-xs font-semibold text-right text-gray-700/70">
+                        <span className={`flex items-center flex-grow text-gray-100 px-2 py-0.5 rounded-xl ${collateral.classes?.innerBg}`}>
+                          {vaultStatusToLabel(state.vaults[collateral.name]['status'])}
+                          <Tooltip
+                            className="ml-2"
+                            shouldWrapChildren={true}
+                            label={vaultStatusToTooltip(state.vaults[collateral.name]['status'])}
+                          >
+                            <StyledIcon
+                              as="InformationCircleIcon"
+                              size={4}
+                              className="block ml-2 text-gray-100"
+                            />
+                          </Tooltip>
+                        </span>
+                      </dd>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <dt className="text-sm font-medium tracking-tight text-gray-500 dark:text-zinc-300">Liquidation ratio</dt>
                     <dd className="flex text-sm font-semibold text-right text-gray-700/70 dark:text-zinc-50/80">
